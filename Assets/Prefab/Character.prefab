@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9177033209295383731}
   - component: {fileID: 2888760600435802566}
   - component: {fileID: 6023709560808131354}
+  - component: {fileID: 7053219674910393393}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -132,9 +133,37 @@ MonoBehaviour:
   _jumpInput: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _attackInput: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _receptionInput: {fileID: -3593731777882109378, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _maxHealth: 100
   _MoveSpeed: 10
-  _jumpForce: 500
+  _jumpForce: 50
   _doubleJumpForce: 250
+--- !u!54 &7053219674910393393
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6370969532702144572}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &7250645191570818822
 GameObject:
   m_ObjectHideFlags: 0

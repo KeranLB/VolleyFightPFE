@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,9 +21,9 @@ public class PlayerCharacter : MonoBehaviour
 
     #region Booleans
 
-    private bool _CanJump;
+    private bool _CanJump = true;
     private bool _isWalled;
-    private bool _isGrounded;
+    private bool _isGrounded = false;
     private bool _isJumping;
 
     #endregion
@@ -56,11 +58,23 @@ public class PlayerCharacter : MonoBehaviour
     void Update()
     {
         
-        Move(_moveInput.action.ReadValue<Vector2>(), -9.81f);
-        
-        if (_moveInput.action.IsPressed())
+        Move(_moveInput.action.ReadValue<Vector2>());
+
+
+        if (_jumpInput.action.WasPressedThisFrame())
         {
-            
+            _isJumping = true;
+            StartCoroutine(FirstJumpDuration());
+        }
+        else if (_jumpInput.action.WasReleasedThisFrame())
+        {
+            _isJumping = false;
+            StopCoroutine(FirstJumpDuration());
+        }
+
+        if (_isJumping)
+        {
+            Jump();
         }
     }
 
@@ -73,10 +87,10 @@ public class PlayerCharacter : MonoBehaviour
             1f,
             LayerMask.GetMask("Ground"));
     }
-    void Move(Vector2 moveinput, float gravity)
+    void Move(Vector2 moveinput)
     {
         gameObject.transform.position += new Vector3(moveinput.x * _MoveSpeed* Time.deltaTime,
-                                                     gravity * Time.deltaTime,
+                                                     0f,
                                                      moveinput.y * _MoveSpeed * Time.deltaTime);
     }
 
@@ -118,7 +132,13 @@ public class PlayerCharacter : MonoBehaviour
 
     void Jump()
     {
-        
+        gameObject.transform.position += new Vector3(0f, _jumpForce * Time.deltaTime, 0f);
+    }
+
+    IEnumerator FirstJumpDuration()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _isJumping = false;
     }
 
     void DoubleJump()
@@ -164,6 +184,18 @@ public class PlayerCharacter : MonoBehaviour
     {
         
     }
-    
+
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        print(other.gameObject.layer.ToString());
+        if (other.gameObject.layer == 3)
+        {
+            print("IsGrounded");
+            _isGrounded = true;
+            _CanJump = true;
+        }
+    }
+
 }
