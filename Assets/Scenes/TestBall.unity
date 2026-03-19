@@ -382,10 +382,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: Ceilling
@@ -455,10 +451,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallRight
@@ -581,10 +573,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallFront
@@ -662,10 +650,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallLeft
@@ -739,10 +723,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallBack
@@ -938,10 +918,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1347574031882059767, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: Ground
