@@ -6,6 +6,11 @@ public class HitZone : MonoBehaviour
     {
         
     }
+
+    public virtual void OnTrajectory(Ball ball, RaycastHit hitInfo)
+    {
+        
+    }
     
     private void OnTriggerEnter(Collider other)
     {

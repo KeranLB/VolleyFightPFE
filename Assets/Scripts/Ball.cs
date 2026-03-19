@@ -103,22 +103,32 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(Physics.Raycast(transform.position, _direction, out RaycastHit hit, _realSpeed * Time.fixedDeltaTime))
+        CheckCollisionAhead(transform.position);
+    }
+
+    public void CheckCollisionAhead(Vector3 startPoint)
+    {
+        if(
+            Physics.Raycast(startPoint, _direction, out RaycastHit hit, _realSpeed * Time.fixedDeltaTime)
+            && hit.collider.TryGetComponent<HitZone>(out HitZone zone)
+        )
         {
-            // TODO add a method on trajectory is collision for each HitZone
-            if(hit.collider.TryGetComponent<Wall>(out Wall wall))
-            {
-                _rigidbody.MovePosition(hit.point - _direction * 0.5f);
-            }
-            else
-            {
-                _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);  
-            }
+            zone.OnTrajectory(this, hit);
         }
         else
         {
-            _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);   
+            MoveInDirection();
         }
+    }
+
+    public void StopBeforeCollision(RaycastHit hit)
+    {
+        _rigidbody.MovePosition(hit.point - _direction * 0.5f);
+    }
+
+    public void MoveInDirection()
+    {
+        _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);
     }
 
     public void ChangeTeam(Teams team)
