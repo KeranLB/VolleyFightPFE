@@ -4,12 +4,13 @@ using UnityEngine;
 public class HitZoneCharacter : HitZone
 {
     [SerializeField] private PlayerCharacter _playerCharacter;
-    void HitBall(Ball ball)
+    protected override void HitBall(Ball ball)
     {
-        
+        base.HitBall(ball);
+        Debug.Log("I m a child of hitzone");
     }
 
-    void ChangeTeamPossess(Ball ball)
+    protected void ChangeTeamPossess(Ball ball)
     {
         
     }

@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class HitZone : MonoBehaviour
 {
-    void HitBall(Ball ball)
+    protected virtual void HitBall(Ball ball)
     {
-        
+        Debug.Log("i m hitzone");
     }
 }
