@@ -46,57 +46,64 @@ public class Ball : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            _realSpeed += 5;
+            _maxSpeed += 5;
         }
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            _realSpeed -= 5;
+            _maxSpeed -= 5;
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
-           _direction = Vector3.back;
+           GetHit(Vector3.back);
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
-            _direction = Vector3.left;
+            GetHit(Vector3.left);
         }
         if (Input.GetKeyDown(KeyCode.Keypad6))
         {
-            _direction = Vector3.right;
+            GetHit(Vector3.right);
         }
         if (Input.GetKeyDown(KeyCode.Keypad8))
         {
-            _direction = Vector3.forward;
+            GetHit(Vector3.forward);
         }
         if (Input.GetKeyDown(KeyCode.Keypad5))
         {
-            _direction = Vector3.down;
+            GetHit(Vector3.down);
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            _direction = Vector3.up;
+            GetHit(Vector3.up);
         }
         if (Input.GetKeyDown(KeyCode.Keypad7))
         {
-            _direction = Vector3.up + Vector3.forward + Vector3.left;
+            GetHit(Vector3.up*2 + Vector3.forward + Vector3.left);
         }
         if (Input.GetKeyDown(KeyCode.Keypad9))
         {
-            _direction = Vector3.up + Vector3.forward + Vector3.right;
+            GetHit(Vector3.up + Vector3.forward*3 + Vector3.right);
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
-            _direction = Vector3.down + Vector3.forward + Vector3.left;
+            GetHit(Vector3.down + Vector3.forward + Vector3.left*2);
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
-            _direction = Vector3.down + Vector3.forward + Vector3.right;
+            GetHit(Vector3.down*2.5f + Vector3.forward + Vector3.right);
         }
     }
 
     private void FixedUpdate()
     {
-        _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);
+        if(Physics.Raycast(transform.position, _direction, out RaycastHit hit, _realSpeed * Time.fixedDeltaTime))
+        {
+            _rigidbody.MovePosition(hit.point - _direction * 0.5f);
+        }
+        else
+        {
+            _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);    
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -111,18 +118,21 @@ public class Ball : MonoBehaviour
 
     public void Bounce(Vector3 normal)
     {
-        Debug.Log("Bounce at " + normal);
         _direction = Vector3.Reflect(_direction, normal);
+        _realSpeed = _maxSpeed;
     }
 
-    void GetHit(Vector3 direction, float accSpeed)
+    void GetHit(Vector3 direction, float accSpeed = 1)
     {
-        _direction = direction;
+        _direction = direction.normalized;
+        _maxSpeed *= accSpeed;
+        _realSpeed = _maxSpeed;
     }
 
-    void GetRecpt(Vector3 target)
+    void GetBlocked(Vector3 target)
     {
         _target = target;
+        _realSpeed = _passSpeed;
     }
 
     void CrossField()
