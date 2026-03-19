@@ -692,6 +692,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _MoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _maxAccelerationTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _curve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
+      propertyPath: _curve.m_Curve.Array.data[1].outSlope
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6370969532702144572, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
       propertyPath: m_Name
       value: Character
