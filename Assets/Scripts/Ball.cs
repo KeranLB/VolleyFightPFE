@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(MeshRenderer))]
 public class Ball : MonoBehaviour
 {
     #region Speeds
@@ -33,12 +34,14 @@ public class Ball : MonoBehaviour
     
     #region Subcomponents
         private Rigidbody _rigidbody;
+        private MeshRenderer _meshRenderer;
     #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _meshRenderer = GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
@@ -92,23 +95,43 @@ public class Ball : MonoBehaviour
         {
             GetHit(Vector3.down*2.5f + Vector3.forward + Vector3.right);
         }
+        if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+        {
+            ChangeTeam(teamPossess==Teams.TeamA ? Teams.TeamB : Teams.TeamA);
+        }
     }
 
     private void FixedUpdate()
     {
         if(Physics.Raycast(transform.position, _direction, out RaycastHit hit, _realSpeed * Time.fixedDeltaTime))
         {
-            _rigidbody.MovePosition(hit.point - _direction * 0.5f);
+            // TODO add a method on trajectory is collision for each HitZone
+            if(hit.collider.TryGetComponent<Wall>(out Wall wall))
+            {
+                _rigidbody.MovePosition(hit.point - _direction * 0.5f);
+            }
+            else
+            {
+                _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);  
+            }
         }
         else
         {
-            _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);    
+            _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);   
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void ChangeTeam(Teams team)
     {
-        Debug.Log(other.gameObject.name);
+        teamPossess = team;
+        if (team == Teams.TeamA)
+        {
+            _meshRenderer.material.color = Color.blue;
+        }
+        else if (team == Teams.TeamB)
+        {
+            _meshRenderer.material.color = Color.yellow;
+        }
     }
 
     void PhysicSim()
@@ -118,7 +141,7 @@ public class Ball : MonoBehaviour
 
     public void Bounce(Vector3 normal)
     {
-        _direction = Vector3.Reflect(_direction, normal);
+        _direction = Vector3.Reflect(_direction, normal.normalized);
         _realSpeed = _maxSpeed;
     }
 
