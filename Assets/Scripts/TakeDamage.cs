@@ -7,8 +7,8 @@ public class TakeDamage : HitZoneCharacter
         
     }
 
-    void ComputeDamage(Ball ball)
+    float ComputeDamage(Ball ball)
     {
-        //return float
+        return 0;
     }
 }
