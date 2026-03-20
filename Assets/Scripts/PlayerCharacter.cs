@@ -1,17 +1,24 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.Serialization;
 
 public class PlayerCharacter : MonoBehaviour
 {
     #region Inputs
     
     //[SerializeField] private InputActionAsset _inputActionAsset;
+    [FormerlySerializedAs("_moveInput")]
     [Header("Inputs :")]
-    [SerializeField] private InputActionReference _moveInput;
+    [SerializeField] private InputActionReference _moveInputAction;
+    private Vector2 _moveInput;
+    private Vector2 _lastDirection = new Vector2(0f,0f);
     [SerializeField] private InputActionReference _jumpInput;
     [SerializeField] private InputActionReference _attackInput;
     [SerializeField] private InputActionReference _receptionInput;
@@ -19,13 +26,34 @@ public class PlayerCharacter : MonoBehaviour
 
     #endregion
 
-    #region Component
+    #region Movement
 
-    [SerializeField] private Rigidbody _rb;
+    [Header("Movement :")]
+    [Header("Speed :")] 
+    [SerializeField] private bool TestTrue;
+
+    private int _frameCurve;
+    [SerializeField] private List<float> _speeds;
+    private int _indexSpeed = 0;
+    [SerializeField] private float _maxMoveSpeed;
+    [SerializeField] private float _moveSpeed;
+    
+    [Header("Acceleration Curve :")]
     [SerializeField] private AnimationCurve _accelerationCurve;
-    private float _currentAccelerationTime = 0f;
-    [SerializeField] private float _maxAccelerationTime;
-    private float _accelerationValue = 0f;
+    [SerializeField] private float _accelerationTimeDuration;
+    [SerializeField] private float _accelerationCurrentTime = 0f;
+    
+    [Header("Inertia Curve :")]
+    [SerializeField] private AnimationCurve _inertiaCurve;
+    [SerializeField] private float _inertiaTimeDuration;
+    [Header("")] // Spacer
+    #endregion
+    
+    #region Component
+    [Header("Component :")]
+    [SerializeField] private Rigidbody _rb;
+
+
 
     #endregion
 
@@ -48,7 +76,7 @@ public class PlayerCharacter : MonoBehaviour
     
     #region Stats
     [Header("Stats :")]
-    [SerializeField] float _MoveSpeed;
+
     [SerializeField] private float _jumpForce;
     [SerializeField] float _doubleJumpForce;
     
@@ -58,16 +86,43 @@ public class PlayerCharacter : MonoBehaviour
     void Start()
     {
        _currentHealth = _maxHealth;
+
+       _accelerationCurrentTime = 0f;
     }
 
     private void FixedUpdate()
     {
         GroundCheck();
-    }
+        _moveInput = _moveInputAction.action.ReadValue<Vector2>();
+        if (_moveInputAction.action.IsPressed())
+        {
+            //AccelerationTest();
+            if (_indexSpeed < _speeds.Count-1)
+            {
+                _indexSpeed++;
+            }
+            AccelerationTest();
+            Move();
+        }
+        else if (_indexSpeed > 0 && TestTrue)
+        {
+            _indexSpeed--;
+            Move();
+        }
+        else if (_accelerationCurrentTime <= 0f && TestTrue!)
+        {
+            InertiaTest();
+            Move();
+        }
+        /*
+        else if (_currentAccelerationTime > 0)
+        {
+            print("last direction = " + _lastDirection);
+            DecelerationTest();
+            Move();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
+        
         if (_moveInput.action.WasPressedThisFrame())
         {
             _isMoving = true;
@@ -84,7 +139,12 @@ public class PlayerCharacter : MonoBehaviour
         {
             Move(_moveInput.action.ReadValue<Vector2>());
         }
+        */
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
         if (_jumpInput.action.WasPressedThisFrame())
         {
             _isJumping = true;
@@ -111,38 +171,32 @@ public class PlayerCharacter : MonoBehaviour
             1f,
             LayerMask.GetMask("Ground"));
     }
-    void Move(Vector2 moveinput)
+    void Move()
     {
-        Vector3 newPosition = _rb.position + new Vector3(moveinput.x * _MoveSpeed * Time.deltaTime, 0f, moveinput.y * _MoveSpeed * Time.deltaTime);
+        Vector3 newPosition;
+        if (TestTrue)
+        {
+            newPosition = _rb.position + new Vector3(_moveInput.x * _speeds[_indexSpeed], 0f,_moveInput.y * _speeds[_indexSpeed]);
+        }
+        else
+        { 
+            newPosition = _rb.position + new Vector3(_moveInput.x * _moveSpeed, 0f, _moveInput.y * _moveSpeed);
+        }
         _rb.MovePosition(newPosition);
-        //_rb.AddForce(new Vector3(moveinput.x * _MoveSpeed * _accelerationValue, 0f, moveinput.y * _MoveSpeed * _accelerationValue), ForceMode.Acceleration);
-        //_rb.linearVelocity = new Vector3(moveinput.x * _MoveSpeed * _accelerationValue, 0f, moveinput.y * _MoveSpeed * _accelerationValue);
     }
 
-    IEnumerator AccelerationMove()
+    private void AccelerationTest()
     {
-        _currentAccelerationTime = 0f;
-        _accelerationValue = 0f;
-        while (_currentAccelerationTime <= _maxAccelerationTime)
-        {
-            _currentAccelerationTime += Time.deltaTime;
-            _accelerationValue = _accelerationCurve.Evaluate(_currentAccelerationTime/_maxAccelerationTime);
-            _MoveSpeed += _accelerationValue * Time.deltaTime;
-            Debug.Log(_accelerationValue);
-            yield return null;
-        }
-        StopCoroutine(AccelerationMove());
+        _accelerationCurrentTime++;
+        _accelerationCurrentTime = Mathf.Clamp(_accelerationCurrentTime,0f,_accelerationTimeDuration);
+        _moveSpeed = _maxMoveSpeed *  _accelerationCurve.Evaluate(_accelerationCurrentTime / _accelerationTimeDuration);
     }
 
-    IEnumerator DecelerationMove()
+    private void InertiaTest()
     {
-        while (_currentAccelerationTime <= _maxAccelerationTime)
-        {
-            _currentAccelerationTime -= Time.deltaTime;
-            _accelerationValue = _accelerationCurve.Evaluate(_currentAccelerationTime/_maxAccelerationTime);
-            yield return null;
-        }
-        StopCoroutine(DecelerationMove());
+        _accelerationCurrentTime--;
+        _accelerationCurrentTime = Mathf.Clamp(_accelerationCurrentTime, 0f, _inertiaTimeDuration);
+        _moveSpeed = _maxMoveSpeed * _inertiaCurve.Evaluate(_accelerationCurrentTime / _inertiaTimeDuration);
     }
 
     #region Attack
