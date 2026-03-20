@@ -121,9 +121,10 @@ public class Ball : MonoBehaviour
         }
     }
 
-    public void StopBeforeCollision(RaycastHit hit)
+    public void StopBeforeCollision(RaycastHit hit, Vector3 normal)
     {
-        _rigidbody.MovePosition(hit.point - _direction * 0.5f);
+        var projected = Vector3.ProjectOnPlane(-_direction, normal);
+        _rigidbody.MovePosition(hit.point + projected + normal * 0.5f);
     }
 
     public void MoveInDirection()

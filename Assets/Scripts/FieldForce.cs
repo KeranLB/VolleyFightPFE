@@ -29,21 +29,22 @@ public class FieldForce : HitZone
         }
         else
         {
-            ball.StopBeforeCollision(hitInfo);
+            if (_team != ball.teamPossess)
+            {
+                ChangeTeam(ball.teamPossess);
+                _letBallPass = true;
+            }
+            else if(!_letBallPass)
+            {
+                ball.StopBeforeCollision(hitInfo, GetBounceNormal());
+                ball.Bounce(GetBounceNormal());
+            }
         }
     }
 
-    protected override void HitBall(Ball ball)
+    private Vector3 GetBounceNormal()
     {
-        if (_team != ball.teamPossess)
-        {
-            ChangeTeam(ball.teamPossess);
-            _letBallPass = true;
-        }
-        else if(!_letBallPass)
-        {
-            ball.Bounce(_team==Teams.TeamA ? _normalTeam1 : _normalTeam2);
-        }
+        return (_team == Teams.TeamA ? _normalTeam1 : _normalTeam2).normalized;
     }
 
     private void OnTriggerExit(Collider other)
