@@ -713,22 +713,6 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: _groundCheck
-      value: 
-      objectReference: {fileID: 945090326}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: _gravityForce
-      value: -30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: _maxMoveSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: _speeds.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
       propertyPath: _inertiaTimeDuration
       value: 2
       objectReference: {fileID: 0}
@@ -739,14 +723,6 @@ PrefabInstance:
     - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
       propertyPath: _maxAccelerationValue
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: '_speeds.Array.data[1]'
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-      propertyPath: '_speeds.Array.data[2]'
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6023709560808131354, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
       propertyPath: _accelerationCurrentTime
@@ -1193,11 +1169,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 10, y: 2.2204466e-16, z: 10.000002}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &945090326 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3085121961962886939, guid: 718bf470b0e0d0e4f9b714ff4c1ee9f0, type: 3}
-  m_PrefabInstance: {fileID: 630515943}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &956322558
 GameObject:
   m_ObjectHideFlags: 0
