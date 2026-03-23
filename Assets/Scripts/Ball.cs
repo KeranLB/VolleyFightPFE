@@ -31,14 +31,13 @@ public class Ball : MonoBehaviour
     [SerializeField] private int _touchLimit;
     [SerializeField] private int _timeLimit;
     private float _timer;
-    public bool isSwitchingSide = false;
+    public bool isSwitchingSide;
     
     #endregion
     
     #region Subcomponents
         private Rigidbody _rigidbody;
         private MeshRenderer _meshRenderer;
-        private Collider _collider;
     #endregion
 
     #region Physics
@@ -47,8 +46,12 @@ public class Ball : MonoBehaviour
     private Vector3 _currentFrameDirection;
     private float _currentFrameDistanceRemaining;
     private const float MAX_STEP_LENGTH = 0.5f;
+    private const int MAX_STEP_NB = 100;
     
-    //DEBUG
+    #endregion
+    
+    #region DEBUG
+    
     [SerializeField]
     private List<Vector3> _currentFrameCollisions;
     private Vector3 _currentFrameDestination;
@@ -60,7 +63,6 @@ public class Ball : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
-        _collider = GetComponent<Collider>();
         
         _currentFramePosition = _rigidbody.position;
     }
@@ -130,6 +132,7 @@ public class Ball : MonoBehaviour
         _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
         
         // Check we're not already overlapping a collider that would be ignored by SphereCast
+        // TODO : check ray in all directions to detect surfaces parallel to direction?
         Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
         foreach (Collider collider in cols)
         {
@@ -142,7 +145,7 @@ public class Ball : MonoBehaviour
         }
         
         // Simulate next position until all collisions are resolved
-        int hardLimit = 100; // Don't get stuck in infinite loop
+        int hardLimit = MAX_STEP_NB; // Don't get stuck in infinite loop
         while (_currentFrameDistanceRemaining > 0 && hardLimit > 0)
         {
             CheckCollisionAhead();
