@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Serialization;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerCharacter : MonoBehaviour
 {
@@ -29,6 +30,9 @@ public class PlayerCharacter : MonoBehaviour
     #region Movement
 
     [Header("Movement :")]
+
+    private Vector3 _velocity;
+
     [Header("Speed :")] 
     [SerializeField] private bool TestTrue;
 
@@ -52,6 +56,8 @@ public class PlayerCharacter : MonoBehaviour
     #region Component
     [Header("Component :")]
     [SerializeField] private Rigidbody _rb;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private float _gravityForce;
 
 
 
@@ -85,6 +91,7 @@ public class PlayerCharacter : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        TestTrue = true;
        _currentHealth = _maxHealth;
 
        _accelerationCurrentTime = 0f;
@@ -93,96 +100,83 @@ public class PlayerCharacter : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        _moveInput = _moveInputAction.action.ReadValue<Vector2>();
-        if (_moveInputAction.action.IsPressed())
-        {
-            //AccelerationTest();
-            if (_indexSpeed < _speeds.Count-1)
-            {
-                _indexSpeed++;
-            }
-            AccelerationTest();
-            Move();
-        }
-        else if (_indexSpeed > 0 && TestTrue)
-        {
-            _indexSpeed--;
-            Move();
-        }
-        else if (_accelerationCurrentTime <= 0f && TestTrue!)
-        {
-            InertiaTest();
-            Move();
-        }
-        /*
-        else if (_currentAccelerationTime > 0)
-        {
-            print("last direction = " + _lastDirection);
-            DecelerationTest();
-            Move();
-        }
 
-        
-        if (_moveInput.action.WasPressedThisFrame())
-        {
-            _isMoving = true;
-            StartCoroutine(AccelerationMove());
-        }
-        else if (_moveInput.action.WasReleasedThisFrame())
-        {
-            _isMoving = false;
-            StopCoroutine(AccelerationMove());
-            StartCoroutine(DecelerationMove());
-        }
+        Move();
 
-        if (_isMoving)
-        {
-            Move(_moveInput.action.ReadValue<Vector2>());
-        }
-        */
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_jumpInput.action.WasPressedThisFrame())
-        {
-            _isJumping = true;
-            StartCoroutine(FirstJumpDuration());
-        }
-        else if (_jumpInput.action.WasReleasedThisFrame())
-        {
-            _isJumping = false;
-            StopCoroutine(FirstJumpDuration());
-        }
-
+        _moveInput = _moveInputAction.action.ReadValue<Vector2>();
+        _isJumping = _jumpInput.action.WasPressedThisFrame();
         if (_isJumping)
         {
-            Jump();
+            _velocity.y = 50f;
         }
     }
 
     void GroundCheck()
     {
         RaycastHit hit;
-        _isGrounded = Physics.Raycast(transform.position,
-            Vector3.down,
-            out hit,
-            1f,
-            LayerMask.GetMask("Ground"));
-    }
-    void Move()
-    {
-        Vector3 newPosition;
-        if (TestTrue)
+        Vector3 startPosition = _rb.position + new Vector3(0f,-3f,0f);
+        Vector3 direction = Vector3.down;
+        float duration = 1f;
+        int layer = LayerMask.GetMask("Ground");
+
+        Debug.DrawRay(startPosition, direction, Color.red, duration);
+
+        _isGrounded = Physics.Raycast(_groundCheck.position, direction, out hit, 0.3f, layer);
+        if (_isGrounded)
         {
-            newPosition = _rb.position + new Vector3(_moveInput.x * _speeds[_indexSpeed], 0f,_moveInput.y * _speeds[_indexSpeed]);
+            Debug.Log("Is Grounded");
+        }
+    }
+
+    void SimGravity()
+    {
+        if (!_isGrounded)
+        {
+            _velocity.y += _gravityForce * Time.fixedDeltaTime;
         }
         else
-        { 
-            newPosition = _rb.position + new Vector3(_moveInput.x * _moveSpeed, 0f, _moveInput.y * _moveSpeed);
+        {
+            _velocity.y = 0f;
         }
-        _rb.MovePosition(newPosition);
+    }
+
+    void Move()
+    {
+
+        Vector2 normDir = _moveInput.normalized;
+        _velocity.x = normDir.x * _maxMoveSpeed;
+        _velocity.z = normDir.y * _maxMoveSpeed;
+        float jumpForce = 1f;
+
+        if (_isGrounded)
+        {
+            _velocity.y = Mathf.Max(_velocity.y, 0f);
+        }
+        else
+        {
+            _velocity.y += _gravityForce * Time.fixedDeltaTime;
+        }
+
+        // _velocity.y = jump ou gravity;
+        // + new Vector3(_moveInput.x * _speeds[_indexSpeed], _velocity.y, _moveInput.y * _speeds[_indexSpeed]);
+        //}
+        //else
+        //{ 
+        //    _velocity = _rb.position + new Vector3(_moveInput.x * _moveSpeed, _velocity.y, _moveInput.y * _moveSpeed);
+        //}
+        int layer = LayerMask.GetMask("Ground");
+        if (Physics.Raycast(_rb.position, _velocity.normalized, out var hit, _velocity.magnitude * Time.fixedDeltaTime, layer)){
+            _rb.MovePosition(hit.point + Vector3.up * 4f);
+        }
+        else
+        {
+            _rb.MovePosition(_rb.position + _velocity * Time.fixedDeltaTime);
+        }
     }
 
     private void AccelerationTest()
@@ -237,7 +231,8 @@ public class PlayerCharacter : MonoBehaviour
 
     void Jump()
     {
-        gameObject.transform.position += new Vector3(0f, _jumpForce * Time.deltaTime, 0f);
+        _velocity.y = _jumpForce;
+        //gameObject.transform.position += new Vector3(0f, _jumpForce * Time.deltaTime, 0f);
     }
 
     IEnumerator FirstJumpDuration()
