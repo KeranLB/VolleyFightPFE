@@ -171,8 +171,9 @@ public class PlayerCharacter : MonoBehaviour
             _velocity.y += _gravityForce * Time.fixedDeltaTime;
         }
 
-        RotateCharacter();
-
+        //RotateCharacter();
+        CharacterRotation();
+        
         int layer = LayerMask.GetMask("Ground");
         if (Physics.Raycast(_rb.position, _velocity.normalized, out var hit, _velocity.magnitude * Time.fixedDeltaTime, layer))
         {
@@ -185,46 +186,11 @@ public class PlayerCharacter : MonoBehaviour
         }
     }
 
-    void RotateCharacter()
+    void CharacterRotation()
     {
-        float tmpX = 0f;
-        float tmpY = 0f;
-        float tmpRotate = _meshCharacter.localEulerAngles.y;
-        if (_velocity.x > 0f && _velocity.z == 0f)
-        {
-            tmpRotate = 90f;
-        }
-        else if (_velocity.x < 0f && _velocity.z == 0f)
-        {
-            tmpRotate = -90f;
-        }
-        else if (_velocity.z > 0f && _velocity.x == 0f)
-        {
-            tmpRotate = 0f;
-        }
-        else if (_velocity.z < 0f && _velocity.x == 0f)
-        {
-            tmpRotate = 180f;
-        }
-
-        else if (_velocity.x > 0f && _velocity.z > 0f)
-        {
-            tmpRotate = 45f;
-        }
-        else if (_velocity.x > 0f && _velocity.z < 0f)
-        {
-            tmpRotate = 135f;
-        }
-        else if (_velocity.x < 0f && _velocity.z > 0f)
-        {
-            tmpRotate = -45f;
-        }
-        else if (_velocity.x < 0f && _velocity.z < 0f)
-        {
-            tmpRotate = -135f;
-        }
-        _meshCharacter.localEulerAngles = new Vector3(0f, tmpRotate, 0f);
+        _meshCharacter.forward = new Vector3(_moveInput.x, 0f, _moveInput.y);
     }
+
 
     private void AccelerationTest()
     {
