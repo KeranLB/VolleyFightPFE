@@ -2,17 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Serialization;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerCharacter : MonoBehaviour
 {
+    #region Variables
+
     #region Inputs
-    
+
     //[SerializeField] private InputActionAsset _inputActionAsset;
     [FormerlySerializedAs("_moveInput")]
     [Header("Inputs :")]
@@ -29,6 +33,9 @@ public class PlayerCharacter : MonoBehaviour
     #region Movement
 
     [Header("Movement :")]
+
+    private Vector3 _velocity;
+
     [Header("Speed :")] 
     [SerializeField] private bool TestTrue;
 
@@ -52,6 +59,10 @@ public class PlayerCharacter : MonoBehaviour
     #region Component
     [Header("Component :")]
     [SerializeField] private Rigidbody _rb;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private Transform _wallCheck;
+    [SerializeField] private Transform _meshCharacter;
+    [SerializeField] private float _gravityForce;
 
 
 
@@ -60,7 +71,7 @@ public class PlayerCharacter : MonoBehaviour
     #region Booleans
 
     private bool _isMoving = false;
-    private bool _CanJump = true;
+    private bool _canJump = true;
     private bool _isWalled;
     private bool _isGrounded = false;
     private bool _isJumping;
@@ -71,6 +82,8 @@ public class PlayerCharacter : MonoBehaviour
     
     [SerializeField] int _maxHealth;
     private int _currentHealth;
+    private bool _isDead = false;
+    private Vector3 _deathPosition;
     
     #endregion
     
@@ -79,12 +92,16 @@ public class PlayerCharacter : MonoBehaviour
 
     [SerializeField] private float _jumpForce;
     [SerializeField] float _doubleJumpForce;
-    
+
     #endregion
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    #endregion
+
+    #region MainFunctions
+
     void Start()
     {
+        TestTrue = true;
        _currentHealth = _maxHealth;
 
        _accelerationCurrentTime = 0f;
@@ -93,96 +110,120 @@ public class PlayerCharacter : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        _moveInput = _moveInputAction.action.ReadValue<Vector2>();
-        if (_moveInputAction.action.IsPressed())
+        WallCheck();
+        if (!_isDead)
         {
-            //AccelerationTest();
-            if (_indexSpeed < _speeds.Count-1)
-            {
-                _indexSpeed++;
-            }
-            AccelerationTest();
             Move();
         }
-        else if (_indexSpeed > 0 && TestTrue)
-        {
-            _indexSpeed--;
-            Move();
-        }
-        else if (_accelerationCurrentTime <= 0f && TestTrue!)
-        {
-            InertiaTest();
-            Move();
-        }
-        /*
-        else if (_currentAccelerationTime > 0)
-        {
-            print("last direction = " + _lastDirection);
-            DecelerationTest();
-            Move();
-        }
-
-        
-        if (_moveInput.action.WasPressedThisFrame())
-        {
-            _isMoving = true;
-            StartCoroutine(AccelerationMove());
-        }
-        else if (_moveInput.action.WasReleasedThisFrame())
-        {
-            _isMoving = false;
-            StopCoroutine(AccelerationMove());
-            StartCoroutine(DecelerationMove());
-        }
-
-        if (_isMoving)
-        {
-            Move(_moveInput.action.ReadValue<Vector2>());
-        }
-        */
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_jumpInput.action.WasPressedThisFrame())
+
+        _moveInput = _moveInputAction.action.ReadValue<Vector2>();
+        _isJumping = _jumpInput.action.WasPressedThisFrame();
+        if (_isJumping && CheckShouldJump())
         {
-            _isJumping = true;
-            StartCoroutine(FirstJumpDuration());
-        }
-        else if (_jumpInput.action.WasReleasedThisFrame())
-        {
-            _isJumping = false;
-            StopCoroutine(FirstJumpDuration());
+            _velocity.y = _jumpForce;
         }
 
-        if (_isJumping)
+        if (Input.GetKeyDown("e"))
         {
-            Jump();
+            GetDamage(10);
+        }
+
+        if (Input.GetKeyDown("r") && _isDead)
+        { 
+            RespawnCharacter();
         }
     }
 
-    void GroundCheck()
+    #endregion
+
+    #region MovementCharacter
+
+    void SimGravity()
     {
-        RaycastHit hit;
-        _isGrounded = Physics.Raycast(transform.position,
-            Vector3.down,
-            out hit,
-            1f,
-            LayerMask.GetMask("Ground"));
-    }
-    void Move()
-    {
-        Vector3 newPosition;
-        if (TestTrue)
+        if (!_isGrounded)
         {
-            newPosition = _rb.position + new Vector3(_moveInput.x * _speeds[_indexSpeed], 0f,_moveInput.y * _speeds[_indexSpeed]);
+            _velocity.y += _gravityForce * Time.fixedDeltaTime;
         }
         else
-        { 
-            newPosition = _rb.position + new Vector3(_moveInput.x * _moveSpeed, 0f, _moveInput.y * _moveSpeed);
+        {
+            _velocity.y = 0f;
         }
-        _rb.MovePosition(newPosition);
+    }
+
+    void Move()
+    {
+
+        Vector3 normDir = _moveInput.normalized;
+        _velocity.x = normDir.x * _maxMoveSpeed;
+        _velocity.z = normDir.y * _maxMoveSpeed;
+
+        if (_isGrounded)
+        {
+            _velocity.y = Mathf.Max(_velocity.y, 0f);
+        }
+        else
+        {
+            _velocity.y += _gravityForce * Time.fixedDeltaTime;
+        }
+
+        RotateCharacter();
+
+        int layer = LayerMask.GetMask("Ground");
+        if (Physics.Raycast(_rb.position, _velocity.normalized, out var hit, _velocity.magnitude * Time.fixedDeltaTime, layer))
+        {
+            _rb.MovePosition(hit.point - _velocity.normalized);
+            //_rb.MovePosition(hit.point + Vector3.up * 4f);
+        }
+        else
+        {
+            _rb.MovePosition(_rb.position + _velocity * Time.fixedDeltaTime);
+        }
+    }
+
+    void RotateCharacter()
+    {
+        float tmpX = 0f;
+        float tmpY = 0f;
+        float tmpRotate = _meshCharacter.localEulerAngles.y;
+        if (_velocity.x > 0f && _velocity.z == 0f)
+        {
+            tmpRotate = 90f;
+        }
+        else if (_velocity.x < 0f && _velocity.z == 0f)
+        {
+            tmpRotate = -90f;
+        }
+        else if (_velocity.z > 0f && _velocity.x == 0f)
+        {
+            tmpRotate = 0f;
+        }
+        else if (_velocity.z < 0f && _velocity.x == 0f)
+        {
+            tmpRotate = 180f;
+        }
+
+        else if (_velocity.x > 0f && _velocity.z > 0f)
+        {
+            tmpRotate = 45f;
+        }
+        else if (_velocity.x > 0f && _velocity.z < 0f)
+        {
+            tmpRotate = 135f;
+        }
+        else if (_velocity.x < 0f && _velocity.z > 0f)
+        {
+            tmpRotate = -45f;
+        }
+        else if (_velocity.x < 0f && _velocity.z < 0f)
+        {
+            tmpRotate = -135f;
+        }
+        _meshCharacter.localEulerAngles = new Vector3(0f, tmpRotate, 0f);
     }
 
     private void AccelerationTest()
@@ -199,21 +240,20 @@ public class PlayerCharacter : MonoBehaviour
         _moveSpeed = _maxMoveSpeed * _inertiaCurve.Evaluate(_accelerationCurrentTime / _inertiaTimeDuration);
     }
 
+    #endregion
+
     #region Attack
 
-    void CheckShouldAttack()
-    {
-        
-    }
+
 
     void LaunchAttack()
     {
         
     }
-    
+
     void GroundAttack()
     {
-        
+
     }
 
     void AerialAttack()
@@ -230,14 +270,12 @@ public class PlayerCharacter : MonoBehaviour
 
     #region Jump
 
-    void CheckShouldJump()
-    {
-        
-    }
+
 
     void Jump()
     {
-        gameObject.transform.position += new Vector3(0f, _jumpForce * Time.deltaTime, 0f);
+        _velocity.y = _jumpForce;
+        //gameObject.transform.position += new Vector3(0f, _jumpForce * Time.deltaTime, 0f);
     }
 
     IEnumerator FirstJumpDuration()
@@ -260,10 +298,7 @@ public class PlayerCharacter : MonoBehaviour
     
     #region Reception
 
-    void CheckShouldReception()
-    {
-        
-    }
+
 
     void LaunchReception()
     {
@@ -292,15 +327,96 @@ public class PlayerCharacter : MonoBehaviour
 
     #endregion
 
-    private void OnTriggerEnter(Collider other)
+    #region Checker
+
+    void GroundCheck()
     {
-        print(other.gameObject.layer.ToString());
-        if (other.gameObject.layer == 3)
+        RaycastHit hit;
+        Vector3 startPosition = _rb.position + new Vector3(0f, -3f, 0f);
+        Vector3 direction = Vector3.down;
+        float duration = 1f;
+        int layer = LayerMask.GetMask("Ground");
+
+        Debug.DrawRay(startPosition, direction, Color.red, duration);
+
+        _isGrounded = Physics.Raycast(_groundCheck.position, direction, out hit, 0.3f, layer);
+        if (_isGrounded)
         {
-            print("IsGrounded");
-            _isGrounded = true;
-            _CanJump = true;
+            _canJump = true;
         }
     }
 
+    void WallCheck()
+    {
+        RaycastHit hit;
+        Vector3 direction = _wallCheck.forward;
+        float duration = 1f;
+        int layer = LayerMask.GetMask("Ground");
+
+        Debug.DrawRay(_wallCheck.position, direction, Color.yellow, duration);
+
+        _isWalled = Physics.Raycast(_wallCheck.position, direction, out hit, 0.3f, layer);
+        if (_isWalled)
+        {
+            Debug.Log("Is Walled");
+            _canJump = true;
+        }
+    }
+
+    bool CheckShouldJump()
+    {
+        if (_canJump && _isGrounded)
+        {
+            return true;
+        }
+        if (_canJump && _isWalled)
+        {
+            return true;
+        }
+        else if (_canJump)
+        {
+            _canJump = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void CheckShouldReception()
+    {
+
+    }
+
+    void CheckShouldAttack()
+    {
+
+    }
+
+    #endregion
+
+    #region LifeSystem
+
+    public void GetDamage(int damage)
+    {
+        _currentHealth -= damage;
+        if (_currentHealth <= 0)
+        {
+            _currentHealth = 0;
+            _isDead = true;
+            _deathPosition = _rb.position;
+            _rb.position = new Vector3(1000f, 1000f, 1000f);
+        }
+        print("You have " + _currentHealth + "Hp remaining !");
+    }
+
+    public void RespawnCharacter()
+    {
+        _rb.position = _deathPosition;
+        _currentHealth = _maxHealth;
+        _isDead = false;
+    }
+
+    #endregion
 }
