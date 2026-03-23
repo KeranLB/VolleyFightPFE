@@ -19,26 +19,21 @@ public class FieldForce : HitZone
     private void Start()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {
-        if (_letBallPass)
+        if (_team != ball.teamPossess)
         {
-            ball.PassThrough(hitInfo);
+            ChangeTeam(ball.teamPossess);
+            _rigidbody.detectCollisions = false;
+            ball.CheckCollisionAhead();
+            _rigidbody.detectCollisions = true;
         }
         else
         {
-            if (_team != ball.teamPossess)
-            {
-                ChangeTeam(ball.teamPossess);
-                _letBallPass = true;
-                ball.PassThrough(hitInfo);
-            }
-            else if(!_letBallPass)
-            {
-                ball.Bounce(hitInfo);
-            }
+            ball.Bounce(hitInfo);
         }
     }
 
