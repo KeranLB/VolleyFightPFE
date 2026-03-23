@@ -7,7 +7,7 @@ public class Wall : HitZone
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {
-        ball.StopBeforeCollision(hitInfo, normal.normalized);
-        ball.Bounce(normal);
+        // ball.StopBeforeCollision(hitInfo, normal.normalized);
+        ball.Bounce(hitInfo);
     }
 }

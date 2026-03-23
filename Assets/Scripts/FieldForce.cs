@@ -25,7 +25,7 @@ public class FieldForce : HitZone
     {
         if (_letBallPass)
         {
-            ball.CheckCollisionAhead(hitInfo.point);
+            ball.PassThrough(hitInfo);
         }
         else
         {
@@ -33,11 +33,11 @@ public class FieldForce : HitZone
             {
                 ChangeTeam(ball.teamPossess);
                 _letBallPass = true;
+                ball.PassThrough(hitInfo);
             }
             else if(!_letBallPass)
             {
-                ball.StopBeforeCollision(hitInfo, GetBounceNormal());
-                ball.Bounce(GetBounceNormal());
+                ball.Bounce(hitInfo);
             }
         }
     }

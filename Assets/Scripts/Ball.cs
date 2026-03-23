@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(MeshRenderer))]
 public class Ball : MonoBehaviour
 {
@@ -35,6 +36,16 @@ public class Ball : MonoBehaviour
     #region Subcomponents
         private Rigidbody _rigidbody;
         private MeshRenderer _meshRenderer;
+        private Collider _collider;
+    #endregion
+
+    #region Physics
+
+    private Vector3 _currentFramePosition;
+    private Vector3 _currentFrameDirection;
+    private float _currentFrameDistanceRemaining;
+    private Collider _currentFrameIgnoreOther;
+
     #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -42,6 +53,7 @@ public class Ball : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
+        _collider = GetComponent<Collider>();
     }
 
     // Update is called once per frame
@@ -103,13 +115,24 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CheckCollisionAhead(transform.position);
+        int hardLimit = 100;
+        _currentFrameDirection = _direction;
+        _currentFramePosition = _rigidbody.position;
+        _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
+        while (_currentFrameDistanceRemaining > 0 && hardLimit > 0)
+        {
+            CheckCollisionAhead();
+            hardLimit--;
+        }
+        _direction = _currentFrameDirection;
+        _rigidbody.MovePosition(_currentFramePosition);
     }
 
-    public void CheckCollisionAhead(Vector3 startPoint)
+    public void CheckCollisionAhead()
     {
         if(
-            Physics.Raycast(startPoint, _direction, out RaycastHit hit, _realSpeed * Time.fixedDeltaTime)
+            Physics.SphereCast(_currentFramePosition, 0.5f, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
+            //Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
             && hit.collider.TryGetComponent<HitZone>(out HitZone zone)
         )
         {
@@ -121,15 +144,32 @@ public class Ball : MonoBehaviour
         }
     }
 
+    public void ReduceFrameDistanceRemaining(float amount)
+    {
+        _currentFrameDistanceRemaining -= amount;
+    }
+
+    public void ChangeFrameDirection(Vector3 newDirection)
+    {
+        _currentFrameDirection = newDirection;
+    }
+
+    public void ChangeFramePosition(Vector3 newPosition)
+    {
+        _currentFramePosition = newPosition;
+    }
+
     public void StopBeforeCollision(RaycastHit hit, Vector3 normal)
     {
-        var projected = Vector3.ProjectOnPlane(-_direction, normal);
-        _rigidbody.MovePosition(hit.point + projected + normal * 0.5f);
+        // var projected = Vector3.ProjectOnPlane(-_direction, normal);
+        // _rigidbody.MovePosition(hit.point + projected + normal);
+        //_rigidbody.MovePosition(hit.point);
     }
 
     public void MoveInDirection()
     {
-        _rigidbody.MovePosition(transform.position + _realSpeed * Time.fixedDeltaTime * _direction);
+        ChangeFramePosition(transform.position + _currentFrameDistanceRemaining * _currentFrameDirection);
+        ReduceFrameDistanceRemaining(_currentFrameDistanceRemaining);
     }
 
     public void ChangeTeam(Teams team)
@@ -150,10 +190,25 @@ public class Ball : MonoBehaviour
         
     }
 
-    public void Bounce(Vector3 normal)
+    public void Bounce(RaycastHit hitInfo)
     {
-        _direction = Vector3.Reflect(_direction, normal.normalized);
+        ChangeFramePosition(hitInfo.point);
+        ChangeFrameDirection(Vector3.Reflect(_direction, hitInfo.normal));
+        ReduceFrameDistanceRemaining(hitInfo.distance);
         _realSpeed = _maxSpeed;
+        if (_currentFrameIgnoreOther)
+        {
+            Physics.IgnoreCollision(_currentFrameIgnoreOther, _collider, false);
+            _currentFrameIgnoreOther = null;
+        }
+    }
+    
+    public void PassThrough(RaycastHit hitInfo)
+    {
+        ChangeFramePosition(hitInfo.point);
+        ReduceFrameDistanceRemaining(hitInfo.distance);
+        _currentFrameIgnoreOther = hitInfo.collider;
+        Physics.IgnoreCollision(_currentFrameIgnoreOther, _collider, true);
     }
 
     void GetHit(Vector3 direction, float accSpeed = 1)
