@@ -26,7 +26,16 @@ public class FieldForce : HitZone
     {
         if (_team != ball.teamPossess)
         {
+            // Switch sides and let the ball through
             ChangeTeam(ball.teamPossess);
+            _rigidbody.detectCollisions = false;
+            ball.CheckCollisionAhead();
+            ball.isSwitchingSide = true;
+            _rigidbody.detectCollisions = true;
+        }
+        else if(ball.isSwitchingSide)
+        {
+            // Let the ball through
             _rigidbody.detectCollisions = false;
             ball.CheckCollisionAhead();
             _rigidbody.detectCollisions = true;

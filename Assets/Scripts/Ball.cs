@@ -31,6 +31,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private int _touchLimit;
     [SerializeField] private int _timeLimit;
     private float _timer;
+    public bool isSwitchingSide = false;
     
     #endregion
     
@@ -219,6 +220,7 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
         _realSpeed = _maxSpeed;
         _currentFrameCollisions.Add(sphereCenter);
+        isSwitchingSide = false;
     }
     
     public void PassThrough(RaycastHit hitInfo)
@@ -232,6 +234,7 @@ public class Ball : MonoBehaviour
         _direction = direction.normalized;
         _maxSpeed *= accSpeed;
         _realSpeed = _maxSpeed;
+        isSwitchingSide = false;
     }
 
     void GetBlocked(Vector3 target)
