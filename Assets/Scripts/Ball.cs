@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -44,7 +45,12 @@ public class Ball : MonoBehaviour
     private Vector3 _currentFramePosition;
     private Vector3 _currentFrameDirection;
     private float _currentFrameDistanceRemaining;
-    private Collider _currentFrameIgnoreOther;
+    private const float MAX_STEP_LENGTH = 0.5f;
+    
+    //DEBUG
+    [SerializeField]
+    private List<Vector3> _currentFrameCollisions;
+    private Vector3 _currentFrameDestination;
 
     #endregion
     
@@ -54,6 +60,8 @@ public class Ball : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _collider = GetComponent<Collider>();
+        
+        _currentFramePosition = _rigidbody.position;
     }
 
     // Update is called once per frame
@@ -115,23 +123,43 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        int hardLimit = 100;
-        _currentFrameDirection = _direction;
-        _currentFramePosition = _rigidbody.position;
+        _rigidbody.MovePosition(_currentFramePosition);
+        _currentFrameCollisions.Clear();
+        _currentFrameDirection = _direction.normalized;
         _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
+        
+        // Check we're not already overlapping a collider that would be ignored by SphereCast
+        Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
+        foreach (Collider collider in cols)
+        {
+            if(
+                Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, 0.5f))
+                && hit.collider.TryGetComponent<HitZone>(out HitZone hitZone))
+            {
+                hitZone.OnTrajectory(this, hit);
+            }
+        }
+        
+        // Simulate next position until all collisions are resolved
+        int hardLimit = 100; // Don't get stuck in infinite loop
         while (_currentFrameDistanceRemaining > 0 && hardLimit > 0)
         {
             CheckCollisionAhead();
             hardLimit--;
         }
+
+        if (hardLimit == 0)
+        {
+            Debug.LogError("HARD LIMIT REACHED");
+        }
         _direction = _currentFrameDirection;
-        _rigidbody.MovePosition(_currentFramePosition);
+        _currentFrameDestination = _currentFramePosition;
     }
 
     public void CheckCollisionAhead()
     {
         if(
-            Physics.SphereCast(_currentFramePosition, 0.5f, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
+            Physics.SphereCast(_currentFramePosition, 0.5f, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH))
             //Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
             && hit.collider.TryGetComponent<HitZone>(out HitZone zone)
         )
@@ -151,7 +179,7 @@ public class Ball : MonoBehaviour
 
     public void ChangeFrameDirection(Vector3 newDirection)
     {
-        _currentFrameDirection = newDirection;
+        _currentFrameDirection = newDirection.normalized;
     }
 
     public void ChangeFramePosition(Vector3 newPosition)
@@ -159,17 +187,10 @@ public class Ball : MonoBehaviour
         _currentFramePosition = newPosition;
     }
 
-    public void StopBeforeCollision(RaycastHit hit, Vector3 normal)
-    {
-        // var projected = Vector3.ProjectOnPlane(-_direction, normal);
-        // _rigidbody.MovePosition(hit.point + projected + normal);
-        //_rigidbody.MovePosition(hit.point);
-    }
-
     public void MoveInDirection()
     {
-        ChangeFramePosition(transform.position + _currentFrameDistanceRemaining * _currentFrameDirection);
-        ReduceFrameDistanceRemaining(_currentFrameDistanceRemaining);
+        ChangeFramePosition(_currentFramePosition + Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH) * _currentFrameDirection);
+        ReduceFrameDistanceRemaining(Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH));
     }
 
     public void ChangeTeam(Teams team)
@@ -192,23 +213,18 @@ public class Ball : MonoBehaviour
 
     public void Bounce(RaycastHit hitInfo)
     {
-        ChangeFramePosition(hitInfo.point);
-        ChangeFrameDirection(Vector3.Reflect(_direction, hitInfo.normal));
+        Vector3 sphereCenter = hitInfo.point + hitInfo.normal * 0.5f;
+        ChangeFramePosition(sphereCenter);
+        ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, hitInfo.normal));
         ReduceFrameDistanceRemaining(hitInfo.distance);
         _realSpeed = _maxSpeed;
-        if (_currentFrameIgnoreOther)
-        {
-            Physics.IgnoreCollision(_currentFrameIgnoreOther, _collider, false);
-            _currentFrameIgnoreOther = null;
-        }
+        _currentFrameCollisions.Add(sphereCenter);
     }
     
     public void PassThrough(RaycastHit hitInfo)
     {
         ChangeFramePosition(hitInfo.point);
         ReduceFrameDistanceRemaining(hitInfo.distance);
-        _currentFrameIgnoreOther = hitInfo.collider;
-        Physics.IgnoreCollision(_currentFrameIgnoreOther, _collider, true);
     }
 
     void GetHit(Vector3 direction, float accSpeed = 1)
@@ -262,5 +278,31 @@ public class Ball : MonoBehaviour
     {
         // conditions if time is over
     }
-    
+
+    private void OnDrawGizmos()
+    {
+        // Spheres
+        Gizmos.color = Color.red;
+        // Collisions
+        foreach (var VARIABLE in _currentFrameCollisions)
+        {
+            Gizmos.DrawWireSphere(VARIABLE, 0.5f);
+        }
+        // Final destination
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(_currentFrameDestination, 0.5f);
+        
+        // Lines
+        Gizmos.color = Color.yellow;
+        Vector3 startLine = transform.position;
+        // Movements with collision
+        foreach (var VARIABLE in _currentFrameCollisions)
+        {
+            Gizmos.DrawLine(startLine, VARIABLE);
+            startLine = VARIABLE;
+        }
+        // Final movement
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(startLine, _currentFrameDestination);
+    }
 }
