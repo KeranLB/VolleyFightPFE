@@ -7,7 +7,6 @@ public class FieldForce : HitZone
     private Teams _team;
     
     private MeshRenderer _meshRenderer;
-    private Rigidbody _rigidbody;
 
     [SerializeField]
     private bool _letBallPass = true;
@@ -15,7 +14,6 @@ public class FieldForce : HitZone
     private void Start()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
-        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
