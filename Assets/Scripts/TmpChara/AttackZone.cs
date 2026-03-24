@@ -12,7 +12,7 @@ public class AttackZone : PlayerHitZone
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetButtonDown("Fire1"))
         {
             FlipActivation();
         }
@@ -21,22 +21,18 @@ public class AttackZone : PlayerHitZone
     private void FlipActivation()
     {
         _rigidbody.detectCollisions = !_rigidbody.detectCollisions;
-        if (!_rigidbody.detectCollisions)
-        {
-            _meshRenderer.material.color = Color.red;
-        }
-        else
-        {
-            _meshRenderer.material.color = Color.blue;
-        }
+        Color c;
+        c = !_rigidbody.detectCollisions ? Color.red : Color.blue;
+        c.a = 0.5f;
+        _meshRenderer.material.color = c;
     }
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {
         base.OnTrajectory(ball, hitInfo);
         Vector3 hitDirection = (
-            transform.right * player.playerInput.currentInput.x
-            + transform.up * player.playerInput.currentInput.y
+            transform.right * player.playerInput.currentDirection.x
+            + transform.up * player.playerInput.currentDirection.y
             + transform.forward
         );
         ball.StopSimulation(hitInfo.point);
