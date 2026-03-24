@@ -232,14 +232,21 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
 
-    void GetHit(Vector3 direction, float accSpeed = 1)
+    public void GetHit(Vector3 direction, float accSpeed = 1)
     {
+        ChangeFrameDirection(direction);
         _direction = direction.normalized;
         _maxSpeed *= accSpeed;
         _realSpeed = _maxSpeed;
         isSwitchingSide = false;
     }
 
+    public void StopSimulation(Vector3 spot)
+    {
+        _currentFramePosition = spot;
+        _currentFrameDistanceRemaining = 0f;
+    }
+    
     void GetBlocked(Vector3 target)
     {
         _target = target;
