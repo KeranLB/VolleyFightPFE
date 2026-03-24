@@ -40,16 +40,16 @@ public class FieldForce : HitZone
         }
     }
 
-    private void ChangeTeam(Teams team)
+    public void ChangeTeam(Teams team)
     {
         _team = team;
-        if (team == Teams.TeamA)
+        Color c = team switch
         {
-            _meshRenderer.material.color = Color.blue;
-        }
-        else if (team == Teams.TeamB)
-        {
-            _meshRenderer.material.color = Color.yellow;
-        }
+            Teams.TeamA => Color.blue,
+            Teams.TeamB => Color.yellow,
+            Teams.Neutral => Color.green,
+        };
+        c.a = 0.5f;
+        _meshRenderer.material.color = c;
     }
 }

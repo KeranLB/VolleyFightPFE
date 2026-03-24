@@ -5,6 +5,7 @@ public class PlayerLife : MonoBehaviour
 {
     public float maxHealth;
     public float currentHealth;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -19,10 +20,15 @@ public class PlayerLife : MonoBehaviour
     public void ChangeHealth(float health)
     {
         currentHealth = Mathf.Clamp(health, 0, maxHealth);
+        Debug.Log("Player health : " + currentHealth);
+        if (currentHealth <= 0)
+        {
+            transform.position = Vector3.up * 50f;
+        }
     }
 
-    private void OnGUI()
+    public void FullHeal()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), "Player health: " + currentHealth);
+        ChangeHealth(maxHealth);
     }
 }

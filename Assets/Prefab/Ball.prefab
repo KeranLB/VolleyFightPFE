@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ball
   _maxSpeed: 10
-  _passSpeed: 25
+  _passSpeed: 10
   teamPossess: 0
   _touchLimit: 3
   _timeLimit: 30

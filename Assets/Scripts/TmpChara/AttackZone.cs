@@ -3,6 +3,7 @@ using UnityEngine;
 public class AttackZone : PlayerHitZone
 {
     private MeshRenderer _meshRenderer;
+    public float speedMult;
     
     protected override void Awake()
     {
@@ -36,7 +37,7 @@ public class AttackZone : PlayerHitZone
             + transform.forward
         );
         ball.StopSimulation(hitInfo.point);
-        ball.GetHit(hitDirection);
+        ball.GetHit(hitDirection, speedMult);
         FlipActivation();
     }
 }

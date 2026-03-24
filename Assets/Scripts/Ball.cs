@@ -233,6 +233,16 @@ public class Ball : MonoBehaviour
         isSwitchingSide = false;
         _vfxImpact.SendEvent("Bounce");
     }
+
+    public void Bunt(Player player)
+    {
+        StopSimulation(player.transform.position);
+        ChangeFrameDirection(Vector3.up);
+        _direction = Vector3.up;
+        isSwitchingSide = false;
+        _realSpeed = _passSpeed;
+        _currentFrameCollisions.Add(player.transform.position);
+    }
     
     public void PassThrough(RaycastHit hitInfo)
     {
@@ -240,11 +250,11 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
 
-    public void GetHit(Vector3 direction, float accSpeed = 1)
+    public void GetHit(Vector3 direction, float multSpeed = 1, float addSpeed = 0)
     {
         ChangeFrameDirection(direction);
         _direction = direction.normalized;
-        _maxSpeed *= accSpeed;
+        _maxSpeed = _maxSpeed * multSpeed + addSpeed;
         _realSpeed = _maxSpeed;
         isSwitchingSide = false;
     }
