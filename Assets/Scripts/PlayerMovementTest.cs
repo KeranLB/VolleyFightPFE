@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PlayerMovementTest : MonoBehaviour
 {
@@ -10,18 +11,38 @@ public class PlayerMovementTest : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _actualAcceleration;
-    [SerializeField] private float _acceleration;
+    private float _acceleration;
     [SerializeField] private float _maxMoveSpeed;
     private float _maxInertia = 5f;
     private float _actualInertia;
     [SerializeField] private float _inertia = 1f;
 
+    [SerializeField] private float _accelerationTime;
+    [SerializeField] private float _friction;
+
+    private Vector3 _vAcceleration;
+    private Vector3 _vActualAcceleration;
+    private Vector3 _v;
     
     private Vector3 _moveDirection;
-    
+
+    #region Gravity
+    [SerializeField] private Transform GroundChecker;
+    [SerializeField] private Vector3 _scaleGroundChecker;
+    [SerializeField] private SphereCollider _sphereTest;
+
+    private bool _isGrounded;
+    private Vector3 Velocity;
+    #endregion
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
+
+        _acceleration = _maxMoveSpeed / _accelerationTime;
+        _friction = _maxMoveSpeed * 2;
+
         _moveSpeed = 0f;
         _actualAcceleration = 0f;
     }
@@ -30,9 +51,14 @@ public class PlayerMovementTest : MonoBehaviour
     {
         if (_moveInputAction.action.IsPressed())
         {
-            Move();
+            Acceleration();
         }
-
+        else
+        {
+            Friction();
+        }
+        Move();
+        Gravity();
     }
 
     // Update is called once per frame
@@ -42,10 +68,6 @@ public class PlayerMovementTest : MonoBehaviour
         {
             InputMovement();
         }
-        else if (_moveInputAction.action.WasReleasedThisFrame())
-        {
-            StartCoroutine(Inertia());
-        }
     }
 
     void InputMovement()
@@ -53,48 +75,77 @@ public class PlayerMovementTest : MonoBehaviour
         float InputX = _moveInputAction.action.ReadValue<Vector2>().x;
         float InputY = _moveInputAction.action.ReadValue<Vector2>().y;
         _moveDirection = new Vector3(InputX, 0f, InputY);
-
     }
 
     void Move()
     {
-        _actualAcceleration += _acceleration *  Time.deltaTime;
-        _moveSpeed = _moveSpeed + _actualAcceleration * Time.deltaTime;
-        if (_moveSpeed >= _maxMoveSpeed)
-        {
-            _moveSpeed = _maxMoveSpeed;
-        }
         _rb.MovePosition(_rb.position + _moveDirection * _moveSpeed * Time.deltaTime);
     }
 
-    void InertiaTest()
+    void Acceleration()
     {
-        _actualAcceleration -= _acceleration * Time.deltaTime;
-        if (_actualAcceleration  <= 0f)
-        {
-            _actualAcceleration = 0f;
-        }
-        print( _actualAcceleration);
-        _moveSpeed -=  _actualAcceleration * Time.deltaTime;
-        if (_moveSpeed <= 0f)
-        {
-            _moveSpeed = 0f;
-        }
-        _rb.MovePosition(_rb.position + _moveDirection * _moveSpeed * Time.deltaTime);
+        float result = _actualAcceleration + _acceleration * Time.deltaTime;
+        _actualAcceleration = Mathf.Clamp(result , 0f, _maxMoveSpeed);
+
+        Vector3 acceTest = new Vector3(result, result, result); 
+        Vector3 minVector = new Vector3(0f, 0f, 0f);
+        Vector3 maxVector = new Vector3(0f, 0f,0f) * _maxMoveSpeed;
+        Vector3.ClampMagnitude(acceTest, _maxMoveSpeed);
+
+
+        result = _moveSpeed + _actualAcceleration * Time.deltaTime;
+        _moveSpeed = Mathf.Clamp(result ,0f, _maxMoveSpeed);
     }
 
-    IEnumerator Inertia()
+    void Friction()
     {
-        print("rentre dans la coroutine");
-        _actualInertia = 0f;
-        while (_moveSpeed >= 0f)
+        float result = _moveSpeed - _friction * Time.deltaTime;
+        _moveSpeed = Mathf.Clamp(result, 0f, _maxMoveSpeed);
+    }
+
+    void Gravity()
+    {
+        if (!GroundCheck())
         {
-            _actualInertia += _inertia * Time.deltaTime;
-            _moveSpeed -= _actualInertia * Time.deltaTime;
-            _rb.MovePosition(_rb.position + _moveDirection* _moveSpeed * Time.deltaTime);
-            print("effectue un Tick");
-            yield return null;
+            Vector3 result = _rb.position + new Vector3(0f, -10f, 0f) * Time.fixedDeltaTime;
+            //result.y = Mathf.Clamp(result.y, -9.81f, 0f);
+
+            _rb.MovePosition(result);
         }
-        print("fin de la coroutine");
+        else if (GroundCheck())
+        {
+            
+        }
+    }
+
+    bool GroundCheck()
+    {
+        Quaternion orientation = Quaternion.identity;
+        LayerMask layer = LayerMask.GetMask("Ground");
+        Array box = Physics.OverlapBox(GroundChecker.position, _scaleGroundChecker, orientation, layer);
+        bool Condition = Physics.CheckBox(GroundChecker.position, _scaleGroundChecker, orientation, layer);
+
+        bool Condition2 = Physics.CheckSphere(_sphereTest.transform.position, _sphereTest.radius, layer, QueryTriggerInteraction.Collide);
+        Collider[] collider = Physics.OverlapSphere(_sphereTest.transform.position, _sphereTest.radius, layer);
+
+        //Vector3 collisionPosition = collider[1].
+
+        Vector3 endline = new Vector3(GroundChecker.position.x, GroundChecker.position.y + 10f * Time.deltaTime , GroundChecker.position.z);
+        Debug.DrawLine(GroundChecker.position, endline, Color.blue, 1f);
+        
+        if (Condition2)
+        {
+            print("CheckBox");
+            return Condition;
+        }
+        else if (Physics.Raycast(GroundChecker.position, Vector3.down, 0.1f, layer))
+        {
+            print("Raycast");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

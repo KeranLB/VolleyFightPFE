@@ -188,7 +188,7 @@ public class PlayerCharacter : MonoBehaviour
 
     void CharacterRotation()
     {
-        _meshCharacter.forward = new Vector3(_moveInput.x, 0f, _moveInput.y);
+        //_meshCharacter.forward = new Vector3(_moveInput.x, 0f, _moveInput.y);
     }
 
 
