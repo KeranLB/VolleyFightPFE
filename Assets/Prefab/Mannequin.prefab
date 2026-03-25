@@ -320,11 +320,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5048477108776295449}
-  - component: {fileID: 3149036026313548607}
   - component: {fileID: 6754645178273718330}
   - component: {fileID: 3870563267189737242}
   - component: {fileID: 8799859916885463089}
   - component: {fileID: 1050730542087834307}
+  - component: {fileID: 7791844043668260406}
   m_Layer: 0
   m_Name: Mannequin
   m_TagString: Untagged
@@ -350,22 +350,6 @@ Transform:
   - {fileID: 5508020133199556667}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3149036026313548607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6559700741937977178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44176722c7d7c4441be96c13d5e2a068, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
-  currentDirection: {x: 0, y: 0}
-  holdsJump: 0
-  pressedAttack: 0
-  pressedBlock: 0
 --- !u!114 &6754645178273718330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,6 +430,22 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 1
+--- !u!114 &7791844043668260406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6559700741937977178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1591087aa70a4b24eac91887743eea9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HumanPlayerInput
+  currentDirection: {x: 0, y: 0}
+  holdsJump: 0
+  pressedAttack: 0
+  pressedBlock: 0
 --- !u!1 &7022140466962976096
 GameObject:
   m_ObjectHideFlags: 0

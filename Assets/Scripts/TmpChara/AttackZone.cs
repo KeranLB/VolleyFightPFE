@@ -16,6 +16,7 @@ public class AttackZone : PlayerHitZone
         if(player.playerInput.pressedAttack)
         {
             FlipActivation();
+            player.playerInput.pressedAttack = false;
         }
     }
 

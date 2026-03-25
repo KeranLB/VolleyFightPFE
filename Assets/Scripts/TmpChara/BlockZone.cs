@@ -15,6 +15,7 @@ public class BlockZone : PlayerHitZone
         if(player.playerInput.pressedBlock)
         {
             FlipActivation();
+            player.playerInput.pressedBlock = false;
         }
     }
     

@@ -168,6 +168,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7364186180876489252, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
   m_PrefabInstance: {fileID: 1899361206}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &151819320 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+  m_PrefabInstance: {fileID: 474905205}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &151819328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151819320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31e0125cad22d64080d1f401e72536a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotPlayerInput
+  jumps: 0
+  followsBallX: 0
+  followsBallZ: 0
+  delayAttack: 2
+  delayBlock: 5
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,10 +501,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mannequin (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7791844043668260406, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 151819328}
   m_SourcePrefab: {fileID: 100100000, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
 --- !u!1 &532645866
 GameObject:
