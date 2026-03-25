@@ -39,9 +39,17 @@ public class BotPlayerInput : MonoBehaviour
         {
             _playerInput.currentDirection.y = toBall.z;
         }
+        else
+        {
+            _playerInput.currentDirection.y = 0;
+        }
         if (followsBallX)
         {
             _playerInput.currentDirection.x = toBall.x;
+        }
+        else
+        {
+            _playerInput.currentDirection.x = 0;
         }
         _playerInput.currentDirection.Normalize();
     }
