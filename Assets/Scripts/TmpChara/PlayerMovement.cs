@@ -13,8 +13,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _groundAcceleration;
     [SerializeField] private float _groundFriction;
     [SerializeField] private float _maxHorizontalSpeed;
-    private Vector3 _forward;
-    private Vector3 _right;
     
     [Header("Vertical Movement")]
     [SerializeField] private float _jumpForce;
@@ -34,9 +32,6 @@ public class PlayerMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
-        
-        _forward = transform.forward;
-        _right = transform.right;
     }
 
     private void Update()
@@ -44,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
         var tmp = _playerInput.currentDirection;
         if (tmp.magnitude > 0)
         {
-            characterModel.forward = _right * tmp.x + _forward * tmp.y;
+            characterModel.forward = Vector3.right * tmp.x + Vector3.forward * tmp.y;
         }
     }
 
@@ -52,9 +47,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Get Inputs
         var tmp = _playerInput.currentDirection.normalized;
-        // Recombine according to original rotation
-        var projected = (tmp.x * _right + tmp.y * _forward).normalized;
-        tmp = Vector2.right * projected.x + Vector2.up * projected.z;
+
         // Get GroundCheck
         _isGrounded = GroundCheck();
         

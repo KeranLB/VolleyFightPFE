@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     private Dictionary<Player, Vector3> _playersSpawnPositions = new();
     private Ball _ball;
     private Vector3 _ballSpawnPosition;
+    private Teams _ballStartTeam;
     private FieldForce _fieldForce;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
         // Init ball
         _ball = FindFirstObjectByType<Ball>();
         _ballSpawnPosition = _ball.transform.position;
+        _ballStartTeam = _ball.teamPossess;
         // Init FieldForce
         _fieldForce = FindFirstObjectByType<FieldForce>();
     }
@@ -45,6 +47,7 @@ public class GameManager : MonoBehaviour
         }
         // Reinit ball
         _ball.StopSimulation(_ballSpawnPosition);
+        _ball.ChangeTeam(_ballStartTeam);
         _ball.GetHit(Vector3.down, 0, 10);
         // Reinit field force
         _fieldForce.ChangeTeam(Teams.Neutral);
