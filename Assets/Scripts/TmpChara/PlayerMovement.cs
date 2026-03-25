@@ -6,10 +6,16 @@ public class PlayerMovement : MonoBehaviour
     private PlayerInput _playerInput;
     private Rigidbody _rigidbody;
 
+    public LayerMask collisionLayers;
+    public Transform characterModel;
+
     [Header("Horizontal Movement")]
     [SerializeField] private float _groundAcceleration;
     [SerializeField] private float _groundFriction;
     [SerializeField] private float _maxHorizontalSpeed;
+    private Vector3 _forward;
+    private Vector3 _right;
+    
     [Header("Vertical Movement")]
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _gravity;
@@ -28,12 +34,27 @@ public class PlayerMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+        
+        _forward = transform.forward;
+        _right = transform.right;
+    }
+
+    private void Update()
+    {
+        var tmp = _playerInput.currentDirection;
+        if (tmp.magnitude > 0)
+        {
+            characterModel.forward = _right * tmp.x + _forward * tmp.y;
+        }
     }
 
     private void FixedUpdate()
     {
         // Get Inputs
         var tmp = _playerInput.currentDirection.normalized;
+        // Recombine according to original rotation
+        var projected = (tmp.x * _right + tmp.y * _forward).normalized;
+        tmp = Vector2.right * projected.x + Vector2.up * projected.z;
         // Get GroundCheck
         _isGrounded = GroundCheck();
         
@@ -100,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
         if (
             Physics.Raycast(
                 _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
-                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime + 0.5f
+                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime + 0.5f, collisionLayers
             )
         )
         {
@@ -112,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
         if (
             Physics.Raycast(
                 _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f
+                _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
             )
         )
         {
@@ -121,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
             if (
                 Physics.Raycast(
                     _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                    _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f
+                    _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
                 )
             )
             {
@@ -134,8 +155,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool GroundCheck()
     {
-        Debug.DrawRay(_feetSpot.position, Vector3.down * _groundCheckRaycastLength, Color.red);
-        return Physics.Raycast(_feetSpot.position, Vector3.down, _groundCheckRaycastLength);
+        return Physics.Raycast(_feetSpot.position, Vector3.down, _groundCheckRaycastLength, collisionLayers);
     }
 
     private void OnGUI()
