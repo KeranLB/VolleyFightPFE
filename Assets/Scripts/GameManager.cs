@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
         {
             player.transform.position = _playersSpawnPositions[player];
             player.playerLife.FullHeal();
+            player.playerMovement.FullStop();
         }
         // Reinit ball
         _ball.StopSimulation(_ballSpawnPosition);

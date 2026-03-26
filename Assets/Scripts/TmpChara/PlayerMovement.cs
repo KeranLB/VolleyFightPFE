@@ -151,6 +151,11 @@ public class PlayerMovement : MonoBehaviour
         return Physics.Raycast(_feetSpot.position, Vector3.down, _groundCheckRaycastLength, collisionLayers);
     }
 
+    public void FullStop()
+    {
+        _currentVelocity = Vector3.zero;
+    }
+
     private void OnGUI()
     {
         GUIStyle style = new GUIStyle();
