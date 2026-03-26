@@ -33,7 +33,7 @@ public class HumanPlayerInput : MonoBehaviour
         }
         else
         {
-            currentDirection =Gamepad.all[gamepadIndex].leftStick.value;
+            currentDirection = Gamepad.all[gamepadIndex].leftStick.value;
         }
         // Recombine according to original rotation
         var projected = (currentDirection.x * _right + currentDirection.y * _forward).normalized;

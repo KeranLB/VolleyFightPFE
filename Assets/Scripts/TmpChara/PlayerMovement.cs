@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _direction;
     private float _forceToApply;
     private bool _isGrounded;
+    private bool _canDoubleJump;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -92,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
             if(_playerInput.holdsJump)
             {
                 _currentVelocity.y = _jumpForce;
+                _canDoubleJump = true;
             }
             else
             {
@@ -100,6 +102,11 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            if (_playerInput.holdsJump && _canDoubleJump)
+            {
+                _currentVelocity.y = _jumpForce;
+                _canDoubleJump = false;
+            }
             _currentVelocity.y = Mathf.Max(_maxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
         
