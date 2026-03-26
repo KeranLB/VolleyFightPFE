@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AttackZone : PlayerHitZone
@@ -11,22 +12,25 @@ public class AttackZone : PlayerHitZone
         _meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    private void Update()
+    private void Start()
     {
-        if(player.playerInput.pressedAttack)
-        {
-            FlipActivation();
-            player.playerInput.pressedAttack = false;
-        }
+        Deactivate();
     }
 
-    private void FlipActivation()
+    public void Activate()
     {
-        _rigidbody.detectCollisions = !_rigidbody.detectCollisions;
-        Color c;
-        c = !_rigidbody.detectCollisions ? Color.red : Color.blue;
+        _rigidbody.detectCollisions = true;
+        Color c = Color.blue;
+        c.a = 0.5f;
+        _meshRenderer.material.color = c; 
+    }
+
+    public void Deactivate()
+    {
+        _rigidbody.detectCollisions = false;
+        Color c = Color.red;
         c.a = 0.3f;
-        _meshRenderer.material.color = c;
+        _meshRenderer.material.color = c; 
     }
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
@@ -39,6 +43,6 @@ public class AttackZone : PlayerHitZone
         );
         ball.StopSimulation(hitInfo.point);
         ball.GetHit(hitDirection, speedMult);
-        FlipActivation();
+        player.playerActions.CancelAction();
     }
 }

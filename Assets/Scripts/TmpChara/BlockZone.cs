@@ -10,28 +10,31 @@ public class BlockZone : PlayerHitZone
         _meshRenderer = GetComponent<MeshRenderer>();
     }
     
-    private void Update()
+    private void Start()
     {
-        if(player.playerInput.pressedBlock)
-        {
-            FlipActivation();
-            player.playerInput.pressedBlock = false;
-        }
+        Deactivate();
     }
     
-    private void FlipActivation()
+    public void Activate()
     {
-        _rigidbody.detectCollisions = !_rigidbody.detectCollisions;
-        Color c;
-        c = !_rigidbody.detectCollisions ? Color.red : Color.green;
+        _rigidbody.detectCollisions = true;
+        Color c = Color.green;
+        c.a = 0.5f;
+        _meshRenderer.material.color = c; 
+    }
+
+    public void Deactivate()
+    {
+        _rigidbody.detectCollisions = false;
+        Color c = Color.red;
         c.a = 0.3f;
-        _meshRenderer.material.color = c;
+        _meshRenderer.material.color = c; 
     }
     
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {
         base.OnTrajectory(ball, hitInfo);
         ball.Bunt(player);
-        FlipActivation();
+        player.playerActions.CancelAction();
     }
 }
