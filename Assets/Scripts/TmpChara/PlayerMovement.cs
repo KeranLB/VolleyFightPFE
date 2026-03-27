@@ -91,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
         if (_isGrounded)
         {
             _canDoubleJump = true;
-            if(_playerInput.holdsJump)
+            if(_playerInput.holdsJump || _playerInput.pressedDoubleJump)
             {
                 _currentVelocity.y = _jumpForce;
             }
