@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
         _ballStartTeam = _ball.teamPossess;
         // Init FieldForce
         _fieldForce = FindFirstObjectByType<FieldForce>();
+        
+        // Start round
+        RestartRound();
     }
 
     // Update is called once per frame

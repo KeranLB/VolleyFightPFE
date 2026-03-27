@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 7791844043668260406}
   - component: {fileID: 756815961040395522}
   - component: {fileID: 6776770826193777988}
+  - component: {fileID: 1908691835272889494}
   m_Layer: 0
   m_Name: Mannequin
   m_TagString: Untagged
@@ -366,6 +367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLife
   maxHealth: 10
   currentHealth: 0
+  LifeBar: {fileID: 0}
 --- !u!114 &3870563267189737242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +384,7 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   playerLife: {fileID: 0}
   playerActions: {fileID: 0}
+  playerMovement: {fileID: 0}
 --- !u!114 &8799859916885463089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,7 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   collisionLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
   characterModel: {fileID: 5947970227115169457}
   _groundAcceleration: 25
   _groundFriction: 30
@@ -445,6 +448,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1591087aa70a4b24eac91887743eea9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HumanPlayerInput
+  isGamepad: 0
+  gamepadIndex: 0
 --- !u!114 &756815961040395522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,6 +464,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
   currentDirection: {x: 0, y: 0}
   holdsJump: 0
+  pressedDoubleJump: 0
   pressedAttack: 0
   pressedBlock: 0
 --- !u!114 &6776770826193777988
@@ -478,6 +484,25 @@ MonoBehaviour:
   _blockDuration: 0.2
   _attackZone: {fileID: 8578066711503218583}
   _blockZone: {fileID: 151278546864466687}
+--- !u!114 &1908691835272889494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6559700741937977178}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31e0125cad22d64080d1f401e72536a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotPlayerInput
+  canJump: 1
+  followsBallX: 1
+  followsBallZ: 1
+  canAttack: 1
+  delayAttack: 0.5
+  canBlock: 1
+  delayBlock: 1.2
 --- !u!1 &7022140466962976096
 GameObject:
   m_ObjectHideFlags: 0
