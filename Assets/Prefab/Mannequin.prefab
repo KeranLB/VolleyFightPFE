@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 7791844043668260406}
   - component: {fileID: 756815961040395522}
   - component: {fileID: 6776770826193777988}
+  - component: {fileID: 1908691835272889494}
   m_Layer: 0
   m_Name: Mannequin
   m_TagString: Untagged
@@ -483,6 +484,25 @@ MonoBehaviour:
   _blockDuration: 0.2
   _attackZone: {fileID: 8578066711503218583}
   _blockZone: {fileID: 151278546864466687}
+--- !u!114 &1908691835272889494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6559700741937977178}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31e0125cad22d64080d1f401e72536a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotPlayerInput
+  canJump: 1
+  followsBallX: 1
+  followsBallZ: 1
+  canAttack: 1
+  delayAttack: 0.5
+  canBlock: 1
+  delayBlock: 1.2
 --- !u!1 &7022140466962976096
 GameObject:
   m_ObjectHideFlags: 0
