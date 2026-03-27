@@ -1,15 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.Serialization;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerCharacter : MonoBehaviour
 {
