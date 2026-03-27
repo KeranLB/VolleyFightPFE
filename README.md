@@ -32,3 +32,6 @@ Pour jouer à moins de 4 joueurs, on peut juste désactiver les objets "PlayerX-
 | Attack        | Left click       | West Button        |
 | Block         | Right click      | East Button        |
 | (Re)Start     | R                | /                  |
+
+## Scène Blockout
+Pour observer le blockout d'intention avec les lumières, lancer la scène "Blockout"
