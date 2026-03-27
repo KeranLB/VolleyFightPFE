@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Tonemapping
   active: 1
   mode:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 2
   neutralHDRRangeReductionMode:
     m_OverrideState: 0
     m_Value: 2
@@ -58,10 +58,10 @@ MonoBehaviour:
     m_Value: {x: 0.70579636, y: 0.76985073, z: 1, w: -0.16829053}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.070859164}
+    m_Value: {x: 1, y: 1, z: 1, w: 0.08585616}
   highlights:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.983868, z: 0.651178, w: 0.18600528}
+    m_Value: {x: 1, y: 0.983868, z: 0.651178, w: 0.12274276}
   shadowsStart:
     m_OverrideState: 0
     m_Value: 0
