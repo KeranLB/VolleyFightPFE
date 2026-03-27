@@ -43,6 +43,7 @@ public class HumanPlayerInput : MonoBehaviour
         if(!isGamepad)
         {
             _playerInput.holdsJump = Input.GetKey(KeyCode.Space);
+            _playerInput.pressedDoubleJump = Input.GetKeyDown(KeyCode.Space);
             _playerInput.pressedAttack = Mouse.current.leftButton.wasPressedThisFrame;
             _playerInput.pressedBlock = Mouse.current.rightButton.wasPressedThisFrame;
             // _playerInput.holdsJump = Input.GetButton("Jump");
@@ -52,6 +53,7 @@ public class HumanPlayerInput : MonoBehaviour
         else
         {
             _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed;
+            _playerInput.pressedDoubleJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed;
             _playerInput.pressedAttack = Gamepad.all[gamepadIndex].buttonWest.wasPressedThisFrame;
             _playerInput.pressedBlock = Gamepad.all[gamepadIndex].buttonEast.wasPressedThisFrame;
         }
