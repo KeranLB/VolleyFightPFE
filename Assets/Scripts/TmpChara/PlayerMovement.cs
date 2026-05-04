@@ -34,6 +34,10 @@ public class PlayerMovement : MonoBehaviour
     private float _forceToApply;
     private bool _isGrounded;
     private bool _canDoubleJump;
+
+    #region Telemetry
+    public static event Action<int> OnPlayerJump;
+    #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -106,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
             _canDoubleJump = true;
             if(_playerInput.holdsJump || _playerInput.pressedDoubleJump)
             {
+                OnPlayerJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
             }
             else
@@ -117,6 +122,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (_playerInput.pressedDoubleJump && _canDoubleJump)
             {
+                OnPlayerJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
             }

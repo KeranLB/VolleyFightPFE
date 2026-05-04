@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,6 +11,9 @@ public class GameManager : MonoBehaviour
     private Vector3 _ballSpawnPosition;
     private Teams _ballStartTeam;
     private FieldForce _fieldForce;
+
+    public static event Action OnGameStarted;
+    public static event Action OnGameEnded;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -28,6 +32,7 @@ public class GameManager : MonoBehaviour
         _fieldForce = FindFirstObjectByType<FieldForce>();
         
         // Start round
+        OnGameStarted?.Invoke();
         RestartRound();
     }
 
@@ -36,6 +41,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
+            OnGameEnded?.Invoke();
             RestartRound();
         }
     }

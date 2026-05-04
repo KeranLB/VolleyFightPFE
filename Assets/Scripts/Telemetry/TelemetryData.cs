@@ -1,27 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TelemetryData
 {
-    public abstract string tableName { get; set; }
-    
-    public abstract string ToJson();
+    public static string tableName { get; set; }
+
+    public virtual string ToJson()
+    {
+        return JsonUtility.ToJson(this);
+    }
 }
 
 [Serializable]
-public class TDPlaytest : TelemetryData
+public class TDGame : TelemetryData
 {
-    public override string tableName {
+    public static string tableName {
         get => "Playtests";
         set{}
     }
 
-    public string gameID;
-    public string startTime;
-    public string endTime;
+    public int startTime;
+    public int endTime;
+}
 
-    public override string ToJson()
-    {
-        return JsonUtility.ToJson(this);
+[Serializable]
+public class TDPlayer: TelemetryData
+{
+    public static string tableName {
+        get => "PlayerActions";
+        set{}
     }
+
+    public string playerId;
+    public string controller;
+    public int attacks;
+    public int blocks;
+    public int jumps;
+    public int gameId;
+}
+
+[Serializable]
+public class RecordsListSchema
+{
+    public List<RecordSchema> records;
+}
+
+[Serializable]
+public class RecordSchema
+{
+    public int id;
 }

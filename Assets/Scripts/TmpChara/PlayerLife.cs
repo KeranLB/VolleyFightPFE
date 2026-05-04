@@ -27,7 +27,6 @@ public class PlayerLife : MonoBehaviour
     {
         currentHealth = Mathf.Clamp(health, 0, maxHealth);
         LifeBar.fillAmount = currentHealth/maxHealth;
-        Debug.Log("Player health : " + currentHealth);
         if (currentHealth <= 0)
         {
             transform.position = Vector3.up * 50f;

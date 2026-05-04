@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -29,6 +30,14 @@ public class PlayerActions : MonoBehaviour
     [SerializeField] private BlockZone _blockZone;
 
     #endregion
+
+    #region Telemetry
+
+    public static event Action<int> OnPlayerAttack;
+    public static event Action<int> OnPlayerBlock;
+    
+
+    #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -42,10 +51,12 @@ public class PlayerActions : MonoBehaviour
     {
         if (_playerInput.pressedAttack && _isReady)
         {
+            OnPlayerAttack?.Invoke(gameObject.GetInstanceID());
             _attackCoroutine = StartCoroutine(AttackCoroutine());
         }
         else if (_playerInput.pressedBlock && _isReady)
         {
+            OnPlayerBlock?.Invoke(gameObject.GetInstanceID());
             _blockCoroutine = StartCoroutine(BlockCoroutine());
         }
     }
