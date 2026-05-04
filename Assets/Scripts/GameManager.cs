@@ -54,6 +54,6 @@ public class GameManager : MonoBehaviour
         _ball.ChangeTeam(_ballStartTeam);
         _ball.GetHit(Vector3.down, 0, 10);
         // Reinit field force
-        _fieldForce.ChangeTeam(Teams.Neutral);
+        _fieldForce?.ChangeTeam(Teams.Neutral);
     }
 }
