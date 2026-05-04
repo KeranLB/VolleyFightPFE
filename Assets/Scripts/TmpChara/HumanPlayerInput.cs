@@ -7,17 +7,16 @@ public class HumanPlayerInput : MonoBehaviour
 {
     private PlayerInput _playerInput;
     
-    private Vector3 _forward;
-    private Vector3 _right;
+    public Transform cameraPosition;
 
     public bool isGamepad;
     public int gamepadIndex;
     
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         _playerInput = GetComponent<PlayerInput>();
-        _forward = transform.forward;
-        _right = transform.right;
     }
 
     // Update is called once per frame
@@ -37,11 +36,24 @@ public class HumanPlayerInput : MonoBehaviour
             currentDirection = Gamepad.all[gamepadIndex].leftStick.value;
         }
         // Recombine according to original rotation
-        var projected = (currentDirection.x * _right + currentDirection.y * _forward).normalized;
+        var projected = (currentDirection.x * cameraPosition.right + currentDirection.y * cameraPosition.forward).normalized;
         _playerInput.currentDirection = Vector2.right * projected.x + Vector2.up * projected.z;
-        
+
+        // Camera Rotation
+        Vector2 rotation;
+        if (!isGamepad)
+        {
+            rotation = Input.mousePositionDelta;
+            //rotation = new Vector2(-Input.GetAxis("mouseY"), Input.GetAxis("mouseX"));
+        }
+        else
+        {
+            rotation = Gamepad.all[gamepadIndex].rightStick.value;
+        }
+        _playerInput.cameraRotation = new Vector3(-rotation.y, rotation.x, 0f);
+
         // Actions
-        if(!isGamepad)
+        if (!isGamepad)
         {
             _playerInput.holdsJump = Input.GetKey(KeyCode.Space);
             if (Input.GetKeyDown(KeyCode.Space))

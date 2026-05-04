@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     public LayerMask collisionLayers;
     public Transform characterModel;
+    public Transform pivotCamera;
 
     [Header("Horizontal Movement")]
     [SerializeField] private float _groundAcceleration;
@@ -20,7 +21,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxFallSpeed;
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
-    
+
+    [Header("Sensitivity :")]
+    [SerializeField] private float _sensitivityX;
+    [SerializeField] private float _sensitivityY;
+
+    private Vector3 _currentRotation;
+
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
     private Vector2 _direction;
@@ -42,6 +49,12 @@ public class PlayerMovement : MonoBehaviour
         {
             characterModel.forward = Vector3.right * tmp.x + Vector3.forward * tmp.y;
         }
+
+        
+        var ResultX = _currentRotation.x + (_playerInput.cameraRotation.x * _sensitivityX * Time.deltaTime);
+        var ResultY = _currentRotation.y + (_playerInput.cameraRotation.y * _sensitivityY * Time.deltaTime);
+        _currentRotation = new Vector3(ResultX, ResultY, _currentRotation.z);
+        pivotCamera.eulerAngles = _currentRotation;
     }
 
     private void FixedUpdate()
@@ -109,9 +122,9 @@ public class PlayerMovement : MonoBehaviour
             }
             _currentVelocity.y = Mathf.Max(_maxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
-        
+
         // Velocity determines our current direction
-        _direction = _currentHorizontalVelocity.normalized;
+        _direction = _currentHorizontalVelocity.normalized; // * _forwardDirection;
         if (_currentVelocity.magnitude == 0) return;
 
         // Move body according to velocity
