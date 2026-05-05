@@ -760,7 +760,7 @@ MonoBehaviour:
   _cooldownBetweenActions: 0.2
   _attackDuration: 0.4
   _blockDuration: 0.2
-  attackZone: {fileID: 8578066711503218583}
+  _attackZone: {fileID: 8578066711503218583}
   _blockZone: {fileID: 151278546864466687}
 --- !u!114 &6625929015242415875
 MonoBehaviour:

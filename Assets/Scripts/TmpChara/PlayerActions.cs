@@ -13,7 +13,7 @@ public class PlayerActions : MonoBehaviour
     [Header("Block")]
     [SerializeField] private float _blockDuration;
     #endregion
-    
+
     #region State
     private bool _isReady;
     private Coroutine _cooldownCoroutine;
@@ -25,8 +25,8 @@ public class PlayerActions : MonoBehaviour
 
     private PlayerInput _playerInput;
 
-    [Header("Dependencies")] 
-    [SerializeField] public AttackZone attackZone;
+    [Header("Dependencies")]
+    [SerializeField] private AttackZone _attackZone;
     [SerializeField] private BlockZone _blockZone;
 
     #endregion
@@ -35,6 +35,7 @@ public class PlayerActions : MonoBehaviour
 
     public static event Action<int> OnPlayerAttack;
     public static event Action<int> OnPlayerBlock;
+
 
     #endregion
 
@@ -59,17 +60,17 @@ public class PlayerActions : MonoBehaviour
             _blockCoroutine = StartCoroutine(BlockCoroutine());
         }
     }
-    
+
     private IEnumerator AttackCoroutine()
     {
         _isReady = false;
-        attackZone.Activate();
+        _attackZone.Activate();
         yield return new WaitForSeconds(_attackDuration);
-        attackZone.Deactivate();
+        _attackZone.Deactivate();
         _attackCoroutine = null;
         _cooldownCoroutine = StartCoroutine(CooldownCoroutine());
     }
-    
+
     private IEnumerator BlockCoroutine()
     {
         _isReady = false;
@@ -92,9 +93,11 @@ public class PlayerActions : MonoBehaviour
     {
         StopAllCoroutines();
         _attackCoroutine = null;
-        attackZone.Deactivate();
+        _attackZone.Deactivate();
         _blockCoroutine = null;
         _blockZone.Deactivate();
         _cooldownCoroutine = StartCoroutine(CooldownCoroutine());
     }
+
+
 }
