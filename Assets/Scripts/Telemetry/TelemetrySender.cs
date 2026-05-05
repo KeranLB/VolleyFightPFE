@@ -49,7 +49,7 @@ public class TelemetrySender : MonoBehaviour
             return;
         }
 
-        if (PlayerPrefs.GetInt("sendTelemetry", 0) == 1)
+        if (TelemetrySettings.IsTelemetryEnabled())
         {
             Debug.Log("Testing telemetry connection");
             if (await TestConnection())
@@ -71,7 +71,7 @@ public class TelemetrySender : MonoBehaviour
 
     private async Awaitable<bool> TestConnection()
     {
-        string uri = $"https://docs.getgrist.com/api/docs/{docId}";
+        string uri = $"https://pfesmashorpass.getgrist.com/api/docs/{docId}";
         using UnityWebRequest www = UnityWebRequest.Get(uri);
         www.SetRequestHeader("Content-Type", "application/json");
         www.SetRequestHeader("Authorization", "Bearer " + apiKey);
@@ -85,13 +85,13 @@ public class TelemetrySender : MonoBehaviour
 
     public async Awaitable<string?> SendTelemetry(string payload, string tableId)
     {
-        if (TelemetrySettings.IsTelemetryEnabled())
+        if (!TelemetrySettings.IsTelemetryEnabled())
         {
             Debug.Log("Telemetry is disabled");
             return null;
         }
         
-        string uri = $"https://docs.getgrist.com/api/docs/{docId}/tables/{tableId}/records";
+        string uri = $"https://pfesmashorpass.getgrist.com/api/docs/{docId}/tables/{tableId}/records";
         using UnityWebRequest www = UnityWebRequest.Post(uri, payload, "application/json");
         www.SetRequestHeader("Content-Type", "application/json");
         www.SetRequestHeader("Authorization", "Bearer " + apiKey);

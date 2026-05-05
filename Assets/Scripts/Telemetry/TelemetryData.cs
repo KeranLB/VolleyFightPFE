@@ -16,7 +16,7 @@ public abstract class TelemetryData
 public class TDGame : TelemetryData
 {
     public static string tableName {
-        get => "Playtests";
+        get => "Game";
         set{}
     }
 
@@ -28,7 +28,7 @@ public class TDGame : TelemetryData
 public class TDPlayer: TelemetryData
 {
     public static string tableName {
-        get => "PlayerActions";
+        get => "Player";
         set{}
     }
 
