@@ -46,8 +46,11 @@ public class TelemetryManager : MonoBehaviour
 
     public void StartNewGame()
     {
+        // Init _currentGame
         _currentGame = new TDGame();
         _currentGame.startTime = GetUnixTime();
+
+        // Init _players
         _players = new Dictionary<int, TDPlayer>();
         
         int playerId = 1;
