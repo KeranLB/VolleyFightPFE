@@ -27,7 +27,9 @@ public class TelemetryManager : MonoBehaviour
         GameManager.OnGameStarted += StartNewGame;
         GameManager.OnGameEnded += EndGame;
         PlayerActions.OnPlayerAttack += OnPlayerAttack;
+        AttackZone.OnPlayerAttackSuccess += OnPlayerAttackSuccess;
         PlayerActions.OnPlayerBlock += OnPlayerBlock;
+        BlockZone.OnPlayerBlockSuccess += OnPlayerBlockSuccess;
         PlayerMovement.OnPlayerJump += OnPlayerJump;
     }
     
@@ -36,7 +38,9 @@ public class TelemetryManager : MonoBehaviour
         GameManager.OnGameStarted -= StartNewGame;
         GameManager.OnGameEnded -= EndGame;
         PlayerActions.OnPlayerAttack -= OnPlayerAttack;
+        AttackZone.OnPlayerAttackSuccess -= OnPlayerAttackSuccess;
         PlayerActions.OnPlayerBlock -= OnPlayerBlock;
+        BlockZone.OnPlayerBlockSuccess -= OnPlayerBlockSuccess;
         PlayerMovement.OnPlayerJump -= OnPlayerJump;
     }
 
@@ -90,11 +94,23 @@ public class TelemetryManager : MonoBehaviour
         TDPlayer player = _players[playerId];
         player.attacks++;
     }
+
+    private void OnPlayerAttackSuccess(int playerId)
+    {
+        TDPlayer player = _players[playerId];
+        player.attacksSuccess++;
+    }
     
     private void OnPlayerBlock(int playerId)
     {
         TDPlayer player = _players[playerId];
         player.blocks++;
+    }
+
+    private void OnPlayerBlockSuccess(int playerId)
+    {
+        TDPlayer player = _players[playerId];
+        player.blocksSuccess++;
     }
     
     private void OnPlayerJump(int playerId)

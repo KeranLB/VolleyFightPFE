@@ -35,7 +35,9 @@ public class TDPlayer: TelemetryData
     public string playerId;
     public string controller;
     public int attacks;
+    public int attacksSuccess;
     public int blocks;
+    public int blocksSuccess;
     public int jumps;
     public int gameId;
 }

@@ -5,7 +5,10 @@ public class AttackZone : PlayerHitZone
 {
     private MeshRenderer _meshRenderer;
     public float speedMult;
-    
+
+    public static event Action<int> OnPlayerAttackSuccess;
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -43,6 +46,7 @@ public class AttackZone : PlayerHitZone
         );
         ball.StopSimulation(hitInfo.point);
         ball.GetHit(hitDirection, speedMult);
+        OnPlayerAttackSuccess?.Invoke(player.gameObject.GetInstanceID());
         player.playerActions.CancelAction();
     }
 }

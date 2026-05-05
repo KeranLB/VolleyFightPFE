@@ -26,7 +26,7 @@ public class PlayerActions : MonoBehaviour
     private PlayerInput _playerInput;
 
     [Header("Dependencies")] 
-    [SerializeField] private AttackZone _attackZone;
+    [SerializeField] public AttackZone attackZone;
     [SerializeField] private BlockZone _blockZone;
 
     #endregion
@@ -35,10 +35,9 @@ public class PlayerActions : MonoBehaviour
 
     public static event Action<int> OnPlayerAttack;
     public static event Action<int> OnPlayerBlock;
-    
 
     #endregion
-    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -64,9 +63,9 @@ public class PlayerActions : MonoBehaviour
     private IEnumerator AttackCoroutine()
     {
         _isReady = false;
-        _attackZone.Activate();
+        attackZone.Activate();
         yield return new WaitForSeconds(_attackDuration);
-        _attackZone.Deactivate();
+        attackZone.Deactivate();
         _attackCoroutine = null;
         _cooldownCoroutine = StartCoroutine(CooldownCoroutine());
     }
@@ -93,11 +92,9 @@ public class PlayerActions : MonoBehaviour
     {
         StopAllCoroutines();
         _attackCoroutine = null;
-        _attackZone.Deactivate();
+        attackZone.Deactivate();
         _blockCoroutine = null;
         _blockZone.Deactivate();
         _cooldownCoroutine = StartCoroutine(CooldownCoroutine());
     }
-    
-    
 }

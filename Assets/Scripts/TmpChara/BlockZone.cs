@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 public class BlockZone : PlayerHitZone
 {
     private MeshRenderer _meshRenderer;
+
+    public static event Action<int> OnPlayerBlockSuccess;
 
     protected override void Awake()
     {
@@ -35,6 +38,7 @@ public class BlockZone : PlayerHitZone
     {
         base.OnTrajectory(ball, hitInfo);
         ball.Bunt(player);
+        OnPlayerBlockSuccess?.Invoke(player.gameObject.GetInstanceID());
         player.playerActions.CancelAction();
     }
 }
