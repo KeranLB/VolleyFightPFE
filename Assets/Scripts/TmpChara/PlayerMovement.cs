@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         pivotCamera.eulerAngles = _currentRotation;
     }
 
-    private void FixedUpdate()
+    public void FixedUpdate()
     {
         // Get Inputs
         var tmp = _playerInput.currentDirection.normalized;
@@ -169,6 +169,13 @@ public class PlayerMovement : MonoBehaviour
                 _currentVelocity.z = 0f;
             }
         }
+        _rigidbody.MovePosition(_rigidbody.position + _currentVelocity * Time.fixedDeltaTime);
+
+        //Move();
+    }
+
+    public void Move()
+    {
         _rigidbody.MovePosition(_rigidbody.position + _currentVelocity * Time.fixedDeltaTime);
     }
 

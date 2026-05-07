@@ -60,6 +60,7 @@ public class TelemetryManager : MonoBehaviour
             TDPlayer newPlayer = new TDPlayer();
             // Player ID
             newPlayer.playerId = (playerId++).ToString();
+            print(newPlayer.playerId);
             // Controller type
             if (player.TryGetComponent(out HumanPlayerInput humanPlayerInput) && humanPlayerInput.enabled)
             {
@@ -94,6 +95,7 @@ public class TelemetryManager : MonoBehaviour
 
     private void OnPlayerAttack(int playerId)
     {
+        print(playerId);
         TDPlayer player = _players[playerId];
         player.attacks++;
     }
