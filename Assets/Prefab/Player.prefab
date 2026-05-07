@@ -675,16 +675,16 @@ MonoBehaviour:
     m_Bits: 72
   characterModel: {fileID: 5947970227115169457}
   pivotCamera: {fileID: 8357122705217506693}
-  _groundAcceleration: 25
-  _groundFriction: 30
-  _maxHorizontalSpeed: 10
-  _jumpForce: 20
-  _gravity: -60
-  _maxFallSpeed: -30
+  _groundAcceleration: 50
+  _groundFriction: 60
+  _maxHorizontalSpeed: 20
+  _jumpForce: 50
+  _gravity: -120
+  _maxFallSpeed: -20
   _feetSpot: {fileID: 6267170178929750526}
   _groundCheckRaycastLength: 0.1
-  _sensitivityX: 0
-  _sensitivityY: 0
+  _maxXAngle: 60
+  _maxXRotationPerFrame: 45
 --- !u!54 &1050730542087834307
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -727,6 +727,9 @@ MonoBehaviour:
   cameraPosition: {fileID: 3952595566736523350}
   isGamepad: 0
   gamepadIndex: 0
+  _mouseSensitivityX: 60
+  _mouseSensitivityY: 60
+  _joystickSensitivity: 200
 --- !u!114 &756815961040395522
 MonoBehaviour:
   m_ObjectHideFlags: 0
