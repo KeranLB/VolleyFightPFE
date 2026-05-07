@@ -31,6 +31,7 @@ public class TelemetryManager : MonoBehaviour
         PlayerActions.OnPlayerBlock += OnPlayerBlock;
         BlockZone.OnPlayerBlockSuccess += OnPlayerBlockSuccess;
         PlayerMovement.OnPlayerJump += OnPlayerJump;
+        PlayerMovement.OnPlayerDoubleJump += OnPlayerDoubleJump;
     }
     
     private void OnDisable()
@@ -42,6 +43,7 @@ public class TelemetryManager : MonoBehaviour
         PlayerActions.OnPlayerBlock -= OnPlayerBlock;
         BlockZone.OnPlayerBlockSuccess -= OnPlayerBlockSuccess;
         PlayerMovement.OnPlayerJump -= OnPlayerJump;
+        PlayerMovement.OnPlayerDoubleJump -= OnPlayerDoubleJump;
     }
 
     public void StartNewGame()
@@ -120,6 +122,12 @@ public class TelemetryManager : MonoBehaviour
     {
         TDPlayer player = _players[playerId];
         player.jumps++;
+    }
+    
+    private void OnPlayerDoubleJump(int playerId)
+    {
+        TDPlayer player = _players[playerId];
+        player.doubleJumps++;
     }
 
     private async Awaitable SendGameData()
