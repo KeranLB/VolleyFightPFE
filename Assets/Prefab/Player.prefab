@@ -683,7 +683,7 @@ MonoBehaviour:
   _maxFallSpeed: -20
   _feetSpot: {fileID: 6267170178929750526}
   _groundCheckRaycastLength: 0.1
-  _maxXAngle: 60
+  _maxXAngle: 30
   _maxXRotationPerFrame: 45
 --- !u!54 &1050730542087834307
 Rigidbody:

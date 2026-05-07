@@ -141,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
         // Move body according to velocity
         RaycastHit hitInfo;
         
-        // If hitting ground or ceiling, snap and reset vertical speed
+        // If hitting ground or ceiling, snap
         if (
             Physics.Raycast(
                 _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
@@ -149,24 +149,23 @@ public class PlayerMovement : MonoBehaviour
             )
         )
         {
-            _rigidbody.MovePosition(hitInfo.point+hitInfo.normal);
-            _currentVelocity.y = 0f;
+            _rigidbody.MovePosition(hitInfo.point+hitInfo.normal*0.95f);
             return;
         }
         // Check walls on side
         if (
-            Physics.Raycast(
-                _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
+            Physics.SphereCast(
+                _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
             )
         )
         {
             _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, hitInfo.normal);
             // If cornered, reset horizontal velocity
             if (
-                Physics.Raycast(
-                    _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                    _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
+                Physics.SphereCast(
+                    _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                    _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
                 )
             )
             {
