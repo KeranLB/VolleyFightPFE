@@ -22,11 +22,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
 
-    [Header("Sensitivity :")]
+    [Header("Camera")]
     [SerializeField] private float _sensitivityX;
     [SerializeField] private float _sensitivityY;
-
-    private Vector3 _currentRotation;
+    [SerializeField] private float _maxXAngle;
+    [SerializeField] private float _maxXRotationPerFrame;
 
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
@@ -48,17 +48,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        var tmp = _playerInput.currentDirection;
-        if (tmp.magnitude > 0)
+        // Make the character face movement direction
+        var dir = _playerInput.currentDirection;
+        if (dir.magnitude > 0)
         {
-            characterModel.forward = Vector3.right * tmp.x + Vector3.forward * tmp.y;
+            characterModel.forward = Vector3.right * dir.x + Vector3.forward * dir.y;
         }
 
-        
-        var ResultX = _currentRotation.x + (_playerInput.cameraRotation.x * _sensitivityX * Time.deltaTime);
-        var ResultY = _currentRotation.y + (_playerInput.cameraRotation.y * _sensitivityY * Time.deltaTime);
-        _currentRotation = new Vector3(ResultX, ResultY, _currentRotation.z);
-        pivotCamera.eulerAngles = _currentRotation;
+        // Limit X rotation
+        var rotX = _playerInput.cameraRotation.x * _sensitivityX * Time.deltaTime;
+        rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
+        var newRotX = rotX + pivotCamera.eulerAngles.x;
+        if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
+        else newRotX = Mathf.Max(newRotX, 360-_maxXAngle);
+        // Don't limit Y rotation
+        var newRotY =_playerInput.cameraRotation.y * _sensitivityY * Time.deltaTime + pivotCamera.eulerAngles.y;
+        // Keep Z rotation
+        var newRotZ = pivotCamera.eulerAngles.z;
+        pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
+        Debug.Log(pivotCamera.eulerAngles.x);
     }
 
     private void FixedUpdate()
