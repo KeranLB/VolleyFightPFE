@@ -23,8 +23,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _groundCheckRaycastLength;
 
     [Header("Camera")]
-    [SerializeField] private float _sensitivityX;
-    [SerializeField] private float _sensitivityY;
     [SerializeField] private float _maxXAngle;
     [SerializeField] private float _maxXRotationPerFrame;
 
@@ -56,17 +54,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Limit X rotation
-        var rotX = _playerInput.cameraRotation.x * _sensitivityX * Time.deltaTime;
+        var rotX = _playerInput.cameraRotation.x * Time.deltaTime;
         rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
         var newRotX = rotX + pivotCamera.eulerAngles.x;
         if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
         else newRotX = Mathf.Max(newRotX, 360-_maxXAngle);
         // Don't limit Y rotation
-        var newRotY =_playerInput.cameraRotation.y * _sensitivityY * Time.deltaTime + pivotCamera.eulerAngles.y;
+        var newRotY =_playerInput.cameraRotation.y * Time.deltaTime + pivotCamera.eulerAngles.y;
         // Keep Z rotation
         var newRotZ = pivotCamera.eulerAngles.z;
         pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
-        Debug.Log(pivotCamera.eulerAngles.x);
     }
 
     private void FixedUpdate()

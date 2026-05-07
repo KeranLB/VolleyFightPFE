@@ -12,6 +12,11 @@ public class HumanPlayerInput : MonoBehaviour
     public bool isGamepad;
     public int gamepadIndex;
     
+    [Header("Camera")]
+    [SerializeField] private float _mouseSensitivityX;
+    [SerializeField] private float _mouseSensitivityY;
+    [SerializeField] private float _joystickSensitivity;
+    
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -44,11 +49,13 @@ public class HumanPlayerInput : MonoBehaviour
         if (!isGamepad)
         {
             rotation = Input.mousePositionDelta;
+            rotation.x *= _mouseSensitivityX;
+            rotation.y *= _mouseSensitivityY;
             //rotation = new Vector2(-Input.GetAxis("mouseY"), Input.GetAxis("mouseX"));
         }
         else
         {
-            rotation = Gamepad.all[gamepadIndex].rightStick.value;
+            rotation = Gamepad.all[gamepadIndex].rightStick.value * _joystickSensitivity;
         }
         _playerInput.cameraRotation = new Vector3(-rotation.y, rotation.x, 0f);
 
@@ -68,8 +75,8 @@ public class HumanPlayerInput : MonoBehaviour
         }
         else
         {
-            _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed;
-            if (Gamepad.all[gamepadIndex].buttonSouth.wasPressedThisFrame)
+            _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed || Gamepad.all[gamepadIndex].rightTrigger.isPressed;
+            if (Gamepad.all[gamepadIndex].buttonSouth.wasPressedThisFrame ||  Gamepad.all[gamepadIndex].rightTrigger.wasPressedThisFrame)
             {
                 StartCoroutine(JumpBuffering());
             }
