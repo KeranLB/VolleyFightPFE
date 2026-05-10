@@ -1307,10 +1307,6 @@ PrefabInstance:
       propertyPath: inputMap.m_Actions.Array.data[0].m_ExpectedControlType
       value: Button
       objectReference: {fileID: 0}
-    - target: {fileID: 8578066711503218583, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
-      propertyPath: speedLevelChange
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8799859916885463089, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: _sensitivityX
       value: 60
