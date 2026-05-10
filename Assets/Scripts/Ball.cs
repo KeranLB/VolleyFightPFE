@@ -14,6 +14,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private float _maxSpeed;
     private float _realSpeed;
     public float baseSpeed = 10.0f;
+    public float baseDamage = 1f;
     [SerializeField] private float _passSpeed;
     [SerializeField] private List<SO_BallSpeedLevel> _speedLevels;
     public SO_BallSpeedLevel currentSpeedLevel;
@@ -277,6 +278,11 @@ public class Ball : MonoBehaviour
     {
         _currentFramePosition = spot;
         _currentFrameDistanceRemaining = 0f;
+    }
+
+    public float GetFinalDamage()
+    {
+        return baseDamage * currentSpeedLevel.damageMultiplier;
     }
     
     void GetBlocked(Vector3 target)

@@ -638,7 +638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c917df4039508b46a82041566e6e6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLife
-  maxHealth: 10
+  maxHealth: 100
   currentHealth: 0
   LifeBar: {fileID: 4030818723378222432}
 --- !u!114 &3870563267189737242
@@ -1069,7 +1069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackZone
   player: {fileID: 3870563267189737242}
-  speedMult: 1.2
+  speedLevelChange: 1
 --- !u!65 &8455541764095989948
 BoxCollider:
   m_ObjectHideFlags: 0
