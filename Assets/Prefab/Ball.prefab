@@ -307,7 +307,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ball
   _maxSpeed: 10
+  baseSpeed: 10
   _passSpeed: 10
+  _speedLevels:
+  - {fileID: 11400000, guid: 9e5fdc1ab28983b4b928ba73c4f8fb20, type: 2}
+  - {fileID: 11400000, guid: 8a800b0cf508f7e45bc58aa4da103199, type: 2}
+  - {fileID: 11400000, guid: d417c742520146c41a5d51be1b723fdd, type: 2}
+  - {fileID: 11400000, guid: 16572cd28bb25dd4f8db915a4f3f4bb6, type: 2}
+  - {fileID: 11400000, guid: 26f873fc1c4e9f24d863b901a5dc4d57, type: 2}
+  - {fileID: 11400000, guid: b794affbfac8d0445b1858d8708a7f7d, type: 2}
+  - {fileID: 11400000, guid: c634e5bfb46781b4f8f4beb5b540d167, type: 2}
+  - {fileID: 11400000, guid: 0c3158a61810d354680e5217091013fc, type: 2}
+  - {fileID: 11400000, guid: 90b26fb4b1db17640a4446446135bdb3, type: 2}
+  - {fileID: 11400000, guid: 8192a5e372afc454e9c0f5e1f7fdd0d6, type: 2}
+  - {fileID: 11400000, guid: 496c515bc08c722419dfa9a000684677, type: 2}
+  currentSpeedLevel: {fileID: 0}
+  currentSpeedLevelIndex: 0
   teamPossess: 0
   _touchLimit: 3
   _timeLimit: 30

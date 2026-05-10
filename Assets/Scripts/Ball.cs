@@ -13,8 +13,11 @@ public class Ball : MonoBehaviour
 
     [SerializeField] private float _maxSpeed;
     private float _realSpeed;
-    private float _hitSpeeed;
+    public float baseSpeed = 10.0f;
     [SerializeField] private float _passSpeed;
+    [SerializeField] private List<SO_BallSpeedLevel> _speedLevels;
+    public SO_BallSpeedLevel currentSpeedLevel;
+    public int currentSpeedLevelIndex;
 
     #endregion
 
@@ -64,6 +67,12 @@ public class Ball : MonoBehaviour
     private VisualEffect _vfxImpact;
     
     #endregion
+
+    #region Delegates
+
+    public static event Action<int> OnSpeedLevelChanged;
+
+    #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,11 +88,11 @@ public class Ball : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            _maxSpeed += 5;
+            ChangeSpeedLevel(currentSpeedLevelIndex + 1);
         }
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            _maxSpeed -= 5;
+            ChangeSpeedLevel(currentSpeedLevelIndex - 1);
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
@@ -139,13 +148,15 @@ public class Ball : MonoBehaviour
         _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
         
         // Check we're not already overlapping a collider that would be ignored by SphereCast
-        // TODO : check ray in all directions to detect surfaces parallel to direction?
         Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
         foreach (Collider collider in cols)
         {
+            Vector3 closestPoint = collider.ClosestPoint(_currentFramePosition);
+            Vector3 direction = (closestPoint - _currentFramePosition).normalized;
             if(
-                Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, 0.5f))
-                && hit.collider.TryGetComponent<HitZone>(out HitZone hitZone))
+                Physics.Raycast(_currentFramePosition, direction, out RaycastHit hit, 0.5f)
+                && hit.collider.TryGetComponent(out HitZone hitZone)
+            )
             {
                 hitZone.OnTrajectory(this, hit);
             }
@@ -217,9 +228,12 @@ public class Ball : MonoBehaviour
         }
     }
 
-    void PhysicSim()
+    public void ChangeSpeedLevel(int i)
     {
-        
+        currentSpeedLevelIndex = Mathf.Clamp(i, 0, _speedLevels.Count - 1);
+        currentSpeedLevel = _speedLevels[currentSpeedLevelIndex];
+        _maxSpeed = currentSpeedLevel.speedMultiplier * baseSpeed;
+        OnSpeedLevelChanged?.Invoke(currentSpeedLevelIndex);
     }
 
     public void Bounce(RaycastHit hitInfo)
@@ -250,11 +264,11 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
 
-    public void GetHit(Vector3 direction, float multSpeed = 1, float addSpeed = 0)
+    public void GetHit(Vector3 direction, int speedLevelChange = 0)
     {
         ChangeFrameDirection(direction);
         _direction = direction.normalized;
-        _maxSpeed = _maxSpeed * multSpeed + addSpeed;
+        ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
         isSwitchingSide = false;
     }
