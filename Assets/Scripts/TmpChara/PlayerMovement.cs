@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _gravity;
     [SerializeField] private float _maxFallSpeed;
+    [SerializeField] private float _slowFallFactor;
+    [SerializeField] private bool _justJumped;
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
 
@@ -110,13 +112,15 @@ public class PlayerMovement : MonoBehaviour
         _currentVelocity.x = _currentHorizontalVelocity.x;
         _currentVelocity.z = _currentHorizontalVelocity.y;
 
+        // Jump and fall
         if (_isGrounded)
         {
             _canDoubleJump = true;
-            if(_playerInput.holdsJump || _playerInput.pressedDoubleJump)
+            if(_playerInput.holdsJump || _playerInput.pressedJump)
             {
                 OnPlayerJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
+                _justJumped = true;
             }
             else
             {
@@ -125,13 +129,33 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (_playerInput.pressedDoubleJump && _canDoubleJump)
+            // Double jump
+            if (_playerInput.pressedJump && _canDoubleJump)
             {
                 OnPlayerJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
+                _justJumped = false;
             }
-            _currentVelocity.y = Mathf.Max(_maxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
+            var realMaxFallSpeed = _maxFallSpeed;
+            if (_currentVelocity.y > 0)
+            {
+                // Short jump if we release the jump button
+                if (_justJumped && _playerInput.releasedJump)
+                {
+                    _currentVelocity.y /= 2;
+                }
+            }
+            else
+            {
+                _justJumped = false;
+                // Slow fall if we hold jump button
+                if (_playerInput.holdsJump)
+                {
+                    realMaxFallSpeed *= _slowFallFactor;
+                }
+            }
+            _currentVelocity.y = Mathf.Max(realMaxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
 
         // Velocity determines our current direction

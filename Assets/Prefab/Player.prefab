@@ -680,7 +680,9 @@ MonoBehaviour:
   _maxHorizontalSpeed: 20
   _jumpForce: 50
   _gravity: -120
-  _maxFallSpeed: -20
+  _maxFallSpeed: -30
+  _slowFallFactor: 0.5
+  _justJumped: 0
   _feetSpot: {fileID: 6267170178929750526}
   _groundCheckRaycastLength: 0.1
   _maxXAngle: 30
@@ -745,7 +747,8 @@ MonoBehaviour:
   currentDirection: {x: 0, y: 0}
   cameraRotation: {x: 0, y: 0, z: 0}
   holdsJump: 0
-  pressedDoubleJump: 0
+  pressedJump: 0
+  releasedJump: 0
   pressedAttack: 0
   pressedBlock: 0
 --- !u!114 &6776770826193777988

@@ -65,7 +65,11 @@ public class HumanPlayerInput : MonoBehaviour
             _playerInput.holdsJump = Input.GetKey(KeyCode.Space);
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                StartCoroutine(JumpBuffering());
+                StartCoroutine(PressJumpBuffering());
+            }
+            else if (Input.GetKeyUp(KeyCode.Space))
+            {
+                StartCoroutine(ReleaseJumpBuffering());
             }
             _playerInput.pressedAttack = Mouse.current.leftButton.wasPressedThisFrame;
             _playerInput.pressedBlock = Mouse.current.rightButton.wasPressedThisFrame;
@@ -78,17 +82,30 @@ public class HumanPlayerInput : MonoBehaviour
             _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed || Gamepad.all[gamepadIndex].rightTrigger.isPressed;
             if (Gamepad.all[gamepadIndex].buttonSouth.wasPressedThisFrame ||  Gamepad.all[gamepadIndex].rightTrigger.wasPressedThisFrame)
             {
-                StartCoroutine(JumpBuffering());
+                StartCoroutine(PressJumpBuffering());
+            }
+            else if (Gamepad.all[gamepadIndex].buttonSouth.wasReleasedThisFrame ||  Gamepad.all[gamepadIndex].rightTrigger.wasReleasedThisFrame)
+            {
+                StartCoroutine(ReleaseJumpBuffering());
             }
             _playerInput.pressedAttack = Gamepad.all[gamepadIndex].buttonWest.wasPressedThisFrame;
             _playerInput.pressedBlock = Gamepad.all[gamepadIndex].buttonEast.wasPressedThisFrame;
         }
     }
-
-    private IEnumerator JumpBuffering()
+    
+    private IEnumerator PressJumpBuffering()
     {
-        _playerInput.pressedDoubleJump = true;
+        // Make sure any script that needs to read this value has a chance to execute
+        _playerInput.pressedJump = true;
         yield return new WaitForFixedUpdate();
-        _playerInput.pressedDoubleJump = false;
+        _playerInput.pressedJump = false;
+    }
+    
+    private IEnumerator ReleaseJumpBuffering()
+    {
+        // Make sure any script that needs to read this value has a chance to execute
+        _playerInput.releasedJump = true;
+        yield return new WaitForFixedUpdate();
+        _playerInput.releasedJump = false;
     }
 }
