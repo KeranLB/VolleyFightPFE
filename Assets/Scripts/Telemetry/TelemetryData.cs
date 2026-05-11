@@ -39,6 +39,7 @@ public class TDPlayer: TelemetryData
     public int blocks;
     public int blocksSuccess;
     public int jumps;
+    public int doubleJumps;
     public int gameId;
 }
 

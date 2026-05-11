@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region Telemetry
     public static event Action<int> OnPlayerJump;
+    public static event Action<int> OnPlayerDoubleJump;
     #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -122,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (_playerInput.pressedDoubleJump && _canDoubleJump)
             {
-                OnPlayerJump?.Invoke(gameObject.GetInstanceID());
+                OnPlayerDoubleJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
             }
