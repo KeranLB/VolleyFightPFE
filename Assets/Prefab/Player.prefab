@@ -638,7 +638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c917df4039508b46a82041566e6e6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLife
-  maxHealth: 10
+  maxHealth: 100
   currentHealth: 0
   LifeBar: {fileID: 4030818723378222432}
 --- !u!114 &3870563267189737242
@@ -675,16 +675,18 @@ MonoBehaviour:
     m_Bits: 72
   characterModel: {fileID: 5947970227115169457}
   pivotCamera: {fileID: 8357122705217506693}
-  _groundAcceleration: 25
-  _groundFriction: 30
-  _maxHorizontalSpeed: 10
-  _jumpForce: 20
-  _gravity: -60
+  _groundAcceleration: 50
+  _groundFriction: 60
+  _maxHorizontalSpeed: 20
+  _jumpForce: 50
+  _gravity: -120
   _maxFallSpeed: -30
+  _slowFallFactor: 0.5
+  _justJumped: 0
   _feetSpot: {fileID: 6267170178929750526}
   _groundCheckRaycastLength: 0.1
-  _sensitivityX: 0
-  _sensitivityY: 0
+  _maxXAngle: 30
+  _maxXRotationPerFrame: 45
 --- !u!54 &1050730542087834307
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -727,6 +729,9 @@ MonoBehaviour:
   cameraPosition: {fileID: 3952595566736523350}
   isGamepad: 0
   gamepadIndex: 0
+  _mouseSensitivityX: 60
+  _mouseSensitivityY: 60
+  _joystickSensitivity: 200
 --- !u!114 &756815961040395522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,7 +747,8 @@ MonoBehaviour:
   currentDirection: {x: 0, y: 0}
   cameraRotation: {x: 0, y: 0, z: 0}
   holdsJump: 0
-  pressedDoubleJump: 0
+  pressedJump: 0
+  releasedJump: 0
   pressedAttack: 0
   pressedBlock: 0
 --- !u!114 &6776770826193777988
@@ -1063,7 +1069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackZone
   player: {fileID: 3870563267189737242}
-  speedMult: 1.2
+  speedLevelChange: 1
 --- !u!65 &8455541764095989948
 BoxCollider:
   m_ObjectHideFlags: 0

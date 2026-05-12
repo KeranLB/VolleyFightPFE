@@ -19,14 +19,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _gravity;
     [SerializeField] private float _maxFallSpeed;
+    [SerializeField] private float _slowFallFactor;
+    [SerializeField] private bool _justJumped;
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
 
-    [Header("Sensitivity :")]
-    [SerializeField] private float _sensitivityX;
-    [SerializeField] private float _sensitivityY;
-
-    private Vector3 _currentRotation;
+    [Header("Camera")]
+    [SerializeField] private float _maxXAngle;
+    [SerializeField] private float _maxXRotationPerFrame;
 
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
@@ -49,17 +49,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        var tmp = _playerInput.currentDirection;
-        if (tmp.magnitude > 0)
+        // Make the character face movement direction
+        var dir = _playerInput.currentDirection;
+        if (dir.magnitude > 0)
         {
-            characterModel.forward = Vector3.right * tmp.x + Vector3.forward * tmp.y;
+            characterModel.forward = Vector3.right * dir.x + Vector3.forward * dir.y;
         }
 
-        
-        var ResultX = _currentRotation.x + (_playerInput.cameraRotation.x * _sensitivityX * Time.deltaTime);
-        var ResultY = _currentRotation.y + (_playerInput.cameraRotation.y * _sensitivityY * Time.deltaTime);
-        _currentRotation = new Vector3(ResultX, ResultY, _currentRotation.z);
-        pivotCamera.eulerAngles = _currentRotation;
+        // Limit X rotation
+        var rotX = _playerInput.cameraRotation.x * Time.deltaTime;
+        rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
+        var newRotX = rotX + pivotCamera.eulerAngles.x;
+        if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
+        else newRotX = Mathf.Max(newRotX, 360-_maxXAngle);
+        // Don't limit Y rotation
+        var newRotY =_playerInput.cameraRotation.y * Time.deltaTime + pivotCamera.eulerAngles.y;
+        // Keep Z rotation
+        var newRotZ = pivotCamera.eulerAngles.z;
+        pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
     }
 
     private void FixedUpdate()
@@ -106,13 +113,15 @@ public class PlayerMovement : MonoBehaviour
         _currentVelocity.x = _currentHorizontalVelocity.x;
         _currentVelocity.z = _currentHorizontalVelocity.y;
 
+        // Jump and fall
         if (_isGrounded)
         {
             _canDoubleJump = true;
-            if(_playerInput.holdsJump || _playerInput.pressedDoubleJump)
+            if(_playerInput.holdsJump || _playerInput.pressedJump)
             {
                 OnPlayerJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
+                _justJumped = true;
             }
             else
             {
@@ -121,13 +130,33 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (_playerInput.pressedDoubleJump && _canDoubleJump)
+            // Double jump
+            if (_playerInput.pressedJump && _canDoubleJump)
             {
                 OnPlayerDoubleJump?.Invoke(gameObject.GetInstanceID());
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
+                _justJumped = false;
             }
-            _currentVelocity.y = Mathf.Max(_maxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
+            var realMaxFallSpeed = _maxFallSpeed;
+            if (_currentVelocity.y > 0)
+            {
+                // Short jump if we release the jump button
+                if (_justJumped && _playerInput.releasedJump)
+                {
+                    _currentVelocity.y /= 2;
+                }
+            }
+            else
+            {
+                _justJumped = false;
+                // Slow fall if we hold jump button
+                if (_playerInput.holdsJump)
+                {
+                    realMaxFallSpeed *= _slowFallFactor;
+                }
+            }
+            _currentVelocity.y = Mathf.Max(realMaxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
 
         // Velocity determines our current direction
@@ -137,7 +166,7 @@ public class PlayerMovement : MonoBehaviour
         // Move body according to velocity
         RaycastHit hitInfo;
         
-        // If hitting ground or ceiling, snap and reset vertical speed
+        // If hitting ground or ceiling, snap
         if (
             Physics.Raycast(
                 _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
@@ -145,24 +174,23 @@ public class PlayerMovement : MonoBehaviour
             )
         )
         {
-            _rigidbody.MovePosition(hitInfo.point+hitInfo.normal);
-            _currentVelocity.y = 0f;
+            _rigidbody.MovePosition(hitInfo.point+hitInfo.normal*0.95f);
             return;
         }
         // Check walls on side
         if (
-            Physics.Raycast(
-                _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
+            Physics.SphereCast(
+                _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
             )
         )
         {
             _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, hitInfo.normal);
             // If cornered, reset horizontal velocity
             if (
-                Physics.Raycast(
-                    _rigidbody.position, _currentVelocity.normalized, out hitInfo,
-                    _currentVelocity.magnitude * Time.fixedDeltaTime + 0.5f, collisionLayers
+                Physics.SphereCast(
+                    _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                    _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
                 )
             )
             {

@@ -4,7 +4,7 @@ using UnityEngine;
 public class AttackZone : PlayerHitZone
 {
     private MeshRenderer _meshRenderer;
-    public float speedMult;
+    public int speedLevelChange;
 
     public static event Action<int> OnPlayerAttackSuccess;
 
@@ -45,7 +45,7 @@ public class AttackZone : PlayerHitZone
             + transform.forward
         );
         ball.StopSimulation(hitInfo.point);
-        ball.GetHit(hitDirection, speedMult);
+        ball.GetHit(hitDirection, speedLevelChange);
         OnPlayerAttackSuccess?.Invoke(player.gameObject.GetInstanceID());
         player.playerActions.CancelAction();
     }
