@@ -152,14 +152,9 @@ public class Ball : MonoBehaviour
         Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
         foreach (Collider collider in cols)
         {
-            Vector3 closestPoint = collider.ClosestPoint(_currentFramePosition);
-            Vector3 direction = (closestPoint - _currentFramePosition).normalized;
-            if(
-                Physics.Raycast(_currentFramePosition, direction, out RaycastHit hit, 0.5f)
-                && hit.collider.TryGetComponent(out HitZone hitZone)
-            )
+            if(collider.TryGetComponent(out HitZone hitZone))
             {
-                hitZone.OnTrajectory(this, hit);
+                hitZone.OnOverlap(this);
             }
         }
         

@@ -5,6 +5,7 @@ public class AttackZone : PlayerHitZone
 {
     private MeshRenderer _meshRenderer;
     public int speedLevelChange;
+    private bool _hasTouchedBall;
 
     public static event Action<int> OnPlayerAttackSuccess;
 
@@ -25,7 +26,8 @@ public class AttackZone : PlayerHitZone
         _rigidbody.detectCollisions = true;
         Color c = Color.blue;
         c.a = 0.5f;
-        _meshRenderer.material.color = c; 
+        _meshRenderer.material.color = c;
+        _hasTouchedBall = false;
     }
 
     public void Deactivate()
@@ -36,17 +38,44 @@ public class AttackZone : PlayerHitZone
         _meshRenderer.material.color = c; 
     }
 
-    public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
+    public virtual Vector3 GetOutDirection()
     {
-        base.OnTrajectory(ball, hitInfo);
         Vector3 hitDirection = (
             transform.right * player.playerInput.currentDirection.x
             + transform.up * player.playerInput.currentDirection.y
             + transform.forward
         );
+
+        return hitDirection;
+    }
+
+    public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
+    {
+        // Ignore subsequent hits for same activation
+        if (_hasTouchedBall)
+        {
+            ball.PassThrough(hitInfo);
+            return;
+        }
+
+        _hasTouchedBall = true;
+        base.OnTrajectory(ball, hitInfo);
         ball.StopSimulation(hitInfo.point);
-        ball.GetHit(hitDirection, speedLevelChange);
+        ball.GetHit(GetOutDirection(), speedLevelChange);
         OnPlayerAttackSuccess?.Invoke(player.gameObject.GetInstanceID());
-        player.playerActions.CancelAction();
+        // player.playerActions.CancelAction();
+    }
+
+    public override void OnOverlap(Ball ball)
+    {
+        // Ignore subsequent hits for same activation
+        if (_hasTouchedBall)
+        {
+            return;
+        }
+        
+        _hasTouchedBall = true;
+        base.OnOverlap(ball);
+        ball.GetHit(GetOutDirection(), speedLevelChange);
     }
 }

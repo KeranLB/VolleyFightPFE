@@ -17,4 +17,9 @@ public class HitZone : MonoBehaviour
     {
         
     }
+
+    public virtual void OnOverlap(Ball ball)
+    {
+        
+    }
 }
