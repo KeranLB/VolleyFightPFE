@@ -95,7 +95,7 @@ public class TDBallExchange : TelemetryData
     public int speedWhenHit;
     public int damageWhenHit;
     public bool killedPlayer;
-    public int time;
+    public int duration;
     public int gameId;
     public int rounId;
 }

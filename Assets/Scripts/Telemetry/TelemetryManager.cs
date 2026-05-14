@@ -8,7 +8,11 @@ public class TelemetryManager : MonoBehaviour
     public static TelemetryManager Instance;
 
     private TDGame _currentGame;
-    private Dictionary<int, TDPlayer> _players;
+    public Dictionary<int, TDRound> rounds;
+    public Dictionary<int, TDPlayer> players;
+    public Dictionary<int, TDActions> actions;
+    public Dictionary<int, TDBallExchange> ballExchanges;
+    public Dictionary<int, TDBallHit> ballHits;
 
     private void Awake()
     {
@@ -26,16 +30,16 @@ public class TelemetryManager : MonoBehaviour
     {
         GameManager.OnGameStarted += StartNewGame;
         GameManager.OnGameEnded += EndGame;
-         PlayerMovement.OnPlayerJump += OnPlayerJump;
-        PlayerMovement.OnPlayerDoubleJump += OnPlayerDoubleJump;
+        //PlayerMovement.OnPlayerJump += OnPlayerJump;
+        //PlayerMovement.OnPlayerDoubleJump += OnPlayerDoubleJump;
     }
     
     private void OnDisable()
     {
         GameManager.OnGameStarted -= StartNewGame;
         GameManager.OnGameEnded -= EndGame;
-        PlayerMovement.OnPlayerJump -= OnPlayerJump;
-        PlayerMovement.OnPlayerDoubleJump -= OnPlayerDoubleJump;
+        //PlayerMovement.OnPlayerJump -= OnPlayerJump;
+        //PlayerMovement.OnPlayerDoubleJump -= OnPlayerDoubleJump;
     }
 
     public void StartNewGame()
@@ -44,8 +48,12 @@ public class TelemetryManager : MonoBehaviour
         _currentGame = new TDGame();
         _currentGame.startTime = GetUnixTime();
 
-        // Init _players
-        _players = new Dictionary<int, TDPlayer>();
+        // Init Dictionary
+        rounds = new Dictionary<int, TDRound>();
+        players = new Dictionary<int, TDPlayer>();
+        actions = new Dictionary<int, TDActions>();
+        ballExchanges = new Dictionary<int, TDBallExchange>();
+        ballHits = new Dictionary<int, TDBallHit>();
         
         int playerId = 1;
         
@@ -68,7 +76,7 @@ public class TelemetryManager : MonoBehaviour
                 continue;
             }
             // Index player
-            _players.Add(player.gameObject.GetInstanceID(), newPlayer);
+            players.Add(player.gameObject.GetInstanceID(), newPlayer);
         }
     }
 
@@ -88,38 +96,88 @@ public class TelemetryManager : MonoBehaviour
     
     private void OnPlayerJump(int playerId)
     {
-        TDPlayer player = _players[playerId];
+        TDPlayer player = players[playerId];
         player.jumps++;
     }
     
     private void OnPlayerDoubleJump(int playerId)
     {
-        TDPlayer player = _players[playerId];
+        TDPlayer player = players[playerId];
         player.doubleJumps++;
     }
 
     private async Awaitable SendGameData()
     {
+        // Game
         string payload = CollateRecords(new TelemetryData[] {_currentGame});
         string result = await TelemetrySender.Instance.SendTelemetry(payload, TDGame.tableName);
         RecordsListSchema recordsPosted = JsonUtility.FromJson<RecordsListSchema>(result);
         if (recordsPosted != null)
         {
             int gameId = recordsPosted.records[0].id;
-            foreach (TDPlayer player in _players.Values)
+            foreach (TDPlayer player in players.Values)
             {
                 player.gameId = gameId;
             }
 
-            payload = CollateRecords(_players.Values.ToArray());
-            result = await TelemetrySender.Instance.SendTelemetry(payload, TDPlayer.tableName);
+            //Rounds
+            payload = CollateRecords(rounds.Values.ToArray());
+            result = await TelemetrySender.Instance.SendTelemetry(payload, TDRound.tableName);
             if (result != null)
             {
-                Debug.Log("All game data sent");
+                Debug.Log("All round data sent");
+
+                //Players
+                payload = CollateRecords(players.Values.ToArray());
+                result = await TelemetrySender.Instance.SendTelemetry(payload, TDPlayer.tableName);
+                if (result != null)
+                {
+                    Debug.Log("All player data sent");
+
+                    //Players Actions
+                    payload = CollateRecords(actions.Values.ToArray());
+                    result = await TelemetrySender.Instance.SendTelemetry(payload, TDActions.tableName);
+                    if (result != null)
+                    {
+                        Debug.Log("All actions data sent");
+
+                        //Ball Exchanges
+                        payload = CollateRecords(ballExchanges.Values.ToArray());
+                        result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallExchange.tableName);
+                        if (result != null)
+                        {
+                            Debug.Log("All ball exchanges data sent");
+
+                            //Ball Hits
+                            payload = CollateRecords(ballHits.Values.ToArray());
+                            result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallHit.tableName);
+                            if (result != null)
+                            {
+                                Debug.Log("All ball hits data sent");
+                            }
+                            else
+                            {
+                                Debug.LogError("Could not send ball hits data");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Could not send ball exchanges data");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Could not send actions data");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Could not send player data");
+                }
             }
             else
             {
-                Debug.LogError("Could not send player data");
+                Debug.LogError("Could not send round data");
             }
         }
         else
