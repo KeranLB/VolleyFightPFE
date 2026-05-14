@@ -231,12 +231,13 @@ public class Ball : MonoBehaviour
     {
         currentSpeedLevelIndex = Mathf.Clamp(i, 0, _speedLevels.Count - 1);
         currentSpeedLevel = _speedLevels[currentSpeedLevelIndex];
-        _maxSpeed = currentSpeedLevel.speedMultiplier * baseSpeed;
+        _maxSpeed = GetFinalSpeed();
         OnSpeedLevelChanged?.Invoke(currentSpeedLevelIndex);
     }
 
     public void Bounce(RaycastHit hitInfo)
     {
+        OnBallBounce?.Invoke();
         Vector3 sphereCenter = hitInfo.point + hitInfo.normal * 0.5f;
         ChangeFramePosition(sphereCenter);
         ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, hitInfo.normal));
@@ -251,6 +252,7 @@ public class Ball : MonoBehaviour
 
     public void Bunt(Player player)
     {
+        OnBallPlayer?.Invoke(player);
         StopSimulation(player.transform.position);
         GetHit(Vector3.up);
         ChangeSpeedLevel(1);
@@ -281,6 +283,11 @@ public class Ball : MonoBehaviour
     public float GetFinalDamage()
     {
         return baseDamage * currentSpeedLevel.damageMultiplier;
+    }
+
+    public float GetFinalSpeed()
+    {
+        return baseSpeed * currentSpeedLevel.speedMultiplier;
     }
     
     void GetBlocked(Vector3 target)

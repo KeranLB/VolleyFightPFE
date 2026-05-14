@@ -7,8 +7,8 @@ public class HealthZone : PlayerHitZone
         if(ball.teamPossess != player.team)
         {
             base.OnTrajectory(ball, hitInfo);
-            ball.Bunt(player);
             player.playerLife.TakeDamage(ball.GetFinalDamage());
+            ball.Bunt(player);
         }
         else
         {

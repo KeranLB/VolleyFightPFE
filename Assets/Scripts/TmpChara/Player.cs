@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public PlayerMovement playerMovement;
 
+    public int playerId;
+
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();

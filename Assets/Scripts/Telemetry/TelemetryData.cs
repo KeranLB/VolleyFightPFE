@@ -11,6 +11,11 @@ public abstract class TelemetryData
     {
         return JsonUtility.ToJson(this);
     }
+
+    public virtual void ConsolidateData()
+    {
+        
+    }
 }
 
 [Serializable]
@@ -34,10 +39,15 @@ public class TDRound : TelemetryData
         set{}
     }
 
-    public string roundId;
+    public int gameId;
+    public int roundId;
     public int startTime;
     public int endTime;
-    public int gameId;
+
+    public override void ConsolidateData()
+    {
+        gameId = TelemetryManager.gameID;
+    }
 }
 
 [Serializable]
@@ -49,37 +59,50 @@ public class TDPlayer : TelemetryData
         set {}
     }
 
-    public string playerId;
+    public int gameId;
+    public int roundId;
+    public int playerId;
     public string controllerType;
     public int jumps;
     public int doubleJumps;
-    public int timeAlive;
-    public int healthRemaining;
-    public int airTime;
-    public int slowFallTime;
-    public int seeingBallTime;
-    public int rounId;
-    public int gameId;
+    public float timeAlive;
+    public float healthRemaining;
+    public float airTime;
+    public float slowFallTime;
+    public float seeingBallTime;
+    public string team;
+    
+    public override void ConsolidateData()
+    {
+        gameId = TelemetryManager.gameID;
+    }
 }
 
 [Serializable]
-public class TDActions : TelemetryData
+public class TDAction : TelemetryData
 {
     public static string tableName
     {
-        get => "Player";
+        get => "Action";
         set {}
     }
 
-    public string actionId;
-    public string actiionType;
-    public bool hitBall;
-    public bool grouded;
-    public bool getHitAfter;
-    public int ballSpeed;
-    public int time;
+    public int gameId;
     public int roundId;
     public int playerId;
+    public int actionId;
+    public string actionType;
+    public bool hitBall;
+    public bool hitBallOverlap;
+    public bool grounded;
+    public int ballSpeed;
+    public float ballSpeedValue;
+    public int time;
+    
+    public override void ConsolidateData()
+    {
+        gameId = TelemetryManager.gameID;
+    }
 }
 
 [Serializable]
@@ -91,13 +114,20 @@ public class TDBallExchange : TelemetryData
         set{}
     }
 
-    public string exchangeId;
-    public int speedWhenHit;
-    public int damageWhenHit;
-    public bool killedPlayer;
-    public int duration;
     public int gameId;
-    public int rounId;
+    public int roundId;
+    public int exchangeId;
+    public int playerId;
+    public int speed;
+    public float speedWhenHit;
+    public float damageWhenHit;
+    public bool killedPlayer;
+    public float duration;
+    
+    public override void ConsolidateData()
+    {
+        gameId = TelemetryManager.gameID;
+    }
 }
 
 [Serializable]
@@ -109,16 +139,22 @@ public class TDBallHit : TelemetryData
         set{}
     }
 
-    public string playerId;
-    public string hitId;
-    public int speed;
-    public string team;
-    public bool teamSwitch;
-    public int rebounds;
-    public int time;
     public int gameId;
     public int roundId;
     public int exchangeId;
+    public int hitId;
+    public int playerId;
+    public int speed;
+    public float speedWhenHit;
+    public string team;
+    public bool teamSwitch;
+    public int bounces;
+    public int time;
+    
+    public override void ConsolidateData()
+    {
+        gameId = TelemetryManager.gameID;
+    }
 }
 
 [Serializable]

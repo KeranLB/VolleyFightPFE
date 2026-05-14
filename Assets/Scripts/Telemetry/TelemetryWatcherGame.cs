@@ -2,46 +2,58 @@ using UnityEngine;
 
 public class TelemetryWatcherGame : MonoBehaviour
 {
-    public float gameStartTime;
-    public float gameEndTime;
-    public float currentRoundStartTime;
-    public float currentRoundEndTime;
+    public TDGame currentGame;
+    public TDRound currentRound;
     
     private void OnEnable()
     {
-        GameManager.OnRoundStarted += OnRoundStarted;
-        GameManager.OnRoundEnded += OnRoundEnded;
-        GameManager.OnGameStarted += OnGameStarted;
-        GameManager.OnGameEnded += OnGameEnded;
+        TelemetryManager.OnRoundStartedTelemetry += OnRoundStarted;
+        TelemetryManager.OnRoundEndedTelemetry += OnRoundEnded;
+        TelemetryManager.OnGameStartedTelemetry += OnGameStarted;
+        TelemetryManager.OnGameEndedTelemetry += OnGameEnded;
     }
     
     private void OnDisable()
     {
-        GameManager.OnRoundStarted += OnRoundStarted;
-        GameManager.OnRoundEnded += OnRoundEnded;
-        GameManager.OnGameStarted += OnGameStarted;
-        GameManager.OnGameEnded += OnGameEnded;
+        TelemetryManager.OnRoundStartedTelemetry -= OnRoundStarted;
+        TelemetryManager.OnRoundEndedTelemetry -= OnRoundEnded;
+        TelemetryManager.OnGameStartedTelemetry -= OnGameStarted;
+        TelemetryManager.OnGameEndedTelemetry -= OnGameEnded;
     }
 
     private void OnRoundStarted()
     {
-        currentRoundStartTime = Time.time;
+        InitRound();
     }
 
     private void OnRoundEnded()
     {
-        currentRoundEndTime = Time.time;
+        currentRound.endTime = TelemetryManager.GetUnixTime();
         // Record
     }
 
     private void OnGameStarted()
     {
-        gameStartTime = Time.time;
+        InitGame();
     }
 
     private void OnGameEnded()
     {
-        gameEndTime = Time.time;
+        currentGame.endTime = TelemetryManager.GetUnixTime();
         // Record
+    }
+
+    public void InitGame()
+    {
+        currentGame = new TDGame();
+        currentGame.startTime = TelemetryManager.GetUnixTime();
+    }
+
+    public void InitRound()
+    {
+        currentRound = new TDRound();
+        currentRound.roundId = TelemetryManager.roundID;
+        currentRound.startTime = TelemetryManager.GetUnixTime();
+        
     }
 }

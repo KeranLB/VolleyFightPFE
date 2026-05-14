@@ -10,28 +10,27 @@ public class GameManager : MonoBehaviour
     private Ball _ball;
     private Vector3 _ballSpawnPosition;
     private Teams _ballStartTeam;
-    private FieldForce _fieldForce;
 
     public static event Action OnGameStarted;
+    public static event Action OnGameEnded;
     public static event Action OnRoundStarted;
     public static event Action OnRoundEnded;
-    public static event Action OnGameEnded;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Init players
         _players = FindObjectsByType<Player>(FindObjectsSortMode.InstanceID).ToList();
+        int playerId = 1;
         foreach (var player in _players)
         {
             _playersSpawnPositions.Add(player, player.transform.position);
+            player.playerId = playerId++;
         }
         // Init ball
         _ball = FindFirstObjectByType<Ball>();
         _ballSpawnPosition = _ball.transform.position;
         _ballStartTeam = _ball.teamPossess;
-        // Init FieldForce
-        _fieldForce = FindFirstObjectByType<FieldForce>();
         
         // Start round
         OnGameStarted?.Invoke();
@@ -67,8 +66,6 @@ public class GameManager : MonoBehaviour
         _ball.ChangeTeam(_ballStartTeam);
         _ball.ChangeSpeedLevel(0);
         _ball.GetHit(Vector3.down);
-        // Reinit field force
-        _fieldForce?.ChangeTeam(Teams.Neutral);
         
         OnRoundStarted?.Invoke();
     }

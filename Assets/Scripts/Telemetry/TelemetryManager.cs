@@ -6,13 +6,24 @@ using UnityEngine;
 public class TelemetryManager : MonoBehaviour
 {
     public static TelemetryManager Instance;
+    public static int gameID;
+    public static int roundID;
 
     private TDGame _currentGame;
     public Dictionary<int, TDRound> rounds;
     public Dictionary<int, TDPlayer> players;
-    public Dictionary<int, TDActions> actions;
+    public Dictionary<int, TDAction> actions;
     public Dictionary<int, TDBallExchange> ballExchanges;
     public Dictionary<int, TDBallHit> ballHits;
+
+    #region Delegates
+
+    public static event Action OnGameStartedTelemetry;
+    public static event Action OnGameEndedTelemetry;
+    public static event Action OnRoundStartedTelemetry;
+    public static event Action OnRoundEndedTelemetry;
+
+    #endregion
 
     private void Awake()
     {
@@ -28,61 +39,29 @@ public class TelemetryManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnGameStarted += StartNewGame;
-        GameManager.OnGameEnded += EndGame;
-        //PlayerMovement.OnPlayerJump += OnPlayerJump;
-        //PlayerMovement.OnPlayerDoubleJump += OnPlayerDoubleJump;
+        GameManager.OnGameStarted += OnGameStarted;
+        GameManager.OnGameEnded += OnGameEnded;
+        GameManager.OnRoundStarted += OnRoundStarted;
+        GameManager.OnRoundEnded += OnRoundEnded;
     }
     
     private void OnDisable()
     {
-        GameManager.OnGameStarted -= StartNewGame;
-        GameManager.OnGameEnded -= EndGame;
-        //PlayerMovement.OnPlayerJump -= OnPlayerJump;
-        //PlayerMovement.OnPlayerDoubleJump -= OnPlayerDoubleJump;
+        GameManager.OnGameStarted -= OnGameStarted;
+        GameManager.OnGameEnded -= OnGameEnded;
+        GameManager.OnRoundStarted -= OnRoundStarted;
+        GameManager.OnRoundEnded -= OnRoundEnded;
     }
 
-    public void StartNewGame()
+    private void OnGameStarted()
     {
-        // Init _currentGame
-        _currentGame = new TDGame();
-        _currentGame.startTime = GetUnixTime();
-
-        // Init Dictionary
-        rounds = new Dictionary<int, TDRound>();
-        players = new Dictionary<int, TDPlayer>();
-        actions = new Dictionary<int, TDActions>();
-        ballExchanges = new Dictionary<int, TDBallExchange>();
-        ballHits = new Dictionary<int, TDBallHit>();
-        
-        int playerId = 1;
-        
-        foreach (var player in FindObjectsByType<Player>(FindObjectsSortMode.InstanceID))
-        {
-            TDPlayer newPlayer = new TDPlayer();
-            // Player ID
-            newPlayer.playerId = (playerId++).ToString();
-            // Controller type
-            if (player.TryGetComponent(out HumanPlayerInput humanPlayerInput) && humanPlayerInput.enabled)
-            {
-                newPlayer.controllerType = humanPlayerInput.isGamepad ? "Gamepad" : "Keyboard";
-            }
-            else if(player.TryGetComponent(out BotPlayerInput botPlayerInput) && botPlayerInput.enabled)
-            {
-                newPlayer.controllerType = "Bot";
-            }
-            else
-            {
-                continue;
-            }
-            // Index player
-            players.Add(player.gameObject.GetInstanceID(), newPlayer);
-        }
+        StartNewGame();
+        OnGameStartedTelemetry?.Invoke();
     }
 
-    public void EndGame()
+    public void OnGameEnded()
     {
-        _currentGame.endTime = GetUnixTime();
+        OnGameEndedTelemetry?.Invoke();
         if (TelemetrySettings.IsTelemetryEnabled())
         {
             SendGameData();
@@ -94,16 +73,27 @@ public class TelemetryManager : MonoBehaviour
         }
     }
     
-    private void OnPlayerJump(int playerId)
+    private void OnRoundStarted()
     {
-        TDPlayer player = players[playerId];
-        player.jumps++;
+        roundID++;
+        OnRoundStartedTelemetry?.Invoke();
+    }
+
+    private void OnRoundEnded()
+    {
+        OnRoundEndedTelemetry?.Invoke();
     }
     
-    private void OnPlayerDoubleJump(int playerId)
+    public void StartNewGame()
     {
-        TDPlayer player = players[playerId];
-        player.doubleJumps++;
+        roundID = 1;
+
+        // Init Dictionary
+        rounds = new Dictionary<int, TDRound>();
+        players = new Dictionary<int, TDPlayer>();
+        actions = new Dictionary<int, TDAction>();
+        ballExchanges = new Dictionary<int, TDBallExchange>();
+        ballHits = new Dictionary<int, TDBallHit>();
     }
 
     private async Awaitable SendGameData()
@@ -136,7 +126,7 @@ public class TelemetryManager : MonoBehaviour
 
                     //Players Actions
                     payload = CollateRecords(actions.Values.ToArray());
-                    result = await TelemetrySender.Instance.SendTelemetry(payload, TDActions.tableName);
+                    result = await TelemetrySender.Instance.SendTelemetry(payload, TDAction.tableName);
                     if (result != null)
                     {
                         Debug.Log("All actions data sent");
@@ -197,6 +187,7 @@ public class TelemetryManager : MonoBehaviour
         string res = "{\"records\":[";
         foreach (var data in dataArray)
         {
+            data.ConsolidateData();
             res += EncapsulateRecord(data) + ",";
         }
         res = res.Remove(res.Length - 1, 1);

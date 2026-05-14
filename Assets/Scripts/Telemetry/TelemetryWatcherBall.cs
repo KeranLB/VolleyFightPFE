@@ -1,21 +1,23 @@
-using System;
 using UnityEngine;
 
 public class TelemetryWatcherBall : MonoBehaviour
 {
     public Ball ball;
 
-    public int bounces;
     public float exchangeStartTime;
     public int exchangeId;
+    public int hitId;
     public Teams lastTeamTouched;
-    public Player lastPlayerTouched;
+    public TDBallExchange currentBallExchange;
+    public TDBallHit currentBallHit;
 
     private void OnEnable()
     {
         ball.OnBallHit += OnBallHit;
         ball.OnBallBounce += OnBallBounce;
         ball.OnBallPlayer += OnBallPlayer;
+        
+        TelemetryManager.OnRoundStartedTelemetry += OnRoundStarted;
     }
 
     private void OnDisable()
@@ -23,45 +25,72 @@ public class TelemetryWatcherBall : MonoBehaviour
         ball.OnBallHit -= OnBallHit;
         ball.OnBallBounce -= OnBallBounce;
         ball.OnBallPlayer -= OnBallPlayer;
+        
+        TelemetryManager.OnRoundStartedTelemetry -= OnRoundStarted;
     }
 
-    private void Start()
+    private void OnRoundStarted()
     {
-        exchangeId = 0;
+        exchangeId = 1;
+        InitExchange();
     }
 
     private void InitExchange()
     {
-        bounces = 0;
+        currentBallExchange = new TDBallExchange();
+        currentBallExchange.roundId = TelemetryManager.roundID;
+        currentBallExchange.exchangeId = exchangeId;
+        
         exchangeStartTime = Time.time;
-        exchangeId++;
         lastTeamTouched = ball.teamPossess;
-        lastPlayerTouched = null;
+        
+        exchangeId++;
+        
+        hitId = 1;
+        InitHit();
+    }
+
+    private void InitHit()
+    {
+        currentBallHit = new TDBallHit();
+        currentBallHit.roundId = TelemetryManager.roundID;
+        currentBallHit.exchangeId = exchangeId;
+        currentBallHit.hitId = hitId;
+        currentBallHit.bounces = 0;
+        
+        hitId++;
     }
 
     private void OnBallHit(Player player)
     {
-        var playerId = player.gameObject.GetInstanceID();
-        var speed = ball.currentSpeedLevelIndex;
-        var time = Time.time;
-        var switchTeam = lastTeamTouched != player.team;
-        lastPlayerTouched = player;
+        currentBallHit.playerId = player.playerId; 
+        currentBallHit.time = TelemetryManager.GetUnixTime();
+        currentBallHit.speed = ball.currentSpeedLevelIndex;
+        currentBallHit.speedWhenHit = ball.GetFinalSpeed();
+        currentBallHit.team = player.team.ToString();
+        currentBallHit.teamSwitch = lastTeamTouched != player.team;
+        currentBallHit.time = TelemetryManager.GetUnixTime();
+        // Record
+        
         lastTeamTouched = player.team;
+        
+        InitHit();
     }
 
     private void OnBallBounce()
     {
-        bounces++;
+        currentBallHit.bounces++;
     }
 
     private void OnBallPlayer(Player player)
     {
-        var playerId = player.gameObject.GetInstanceID();
-        var speed = ball.currentSpeedLevelIndex;
-        var time = Time.time;
-        var exchangeTime = time - exchangeStartTime;
-        lastPlayerTouched = player;
-        lastTeamTouched = player.team;
+        currentBallExchange.playerId = player.playerId;
+        currentBallExchange.speed = ball.currentSpeedLevelIndex;
+        currentBallExchange.speedWhenHit = ball.GetFinalSpeed();
+        currentBallExchange.damageWhenHit = ball.GetFinalDamage();
+        currentBallExchange.killedPlayer = player.playerLife.IsAlive();
+        currentBallExchange.duration = Time.time - exchangeStartTime;
+        // Record
     }
     
 }

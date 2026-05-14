@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class TelemetryWatcherPlayer : MonoBehaviour
 {
@@ -8,21 +6,13 @@ public class TelemetryWatcherPlayer : MonoBehaviour
     private PlayerActions _playerActions;
     private PlayerMovement _playerMovement;
     private PlayerLife _playerLife;
-    private int _playerId;
 
-    public float airTime;
-    public float slowFallTime;
     public float roundStartTime;
     public float deathTime;
-    public int jumps;
-    public int doubleJumps;
-
-    public float currentActionStartTime;
-    public AbilityType currentAbilityType;
-    public bool currentActionStartedOnGround;
-    public bool currentActionHitBall;
-    public bool currentActionHitBallOverlap;
-    public int currentActionBallSpeed;
+    public int actionId;
+    
+    public TDPlayer currentPlayer;
+    public TDAction currentAction;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
@@ -30,7 +20,6 @@ public class TelemetryWatcherPlayer : MonoBehaviour
         _playerActions = player.playerActions;
         _playerMovement = player.playerMovement;
         _playerLife = player.playerLife;
-        _playerId = player.gameObject.GetInstanceID();
     }
 
     private void OnEnable()
@@ -67,25 +56,22 @@ public class TelemetryWatcherPlayer : MonoBehaviour
 
     private void OnRoundStarted()
     {
-        airTime = 0f;
-        slowFallTime = 0f;
         deathTime = 0f;
-        jumps = 0;
-        doubleJumps = 0;
         roundStartTime = Time.time;
+        InitPlayer();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if(!_playerLife.IsAlive()) return;
+        if(!_playerLife.IsAlive() || currentPlayer==null) return;
         
         if (!_playerMovement.isGrounded)
         {
-            airTime += Time.deltaTime;
+            currentPlayer.airTime += Time.deltaTime;
             if (_playerMovement.isSlowFalling)
             {
-                slowFallTime += Time.deltaTime;
+                currentPlayer.slowFallTime += Time.deltaTime;
             }
         }
     }
@@ -97,29 +83,31 @@ public class TelemetryWatcherPlayer : MonoBehaviour
 
     private void OnPlayerJump()
     {
-        jumps++;
+        currentPlayer.jumps++;
     }
 
     private void OnPlayerDoubleJump()
     {
-        doubleJumps++;
+        currentPlayer.doubleJumps++;
     }
 
     private void OnPlayerActionStart()
     {
-        currentActionStartTime = Time.time;
-        currentActionStartedOnGround = _playerMovement.isGrounded;
-        currentAbilityType = _playerActions.activeAbility.abilityType;
-        currentActionHitBall = false;
-        currentActionHitBallOverlap = false;
-        currentActionBallSpeed = 0;
+        currentAction.grounded = _playerMovement.isGrounded;
+        currentAction.actionType = _playerActions.activeAbility.abilityType.ToString();
+        currentAction.hitBall = false;
+        currentAction.hitBallOverlap = false;
+        currentAction.ballSpeed = -1;
+        currentAction.ballSpeedValue = -1;
+        currentAction.time = TelemetryManager.GetUnixTime();
     }
 
     private void OnPlayerAttackSuccess(Ball ball, bool isOverlap)
     {
-        currentActionBallSpeed = ball.currentSpeedLevelIndex;
-        currentActionHitBall = true;
-        currentActionHitBallOverlap = isOverlap;
+        currentAction.ballSpeed = ball.currentSpeedLevelIndex;
+        currentAction.ballSpeedValue = ball.GetFinalSpeed();
+        currentAction.hitBall = true;
+        currentAction.hitBallOverlap = isOverlap;
     }
 
     private void OnPlayerActionEnd()
@@ -129,8 +117,42 @@ public class TelemetryWatcherPlayer : MonoBehaviour
 
     private void OnRoundEnded()
     {
-        var remaingingHealth = _playerLife.currentHealth;
-        var timeAlive = (deathTime > 0 ? deathTime : Time.time) - roundStartTime;  
+        currentPlayer.healthRemaining = _playerLife.currentHealth;
+        currentPlayer.timeAlive = (deathTime > 0 ? deathTime : Time.time) - roundStartTime;  
         // Record
+    }
+
+    private void InitPlayer()
+    {
+        currentPlayer = new TDPlayer();
+        currentPlayer.roundId = TelemetryManager.roundID;
+        currentPlayer.playerId = player.playerId;
+        if (player.TryGetComponent(out HumanPlayerInput humanPlayerInput) && humanPlayerInput.enabled)
+        {
+            currentPlayer.controllerType = humanPlayerInput.isGamepad ? "Gamepad" : "Keyboard";
+        }
+        else if(player.TryGetComponent(out BotPlayerInput botPlayerInput) && botPlayerInput.enabled)
+        {
+            currentPlayer.controllerType = "Bot";
+        }
+        currentPlayer.jumps = 0;
+        currentPlayer.doubleJumps = 0;
+        currentPlayer.airTime = 0;
+        currentPlayer.slowFallTime = 0;
+        currentPlayer.seeingBallTime = 0;
+        currentPlayer.team = player.team.ToString();
+
+        actionId = 1;
+        InitAction();
+    }
+
+    private void InitAction()
+    {
+        currentAction = new TDAction();
+        currentAction.roundId = TelemetryManager.roundID;
+        currentAction.playerId = player.playerId;
+        currentAction.actionId = actionId;
+        
+        actionId++;
     }
 }
