@@ -641,6 +641,11 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   LifeBar: {fileID: 4030818723378222432}
+  LifeBars:
+  - {fileID: 4030818723378222432}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &3870563267189737242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -687,6 +692,8 @@ MonoBehaviour:
   _groundCheckRaycastLength: 0.1
   _maxXAngle: 30
   _maxXRotationPerFrame: 45
+  isOverriden: 0
+  overrideVelocity: {x: 0, y: 0, z: 0}
 --- !u!54 &1050730542087834307
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -749,7 +756,8 @@ MonoBehaviour:
   holdsJump: 0
   pressedJump: 0
   releasedJump: 0
-  pressedAttack: 0
+  pressedAttack1: 0
+  pressedAttack2: 0
   pressedBlock: 0
 --- !u!114 &6776770826193777988
 MonoBehaviour:
@@ -768,6 +776,11 @@ MonoBehaviour:
   _blockDuration: 0.2
   _attackZone: {fileID: 8578066711503218583}
   _blockZone: {fileID: 151278546864466687}
+  _animator: {fileID: 0}
+  attack1: {fileID: 0}
+  attack2: {fileID: 0}
+  block: {fileID: 0}
+  activeAbility: {fileID: 0}
 --- !u!114 &6625929015242415875
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerLife : MonoBehaviour
@@ -8,6 +10,7 @@ public class PlayerLife : MonoBehaviour
     public float currentHealth;
 
     public Image LifeBar;
+    public List<Image> LifeBars;
 
     #region Delegates
 
@@ -19,7 +22,11 @@ public class PlayerLife : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        LifeBar.fillAmount = 1;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = 1;
+        }
+        //LifeBar.fillAmount = 1;
     }
 
     public void TakeDamage(float damage)
@@ -30,7 +37,11 @@ public class PlayerLife : MonoBehaviour
     public void ChangeHealth(float health)
     {
         currentHealth = Mathf.Clamp(health, 0, maxHealth);
-        LifeBar.fillAmount = currentHealth/maxHealth;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = currentHealth/maxHealth;
+        }
+        //LifeBar.fillAmount = currentHealth/maxHealth;
         if (currentHealth <= 0)
         {
             Die();
@@ -46,7 +57,11 @@ public class PlayerLife : MonoBehaviour
     public void FullHeal()
     {
         ChangeHealth(maxHealth);
-        LifeBar.fillAmount = 1;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = 1;
+        }
+        //LifeBar.fillAmount = 1;
     }
 
     public bool IsAlive()
