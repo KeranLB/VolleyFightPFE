@@ -249,10 +249,8 @@ public class Ball : MonoBehaviour
     public void Bunt(Player player)
     {
         StopSimulation(player.transform.position);
-        ChangeFrameDirection(Vector3.up);
-        _direction = Vector3.up;
-        isSwitchingSide = false;
-        _realSpeed = _passSpeed;
+        GetHit(Vector3.up);
+        ChangeSpeedLevel(1);
         _currentFrameCollisions.Add(player.transform.position);
     }
     
