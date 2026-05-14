@@ -76,6 +76,6 @@ public class AttackZone : PlayerHitZone
         _hasTouchedBall = true;
         OnPlayerAttackSuccess?.Invoke(ball, true);
         base.OnOverlap(ball);
-        ball.GetHit(GetOutDirection(), speedLevelChange);
+        ball.GetHit(GetOutDirection(), speedLevelChange, player);
     }
 }

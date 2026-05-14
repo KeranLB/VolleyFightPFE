@@ -63,16 +63,16 @@ public class TelemetryWatcherBall : MonoBehaviour
 
     private void OnBallHit(Player player)
     {
-        currentBallHit.playerId = player.playerId; 
+        currentBallHit.playerId = player?.playerId ?? 0; 
         currentBallHit.time = TelemetryManager.GetUnixTime();
         currentBallHit.speed = ball.currentSpeedLevelIndex;
         currentBallHit.speedWhenHit = ball.GetFinalSpeed();
-        currentBallHit.team = player.team.ToString();
-        currentBallHit.teamSwitch = lastTeamTouched != player.team;
+        currentBallHit.team = (player?.team ?? Teams.Neutral).ToString();
+        currentBallHit.teamSwitch = lastTeamTouched != (player?.team ?? lastTeamTouched);
         currentBallHit.time = TelemetryManager.GetUnixTime();
         // Record
         
-        lastTeamTouched = player.team;
+        lastTeamTouched = player?.team ?? lastTeamTouched;
         
         InitHit();
     }
