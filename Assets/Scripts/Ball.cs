@@ -241,7 +241,9 @@ public class Ball : MonoBehaviour
         _realSpeed = _maxSpeed;
         _currentFrameCollisions.Add(sphereCenter);
         isSwitchingSide = false;
-        _vfxImpact.SendEvent("Bounce");
+        VFXEventAttribute attribute = new VFXEventAttribute(_vfxImpact.CreateVFXEventAttribute());
+        attribute.SetVector3("position", _currentFramePosition);
+        _vfxImpact.SendEvent("Bounce", attribute);
     }
 
     public void Bunt(Player player)
