@@ -26,11 +26,7 @@ public class TelemetryManager : MonoBehaviour
     {
         GameManager.OnGameStarted += StartNewGame;
         GameManager.OnGameEnded += EndGame;
-        PlayerActions.OnPlayerAttack += OnPlayerAttack;
-        AttackZone.OnPlayerAttackSuccess += OnPlayerAttackSuccess;
-        PlayerActions.OnPlayerBlock += OnPlayerBlock;
-        BlockZone.OnPlayerBlockSuccess += OnPlayerBlockSuccess;
-        PlayerMovement.OnPlayerJump += OnPlayerJump;
+         PlayerMovement.OnPlayerJump += OnPlayerJump;
         PlayerMovement.OnPlayerDoubleJump += OnPlayerDoubleJump;
     }
     
@@ -38,10 +34,6 @@ public class TelemetryManager : MonoBehaviour
     {
         GameManager.OnGameStarted -= StartNewGame;
         GameManager.OnGameEnded -= EndGame;
-        PlayerActions.OnPlayerAttack -= OnPlayerAttack;
-        AttackZone.OnPlayerAttackSuccess -= OnPlayerAttackSuccess;
-        PlayerActions.OnPlayerBlock -= OnPlayerBlock;
-        BlockZone.OnPlayerBlockSuccess -= OnPlayerBlockSuccess;
         PlayerMovement.OnPlayerJump -= OnPlayerJump;
         PlayerMovement.OnPlayerDoubleJump -= OnPlayerDoubleJump;
     }
@@ -65,11 +57,11 @@ public class TelemetryManager : MonoBehaviour
             // Controller type
             if (player.TryGetComponent(out HumanPlayerInput humanPlayerInput) && humanPlayerInput.enabled)
             {
-                newPlayer.controller = humanPlayerInput.isGamepad ? "Gamepad" : "Keyboard";
+                newPlayer.controllerType = humanPlayerInput.isGamepad ? "Gamepad" : "Keyboard";
             }
             else if(player.TryGetComponent(out BotPlayerInput botPlayerInput) && botPlayerInput.enabled)
             {
-                newPlayer.controller = "Bot";
+                newPlayer.controllerType = "Bot";
             }
             else
             {
@@ -92,30 +84,6 @@ public class TelemetryManager : MonoBehaviour
             Debug.Log("Telemetry disabled, skipping sending game data");
             StartNewGame();
         }
-    }
-
-    private void OnPlayerAttack(int playerId)
-    {
-        TDPlayer player = _players[playerId];
-        player.attacks++;
-    }
-
-    private void OnPlayerAttackSuccess(int playerId)
-    {
-        TDPlayer player = _players[playerId];
-        player.attacksSuccess++;
-    }
-    
-    private void OnPlayerBlock(int playerId)
-    {
-        TDPlayer player = _players[playerId];
-        player.blocks++;
-    }
-
-    private void OnPlayerBlockSuccess(int playerId)
-    {
-        TDPlayer player = _players[playerId];
-        player.blocksSuccess++;
     }
     
     private void OnPlayerJump(int playerId)
