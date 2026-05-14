@@ -34,8 +34,8 @@ public class TelemetryWatcherPlayer : MonoBehaviour
         player.playerActions.attack2.attackZone.OnPlayerAttackSuccess += OnPlayerAttackSuccess;
         player.playerActions.block.attackZone.OnPlayerAttackSuccess += OnPlayerAttackSuccess;
 
-        GameManager.OnRoundStarted += OnRoundStarted;
-        GameManager.OnRoundEnded += OnRoundEnded;
+        TelemetryManager.OnRoundStartedTelemetry += OnRoundStarted;
+        TelemetryManager.OnRoundEndedTelemetry += OnRoundEnded;
     }
 
     private void OnDisable()
@@ -50,15 +50,8 @@ public class TelemetryWatcherPlayer : MonoBehaviour
         player.playerActions.attack2.attackZone.OnPlayerAttackSuccess -= OnPlayerAttackSuccess;
         player.playerActions.block.attackZone.OnPlayerAttackSuccess -= OnPlayerAttackSuccess;
         
-        GameManager.OnRoundStarted -= OnRoundStarted;
-        GameManager.OnRoundEnded -= OnRoundEnded;
-    }
-
-    private void OnRoundStarted()
-    {
-        deathTime = 0f;
-        roundStartTime = Time.time;
-        InitPlayer();
+        TelemetryManager.OnRoundStartedTelemetry -= OnRoundStarted;
+        TelemetryManager.OnRoundEndedTelemetry -= OnRoundEnded;
     }
 
     // Update is called once per frame
@@ -75,6 +68,22 @@ public class TelemetryWatcherPlayer : MonoBehaviour
             }
         }
     }
+    
+    private void OnRoundStarted()
+    {
+        deathTime = 0f;
+        roundStartTime = Time.time;
+        InitPlayer();
+    }
+
+    private void OnRoundEnded()
+    {
+        currentPlayer.healthRemaining = _playerLife.currentHealth;
+        currentPlayer.timeAlive = (deathTime > 0 ? deathTime : Time.time) - roundStartTime;  
+        
+        // Write record
+        TelemetryManager.Instance.players.Add(currentPlayer);
+    }
 
     private void OnPlayerDeath()
     {
@@ -83,16 +92,22 @@ public class TelemetryWatcherPlayer : MonoBehaviour
 
     private void OnPlayerJump()
     {
+        if (!_playerLife.IsAlive()) return;
+        
         currentPlayer.jumps++;
     }
 
     private void OnPlayerDoubleJump()
     {
+        if (!_playerLife.IsAlive()) return;
+        
         currentPlayer.doubleJumps++;
     }
 
     private void OnPlayerActionStart()
     {
+        if (!_playerLife.IsAlive()) return;
+        
         currentAction.grounded = _playerMovement.isGrounded;
         currentAction.actionType = _playerActions.activeAbility.abilityType.ToString();
         currentAction.hitBall = false;
@@ -112,14 +127,12 @@ public class TelemetryWatcherPlayer : MonoBehaviour
 
     private void OnPlayerActionEnd()
     {
-        // Record
-    }
-
-    private void OnRoundEnded()
-    {
-        currentPlayer.healthRemaining = _playerLife.currentHealth;
-        currentPlayer.timeAlive = (deathTime > 0 ? deathTime : Time.time) - roundStartTime;  
-        // Record
+        if (!_playerLife.IsAlive()) return;
+        
+        // Write record
+        TelemetryManager.Instance.actions.Add(currentAction);
+        
+        InitAction();
     }
 
     private void InitPlayer()

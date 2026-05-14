@@ -29,7 +29,9 @@ public class TelemetryWatcherGame : MonoBehaviour
     private void OnRoundEnded()
     {
         currentRound.endTime = TelemetryManager.GetUnixTime();
-        // Record
+        
+        // Write record
+        TelemetryManager.Instance.rounds.Add(currentRound);
     }
 
     private void OnGameStarted()
@@ -40,7 +42,9 @@ public class TelemetryWatcherGame : MonoBehaviour
     private void OnGameEnded()
     {
         currentGame.endTime = TelemetryManager.GetUnixTime();
-        // Record
+        
+        // Write record
+        TelemetryManager.Instance.game = currentGame;
     }
 
     public void InitGame()

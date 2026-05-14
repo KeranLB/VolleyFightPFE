@@ -662,7 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae908b345eda1ae42ac2fca336314181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PABlock
-  abilityType: 0
+  abilityType: 2
   startupTime: 0
   activeTime: 0.5
   recoveryTime: 0.2
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae561f3f436aaa4e86fcaca576faaff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PADivekick
-  abilityType: 0
+  abilityType: 1
   startupTime: 0
   activeTime: 0.3
   recoveryTime: 0.1

@@ -66,11 +66,13 @@ public class TelemetryWatcherBall : MonoBehaviour
         currentBallHit.playerId = player?.playerId ?? 0; 
         currentBallHit.time = TelemetryManager.GetUnixTime();
         currentBallHit.speed = ball.currentSpeedLevelIndex;
-        currentBallHit.speedWhenHit = ball.GetFinalSpeed();
+        currentBallHit.speedValue = ball.GetFinalSpeed();
         currentBallHit.team = (player?.team ?? Teams.Neutral).ToString();
         currentBallHit.teamSwitch = lastTeamTouched != (player?.team ?? lastTeamTouched);
         currentBallHit.time = TelemetryManager.GetUnixTime();
-        // Record
+        
+        // Write record
+        TelemetryManager.Instance.ballHits.Add(currentBallHit);
         
         lastTeamTouched = player?.team ?? lastTeamTouched;
         
@@ -88,9 +90,13 @@ public class TelemetryWatcherBall : MonoBehaviour
         currentBallExchange.speed = ball.currentSpeedLevelIndex;
         currentBallExchange.speedWhenHit = ball.GetFinalSpeed();
         currentBallExchange.damageWhenHit = ball.GetFinalDamage();
-        currentBallExchange.killedPlayer = player.playerLife.IsAlive();
+        currentBallExchange.killedPlayer = !player.playerLife.IsAlive();
         currentBallExchange.duration = Time.time - exchangeStartTime;
-        // Record
+        
+        // Write record
+        TelemetryManager.Instance.ballExchanges.Add(currentBallExchange);
+        
+        InitExchange();
     }
     
 }

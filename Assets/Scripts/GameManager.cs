@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
         // Init ball
         _ball = FindFirstObjectByType<Ball>();
         _ballSpawnPosition = _ball.transform.position;
-        _ballStartTeam = _ball.teamPossess;
         
         // Start round
         OnGameStarted?.Invoke();
@@ -50,6 +49,11 @@ public class GameManager : MonoBehaviour
         {
             OnGameEnded?.Invoke();
         }
+
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            ResetBall();
+        }
     }
 
     private void RestartRound()
@@ -62,11 +66,16 @@ public class GameManager : MonoBehaviour
             player.playerMovement.FullStop();
         }
         // Reinit ball
-        _ball.StopSimulation(_ballSpawnPosition);
-        _ball.ChangeTeam(_ballStartTeam);
-        _ball.ChangeSpeedLevel(0);
-        _ball.GetHit(Vector3.down);
+        ResetBall();
         
         OnRoundStarted?.Invoke();
+    }
+
+    private void ResetBall()
+    {
+        _ball.StopSimulation(_ballSpawnPosition);
+        _ball.ChangeTeam(Teams.Neutral);
+        _ball.ChangeSpeedLevel(0);
+        _ball.GetHit(Vector3.down);
     }
 }

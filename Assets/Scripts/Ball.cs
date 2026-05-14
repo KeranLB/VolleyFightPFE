@@ -77,13 +77,18 @@ public class Ball : MonoBehaviour
     public event Action<Player> OnBallHit;
 
     #endregion
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+
+    private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _vfxImpact = GetComponentInChildren<VisualEffect>();
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
         _currentFramePosition = _rigidbody.position;
     }
 
@@ -217,14 +222,12 @@ public class Ball : MonoBehaviour
     public void ChangeTeam(Teams team)
     {
         teamPossess = team;
-        if (team == Teams.TeamA)
+        _meshRenderer.material.color = team switch
         {
-            _meshRenderer.material.color = Color.blue;
-        }
-        else if (team == Teams.TeamB)
-        {
-            _meshRenderer.material.color = Color.yellow;
-        }
+            Teams.TeamA => Color.blue,
+            Teams.TeamB => Color.yellow,
+            _ => Color.gray
+        };
     }
 
     public void ChangeSpeedLevel(int i)

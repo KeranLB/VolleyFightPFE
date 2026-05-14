@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public abstract class TelemetryData
 {
@@ -21,7 +22,7 @@ public abstract class TelemetryData
 [Serializable]
 public class TDGame : TelemetryData
 {
-    public static string tableName {
+    public new static string tableName {
         get => "Game";
         set{}
     }
@@ -33,7 +34,7 @@ public class TDGame : TelemetryData
 [Serializable]
 public class TDRound : TelemetryData
 {
-    public static string tableName
+    public new static string tableName
     {
         get => "Round";
         set{}
@@ -53,7 +54,7 @@ public class TDRound : TelemetryData
 [Serializable]
 public class TDPlayer : TelemetryData
 {
-    public static string tableName
+    public new static string tableName
     {
         get => "Player";
         set {}
@@ -81,7 +82,7 @@ public class TDPlayer : TelemetryData
 [Serializable]
 public class TDAction : TelemetryData
 {
-    public static string tableName
+    public new static string tableName
     {
         get => "Action";
         set {}
@@ -108,7 +109,7 @@ public class TDAction : TelemetryData
 [Serializable]
 public class TDBallExchange : TelemetryData
 {
-    public static string tableName
+    public new static string tableName
     {
         get => "BallExchange";
         set{}
@@ -133,7 +134,7 @@ public class TDBallExchange : TelemetryData
 [Serializable]
 public class TDBallHit : TelemetryData
 {
-    public static string tableName
+    public new static string tableName
     {
         get => "BallHit";
         set{}
@@ -145,7 +146,7 @@ public class TDBallHit : TelemetryData
     public int hitId;
     public int playerId;
     public int speed;
-    public float speedWhenHit;
+    public float speedValue;
     public string team;
     public bool teamSwitch;
     public int bounces;

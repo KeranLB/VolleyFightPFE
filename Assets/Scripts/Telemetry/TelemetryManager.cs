@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 
 public class TelemetryManager : MonoBehaviour
@@ -9,12 +10,12 @@ public class TelemetryManager : MonoBehaviour
     public static int gameID;
     public static int roundID;
 
-    private TDGame _currentGame;
-    public Dictionary<int, TDRound> rounds;
-    public Dictionary<int, TDPlayer> players;
-    public Dictionary<int, TDAction> actions;
-    public Dictionary<int, TDBallExchange> ballExchanges;
-    public Dictionary<int, TDBallHit> ballHits;
+    public TDGame game;
+    public List<TDRound> rounds;
+    public List<TDPlayer> players;
+    public List<TDAction> actions;
+    public List<TDBallExchange> ballExchanges;
+    public List<TDBallHit> ballHits;
 
     #region Delegates
 
@@ -69,7 +70,6 @@ public class TelemetryManager : MonoBehaviour
         else
         {
             Debug.Log("Telemetry disabled, skipping sending game data");
-            StartNewGame();
         }
     }
     
@@ -86,89 +86,82 @@ public class TelemetryManager : MonoBehaviour
     
     public void StartNewGame()
     {
-        roundID = 1;
+        roundID = 0;
 
         // Init Dictionary
-        rounds = new Dictionary<int, TDRound>();
-        players = new Dictionary<int, TDPlayer>();
-        actions = new Dictionary<int, TDAction>();
-        ballExchanges = new Dictionary<int, TDBallExchange>();
-        ballHits = new Dictionary<int, TDBallHit>();
+        rounds = new List<TDRound>();
+        players = new List<TDPlayer>();
+        actions = new List<TDAction>();
+        ballExchanges = new List<TDBallExchange>();
+        ballHits = new List<TDBallHit>();
     }
 
     private async Awaitable SendGameData()
     {
         // Game
-        string payload = CollateRecords(new TelemetryData[] {_currentGame});
+        string payload = CollateRecords(new TelemetryData[] {game});
         string result = await TelemetrySender.Instance.SendTelemetry(payload, TDGame.tableName);
         RecordsListSchema recordsPosted = JsonUtility.FromJson<RecordsListSchema>(result);
         if (recordsPosted != null)
         {
-            int gameId = recordsPosted.records[0].id;
-            foreach (TDPlayer player in players.Values)
-            {
-                player.gameId = gameId;
-            }
-
+            gameID = recordsPosted.records[0].id;
+            
             //Rounds
-            payload = CollateRecords(rounds.Values.ToArray());
+            payload = CollateRecords(rounds.ToArray());
             result = await TelemetrySender.Instance.SendTelemetry(payload, TDRound.tableName);
             if (result != null)
             {
                 Debug.Log("All round data sent");
-
-                //Players
-                payload = CollateRecords(players.Values.ToArray());
-                result = await TelemetrySender.Instance.SendTelemetry(payload, TDPlayer.tableName);
-                if (result != null)
-                {
-                    Debug.Log("All player data sent");
-
-                    //Players Actions
-                    payload = CollateRecords(actions.Values.ToArray());
-                    result = await TelemetrySender.Instance.SendTelemetry(payload, TDAction.tableName);
-                    if (result != null)
-                    {
-                        Debug.Log("All actions data sent");
-
-                        //Ball Exchanges
-                        payload = CollateRecords(ballExchanges.Values.ToArray());
-                        result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallExchange.tableName);
-                        if (result != null)
-                        {
-                            Debug.Log("All ball exchanges data sent");
-
-                            //Ball Hits
-                            payload = CollateRecords(ballHits.Values.ToArray());
-                            result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallHit.tableName);
-                            if (result != null)
-                            {
-                                Debug.Log("All ball hits data sent");
-                            }
-                            else
-                            {
-                                Debug.LogError("Could not send ball hits data");
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("Could not send ball exchanges data");
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogError("Could not send actions data");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Could not send player data");
-                }
             }
             else
             {
                 Debug.LogError("Could not send round data");
             }
+            //Players
+            payload = CollateRecords(players.ToArray());
+            result = await TelemetrySender.Instance.SendTelemetry(payload, TDPlayer.tableName);
+            if (result != null)
+            {
+                Debug.Log("All player data sent");
+            }
+            else
+            {
+                Debug.LogError("Could not send player data");
+            }
+            //Players Actions
+            payload = CollateRecords(actions.ToArray());
+            result = await TelemetrySender.Instance.SendTelemetry(payload, TDAction.tableName);
+            if (result != null)
+            {
+                Debug.Log("All actions data sent");
+            }
+            else
+            {
+                Debug.LogError("Could not send actions data");
+            }
+            //Ball Exchanges
+            payload = CollateRecords(ballExchanges.ToArray());
+            result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallExchange.tableName);
+            if (result != null)
+            {
+                Debug.Log("All ball exchanges data sent");
+            }
+            else
+            {
+                Debug.LogError("Could not send ball exchanges data");
+            }
+            //Ball Hits
+            payload = CollateRecords(ballHits.ToArray());
+            result = await TelemetrySender.Instance.SendTelemetry(payload, TDBallHit.tableName);
+            if (result != null)
+            {
+                Debug.Log("All ball hits data sent");
+            }
+            else
+            {
+                Debug.LogError("Could not send ball hits data");
+            }
+            Debug.Log("End of data sending");
         }
         else
         {
@@ -184,6 +177,8 @@ public class TelemetryManager : MonoBehaviour
 
     public static string CollateRecords(TelemetryData[] dataArray)
     {
+        if (dataArray.Length == 0) return "";
+        
         string res = "{\"records\":[";
         foreach (var data in dataArray)
         {
