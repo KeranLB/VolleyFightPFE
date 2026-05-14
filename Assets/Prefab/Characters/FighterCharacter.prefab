@@ -356,6 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae908b345eda1ae42ac2fca336314181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PABlock
+  abilityType: 0
   startupTime: 0
   activeTime: 0.5
   recoveryTime: 0.2
@@ -425,6 +426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae561f3f436aaa4e86fcaca576faaff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PADivekick
+  abilityType: 0
   startupTime: 0
   activeTime: 0.3
   recoveryTime: 0.1
@@ -582,6 +584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaadf4fe5722cae42b6558866f15a0ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PAUppercut
+  abilityType: 0
   startupTime: 0
   activeTime: 0.3
   recoveryTime: 0.1
@@ -889,7 +892,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: m_Name
-      value: Player1-1 Variant
+      value: FighterCharacter
       objectReference: {fileID: 0}
     - target: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: m_IsActive
@@ -1023,6 +1026,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2302498627656456172}
+    - targetCorrespondingSourceObject: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3752056706560103674}
   m_SourcePrefab: {fileID: 100100000, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
 --- !u!114 &1730776642683030820 stripped
 MonoBehaviour:
@@ -1078,6 +1084,31 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3752056706560103674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8555513240669068644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a11d42bc70290c4ebbf64ddfee424ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TelemetryWatcherPlayer
+  player: {fileID: 1730776642683030820}
+  airTime: 0
+  slowFallTime: 0
+  roundStartTime: 0
+  deathTime: 0
+  jumps: 0
+  doubleJumps: 0
+  currentActionStartTime: 0
+  currentAbilityType: 0
+  currentActionStartedOnGround: 0
+  currentActionHitBall: 0
+  currentActionHitBallOverlap: 0
+  currentActionBallSpeed: 0
 --- !u!4 &9167248080412859535 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5947970227115169457, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}

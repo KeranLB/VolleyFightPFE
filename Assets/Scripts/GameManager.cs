@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private FieldForce _fieldForce;
 
     public static event Action OnGameStarted;
+    public static event Action OnRoundStarted;
+    public static event Action OnRoundEnded;
     public static event Action OnGameEnded;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,10 +41,15 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            OnRoundEnded?.Invoke();
+            RestartRound();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F12))
         {
             OnGameEnded?.Invoke();
-            RestartRound();
         }
     }
 
@@ -62,5 +69,7 @@ public class GameManager : MonoBehaviour
         _ball.GetHit(Vector3.down);
         // Reinit field force
         _fieldForce?.ChangeTeam(Teams.Neutral);
+        
+        OnRoundStarted?.Invoke();
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class StateAttack : StateMachineBehaviour
 {
+    private PlayerActions _playerActions;
     private PlayerAbility _ability;
     private PlayerMovement _playerMovement;
     private float _relativeTime;
@@ -11,7 +12,8 @@ public class StateAttack : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _ability = animator.GetComponent<PlayerActions>().activeAbility;
+        _playerActions = animator.GetComponent<PlayerActions>();
+        _ability = _playerActions.activeAbility;
         _playerMovement = animator.GetComponent<PlayerMovement>();
         _relativeTime = 0f;
         if (_ability.overridesMovement)
@@ -20,6 +22,7 @@ public class StateAttack : StateMachineBehaviour
         }
         _hasStarted = false;
         _hasFinished = false;
+        _playerActions.EmitActionStart();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -54,7 +57,8 @@ public class StateAttack : StateMachineBehaviour
             _playerMovement.isOverriden = false;
         }
 
-        animator.GetComponent<PlayerActions>().activeAbility = null;
+        _playerActions.activeAbility = null;
+        _playerActions.EmitActionEnd();
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

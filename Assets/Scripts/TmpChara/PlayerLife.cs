@@ -1,15 +1,19 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-//using UnityEngine.UIElements;
 
 public class PlayerLife : MonoBehaviour
 {
     public float maxHealth;
     public float currentHealth;
 
-    public Image LifeBar; 
+    public Image LifeBar;
+
+    #region Delegates
+
+    public event Action OnPlayerDeath;
+
+    #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -29,13 +33,24 @@ public class PlayerLife : MonoBehaviour
         LifeBar.fillAmount = currentHealth/maxHealth;
         if (currentHealth <= 0)
         {
-            transform.position = Vector3.up * 50f;
+            Die();
         }
+    }
+
+    public void Die()
+    {
+        transform.position = Vector3.up * 50f;
+        OnPlayerDeath?.Invoke();
     }
 
     public void FullHeal()
     {
         ChangeHealth(maxHealth);
         LifeBar.fillAmount = 1;
+    }
+
+    public bool IsAlive()
+    {
+        return currentHealth > 0;
     }
 }

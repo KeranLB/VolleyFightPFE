@@ -42,11 +42,10 @@ public class PlayerActions : MonoBehaviour
     
     #endregion
 
-    #region Telemetry
+    #region Delegates
 
-    public static event Action<int> OnPlayerAttack;
-    public static event Action<int> OnPlayerBlock;
-
+    public event Action OnPlayerActionStart;
+    public event Action OnPlayerActionEnd;
 
     #endregion
 
@@ -62,25 +61,32 @@ public class PlayerActions : MonoBehaviour
     {
         if (_playerInput.pressedAttack1 && _isReady)
         {
-            OnPlayerAttack?.Invoke(gameObject.GetInstanceID());
             // _attackCoroutine = StartCoroutine(AttackCoroutine());
             activeAbility = attack1;
             _animator.SetBool("InAttack", true);
         }
         else if (_playerInput.pressedAttack2 && _isReady)
         {
-            OnPlayerAttack?.Invoke(gameObject.GetInstanceID());
             // _blockCoroutine = StartCoroutine(BlockCoroutine());
             activeAbility = attack2;
             _animator.SetBool("InAttack", true);
         }
         else if (_playerInput.pressedBlock && _isReady)
         {
-            OnPlayerBlock?.Invoke(gameObject.GetInstanceID());
             // _blockCoroutine = StartCoroutine(BlockCoroutine());
             activeAbility = block;
             _animator.SetBool("InAttack", true);
         }
+    }
+
+    public void EmitActionStart()
+    {
+        OnPlayerActionStart?.Invoke();
+    }
+
+    public void EmitActionEnd()
+    {
+        OnPlayerActionEnd?.Invoke();
     }
 
     private IEnumerator AttackCoroutine()

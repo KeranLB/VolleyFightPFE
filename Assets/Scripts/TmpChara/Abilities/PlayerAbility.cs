@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerAbility : MonoBehaviour
 {
+    public AbilityType abilityType;
     public float startupTime;
     public float activeTime;
     public float recoveryTime;
@@ -36,4 +37,11 @@ public class PlayerAbility : MonoBehaviour
     {
         attackZone.Deactivate();
     }
+}
+
+public enum AbilityType
+{
+    Attack1,
+    Attack2,
+    Block
 }

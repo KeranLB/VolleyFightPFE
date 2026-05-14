@@ -7,7 +7,7 @@ public class AttackZone : PlayerHitZone
     public int speedLevelChange;
     private bool _hasTouchedBall;
 
-    public static event Action<int> OnPlayerAttackSuccess;
+    public event Action<Ball, bool> OnPlayerAttackSuccess;
 
 
     protected override void Awake()
@@ -59,11 +59,10 @@ public class AttackZone : PlayerHitZone
         }
 
         _hasTouchedBall = true;
+        OnPlayerAttackSuccess?.Invoke(ball, false);
         base.OnTrajectory(ball, hitInfo);
         ball.StopSimulation(hitInfo.point);
         ball.GetHit(GetOutDirection(), speedLevelChange);
-        OnPlayerAttackSuccess?.Invoke(player.gameObject.GetInstanceID());
-        // player.playerActions.CancelAction();
     }
 
     public override void OnOverlap(Ball ball)
@@ -75,6 +74,7 @@ public class AttackZone : PlayerHitZone
         }
         
         _hasTouchedBall = true;
+        OnPlayerAttackSuccess?.Invoke(ball, true);
         base.OnOverlap(ball);
         ball.GetHit(GetOutDirection(), speedLevelChange);
     }

@@ -72,6 +72,9 @@ public class Ball : MonoBehaviour
     #region Delegates
 
     public static event Action<int> OnSpeedLevelChanged;
+    public event Action OnBallBounce;
+    public event Action<Player> OnBallPlayer;
+    public event Action<Player> OnBallHit;
 
     #endregion
     
@@ -260,13 +263,13 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
 
-    public void GetHit(Vector3 direction, int speedLevelChange = 0)
+    public void GetHit(Vector3 direction, int speedLevelChange = 0, Player player = null)
     {
+        OnBallHit?.Invoke(player);
         ChangeFrameDirection(direction);
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
-        isSwitchingSide = false;
     }
 
     public void StopSimulation(Vector3 spot)

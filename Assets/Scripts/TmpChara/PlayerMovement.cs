@@ -33,15 +33,18 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _direction;
     private float _forceToApply;
     private bool _isGrounded;
+    public bool isGrounded => _isGrounded;
+    private bool _isSlowFalling;
+    public bool isSlowFalling => _isSlowFalling;
     private bool _canDoubleJump;
 
     [Header("Override movement")]
     public bool isOverriden;
     public Vector3 overrideVelocity;
 
-    #region Telemetry
-    public static event Action<int> OnPlayerJump;
-    public static event Action<int> OnPlayerDoubleJump;
+    #region Delegates
+    public event Action OnPlayerJump;
+    public event Action OnPlayerDoubleJump;
     #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -172,12 +175,13 @@ public class PlayerMovement : MonoBehaviour
         _currentVelocity.z = _currentHorizontalVelocity.y;
 
         // Jump and fall
+        // On the ground
         if (_isGrounded)
         {
             _canDoubleJump = true;
             if(_playerInput.holdsJump || _playerInput.pressedJump)
             {
-                OnPlayerJump?.Invoke(gameObject.GetInstanceID());
+                OnPlayerJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
                 _justJumped = true;
             }
@@ -186,34 +190,33 @@ public class PlayerMovement : MonoBehaviour
                 _currentVelocity.y = 0f;
             }
         }
-        else
+        else // In air
         {
             // Double jump
             if (_playerInput.pressedJump && _canDoubleJump)
             {
-                OnPlayerDoubleJump?.Invoke(gameObject.GetInstanceID());
+                OnPlayerDoubleJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
                 _justJumped = false;
             }
-            var realMaxFallSpeed = _maxFallSpeed;
+            // Ascending
             if (_currentVelocity.y > 0)
             {
+                _isSlowFalling = false;
                 // Short jump if we release the jump button
                 if (_justJumped && _playerInput.releasedJump)
                 {
                     _currentVelocity.y /= 2;
                 }
             }
-            else
+            else // Falling
             {
                 _justJumped = false;
                 // Slow fall if we hold jump button
-                if (_playerInput.holdsJump)
-                {
-                    realMaxFallSpeed *= _slowFallFactor;
-                }
+                _isSlowFalling = _playerInput.holdsJump;
             }
+            var realMaxFallSpeed = isSlowFalling ? _maxFallSpeed * _slowFallFactor : _maxFallSpeed;
             _currentVelocity.y = Mathf.Max(realMaxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
 
