@@ -659,10 +659,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   team: 1
-  playerInput: {fileID: 0}
-  playerLife: {fileID: 0}
-  playerActions: {fileID: 0}
-  playerMovement: {fileID: 0}
+  playerInput: {fileID: 756815961040395522}
+  playerLife: {fileID: 6754645178273718330}
+  playerActions: {fileID: 6776770826193777988}
+  playerMovement: {fileID: 8799859916885463089}
+  playerId: 0
 --- !u!114 &8799859916885463089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1121,16 +1122,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2778301290213007241, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
       propertyPath: m_Pivot.x
