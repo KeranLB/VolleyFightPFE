@@ -1651,7 +1651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: gamepadIndex
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5536081472722360734, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -1796,7 +1796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: gamepadIndex
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5536081472722360734, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -1892,7 +1892,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8555513240669068644, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
