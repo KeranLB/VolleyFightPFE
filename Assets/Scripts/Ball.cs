@@ -253,13 +253,13 @@ public class Ball : MonoBehaviour
         _vfxImpact.SendEvent("Bounce", attribute);
     }
 
-    public void Bunt(Player player)
+    public void Bunt(Player player, Vector3 position)
     {
         OnBallPlayer?.Invoke(player);
-        StopSimulation(player.transform.position);
+        StopSimulation(position);
         GetHit(Vector3.up);
         ChangeSpeedLevel(1);
-        _currentFrameCollisions.Add(player.transform.position);
+        _currentFrameCollisions.Add(position);
     }
     
     public void PassThrough(RaycastHit hitInfo)
