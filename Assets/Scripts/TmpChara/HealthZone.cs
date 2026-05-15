@@ -7,8 +7,24 @@ public class HealthZone : PlayerHitZone
         if(ball.teamPossess != player.team)
         {
             base.OnTrajectory(ball, hitInfo);
-            player.playerLife.TakeDamage(ball.GetFinalDamage());
             ball.Bunt(player);
+            player.playerLife.TakeDamage(ball.GetFinalDamage());
+        }
+        else
+        {
+            _rigidbody.detectCollisions = false;
+            ball.CheckCollisionAhead();
+            _rigidbody.detectCollisions = true;
+        }
+    }
+
+    public override void OnOverlap(Ball ball)
+    {
+        if(ball.teamPossess != player.team)
+        {
+            base.OnOverlap(ball);
+            ball.Bunt(player);
+            player.playerLife.TakeDamage(ball.GetFinalDamage());
         }
         else
         {
