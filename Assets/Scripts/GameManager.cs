@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private List<Player> _players;
-    private Dictionary<Player, Vector3> _playersSpawnPositions = new();
+    private Dictionary<int, Vector3> _playersSpawnPositions = new();
     private Ball _ball;
     private Vector3 _ballSpawnPosition;
     private Teams _ballStartTeam;
@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
         int playerId = 1;
         foreach (var player in _players)
         {
-            _playersSpawnPositions.Add(player, player.transform.position);
             player.playerId = playerId++;
+            _playersSpawnPositions.Add(player.playerId, player.transform.position);
         }
         // Init ball
         _ball = FindFirstObjectByType<Ball>();
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         // Reinit players
         foreach (var player in _players)
         {
-            player.transform.position = _playersSpawnPositions[player];
+            player.transform.position = _playersSpawnPositions[player.playerId];
             player.playerLife.FullHeal();
             player.playerMovement.FullStop();
         }
