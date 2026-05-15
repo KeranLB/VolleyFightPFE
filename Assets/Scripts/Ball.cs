@@ -47,6 +47,7 @@ public class Ball : MonoBehaviour
 
     #region Physics
 
+    private float _radius;
     private Vector3 _currentFramePosition;
     private Vector3 _currentFrameDirection;
     private float _currentFrameDistanceRemaining;
@@ -90,6 +91,7 @@ public class Ball : MonoBehaviour
     void Start()
     {
         _currentFramePosition = _rigidbody.position;
+        _radius = transform.localScale.x / 2;
     }
 
     // Update is called once per frame
@@ -157,7 +159,7 @@ public class Ball : MonoBehaviour
         _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
         
         // Check we're not already overlapping a collider that would be ignored by SphereCast
-        Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
+        Collider[] cols = Physics.OverlapSphere(_currentFramePosition, _radius);
         foreach (Collider collider in cols)
         {
             if(collider.TryGetComponent(out HitZone hitZone))
@@ -185,7 +187,7 @@ public class Ball : MonoBehaviour
     public void CheckCollisionAhead()
     {
         if(
-            Physics.SphereCast(_currentFramePosition, 0.5f, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH))
+            Physics.SphereCast(_currentFramePosition, _radius, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH))
             //Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
             && hit.collider.TryGetComponent<HitZone>(out HitZone zone)
         )
@@ -240,11 +242,16 @@ public class Ball : MonoBehaviour
 
     public void Bounce(RaycastHit hitInfo)
     {
+        Bounce(hitInfo.point, hitInfo.normal, hitInfo.distance);
+    }
+
+    public void Bounce(Vector3 position, Vector3 normal, float distance)
+    {
         OnBallBounce?.Invoke();
-        Vector3 sphereCenter = hitInfo.point + hitInfo.normal * 0.5f;
+        Vector3 sphereCenter = position + normal * _radius;
         ChangeFramePosition(sphereCenter);
-        ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, hitInfo.normal));
-        ReduceFrameDistanceRemaining(hitInfo.distance);
+        ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, normal));
+        ReduceFrameDistanceRemaining(distance);
         _realSpeed = _maxSpeed;
         _currentFrameCollisions.Add(sphereCenter);
         isSwitchingSide = false;
