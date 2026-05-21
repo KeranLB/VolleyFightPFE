@@ -9,6 +9,11 @@ public class PlayerHitZone : HitZone
         ChangeBallTeam(ball);
     }
 
+    public override void OnOverlap(Ball ball)
+    {
+        ChangeBallTeam(ball);
+    }
+
     private void ChangeBallTeam(Ball ball)
     {
         ball.ChangeTeam(player.team);

@@ -641,6 +641,11 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   LifeBar: {fileID: 4030818723378222432}
+  LifeBars:
+  - {fileID: 4030818723378222432}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &3870563267189737242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,10 +659,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   team: 1
-  playerInput: {fileID: 0}
-  playerLife: {fileID: 0}
-  playerActions: {fileID: 0}
-  playerMovement: {fileID: 0}
+  playerInput: {fileID: 756815961040395522}
+  playerLife: {fileID: 6754645178273718330}
+  playerActions: {fileID: 6776770826193777988}
+  playerMovement: {fileID: 8799859916885463089}
+  playerId: 0
 --- !u!114 &8799859916885463089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -687,6 +693,8 @@ MonoBehaviour:
   _groundCheckRaycastLength: 0.1
   _maxXAngle: 30
   _maxXRotationPerFrame: 45
+  isOverriden: 0
+  overrideVelocity: {x: 0, y: 0, z: 0}
 --- !u!54 &1050730542087834307
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -749,7 +757,8 @@ MonoBehaviour:
   holdsJump: 0
   pressedJump: 0
   releasedJump: 0
-  pressedAttack: 0
+  pressedAttack1: 0
+  pressedAttack2: 0
   pressedBlock: 0
 --- !u!114 &6776770826193777988
 MonoBehaviour:
@@ -768,6 +777,11 @@ MonoBehaviour:
   _blockDuration: 0.2
   _attackZone: {fileID: 8578066711503218583}
   _blockZone: {fileID: 151278546864466687}
+  _animator: {fileID: 0}
+  attack1: {fileID: 0}
+  attack2: {fileID: 0}
+  block: {fileID: 0}
+  activeAbility: {fileID: 0}
 --- !u!114 &6625929015242415875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1108,16 +1122,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1358615989924149297, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2778301290213007241, guid: d725fe7a04c8d2543967952d989e9a3b, type: 3}
       propertyPath: m_Pivot.x

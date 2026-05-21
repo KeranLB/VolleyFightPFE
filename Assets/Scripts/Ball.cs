@@ -47,6 +47,7 @@ public class Ball : MonoBehaviour
 
     #region Physics
 
+    private float _radius;
     private Vector3 _currentFramePosition;
     private Vector3 _currentFrameDirection;
     private float _currentFrameDistanceRemaining;
@@ -72,16 +73,25 @@ public class Ball : MonoBehaviour
     #region Delegates
 
     public static event Action<int> OnSpeedLevelChanged;
+    public event Action OnBallBounce;
+    public event Action<Player> OnBallPlayer;
+    public event Action<Player> OnBallHit;
 
     #endregion
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+
+    private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _vfxImpact = GetComponentInChildren<VisualEffect>();
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
         _currentFramePosition = _rigidbody.position;
+        _radius = transform.localScale.x / 2;
     }
 
     // Update is called once per frame
@@ -149,17 +159,12 @@ public class Ball : MonoBehaviour
         _currentFrameDistanceRemaining = _realSpeed * Time.fixedDeltaTime;
         
         // Check we're not already overlapping a collider that would be ignored by SphereCast
-        Collider[] cols = Physics.OverlapSphere(_currentFramePosition, 0.5f);
+        Collider[] cols = Physics.OverlapSphere(_currentFramePosition, _radius);
         foreach (Collider collider in cols)
         {
-            Vector3 closestPoint = collider.ClosestPoint(_currentFramePosition);
-            Vector3 direction = (closestPoint - _currentFramePosition).normalized;
-            if(
-                Physics.Raycast(_currentFramePosition, direction, out RaycastHit hit, 0.5f)
-                && hit.collider.TryGetComponent(out HitZone hitZone)
-            )
+            if(collider.TryGetComponent(out HitZone hitZone))
             {
-                hitZone.OnTrajectory(this, hit);
+                hitZone.OnOverlap(this);
             }
         }
         
@@ -182,7 +187,7 @@ public class Ball : MonoBehaviour
     public void CheckCollisionAhead()
     {
         if(
-            Physics.SphereCast(_currentFramePosition, 0.5f, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH))
+            Physics.SphereCast(_currentFramePosition, _radius, _currentFrameDirection, out RaycastHit hit, Mathf.Min(_currentFrameDistanceRemaining, MAX_STEP_LENGTH))
             //Physics.Raycast(_currentFramePosition, _currentFrameDirection, out RaycastHit hit, _currentFrameDistanceRemaining)
             && hit.collider.TryGetComponent<HitZone>(out HitZone zone)
         )
@@ -219,44 +224,49 @@ public class Ball : MonoBehaviour
     public void ChangeTeam(Teams team)
     {
         teamPossess = team;
-        if (team == Teams.TeamA)
+        _meshRenderer.material.color = team switch
         {
-            _meshRenderer.material.color = Color.blue;
-        }
-        else if (team == Teams.TeamB)
-        {
-            _meshRenderer.material.color = Color.yellow;
-        }
+            Teams.TeamA => Color.blue,
+            Teams.TeamB => Color.yellow,
+            _ => Color.gray
+        };
     }
 
     public void ChangeSpeedLevel(int i)
     {
         currentSpeedLevelIndex = Mathf.Clamp(i, 0, _speedLevels.Count - 1);
         currentSpeedLevel = _speedLevels[currentSpeedLevelIndex];
-        _maxSpeed = currentSpeedLevel.speedMultiplier * baseSpeed;
+        _maxSpeed = GetFinalSpeed();
         OnSpeedLevelChanged?.Invoke(currentSpeedLevelIndex);
     }
 
     public void Bounce(RaycastHit hitInfo)
     {
-        Vector3 sphereCenter = hitInfo.point + hitInfo.normal * 0.5f;
+        Bounce(hitInfo.point, hitInfo.normal, hitInfo.distance);
+    }
+
+    public void Bounce(Vector3 position, Vector3 normal, float distance)
+    {
+        OnBallBounce?.Invoke();
+        Vector3 sphereCenter = position + normal * _radius;
         ChangeFramePosition(sphereCenter);
-        ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, hitInfo.normal));
-        ReduceFrameDistanceRemaining(hitInfo.distance);
+        ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, normal));
+        ReduceFrameDistanceRemaining(distance);
         _realSpeed = _maxSpeed;
         _currentFrameCollisions.Add(sphereCenter);
         isSwitchingSide = false;
-        _vfxImpact.SendEvent("Bounce");
+        VFXEventAttribute attribute = new VFXEventAttribute(_vfxImpact.CreateVFXEventAttribute());
+        attribute.SetVector3("position", _currentFramePosition);
+        _vfxImpact.SendEvent("Bounce", attribute);
     }
 
-    public void Bunt(Player player)
+    public void Bunt(Player player, Vector3 position)
     {
-        StopSimulation(player.transform.position);
-        ChangeFrameDirection(Vector3.up);
-        _direction = Vector3.up;
-        isSwitchingSide = false;
-        _realSpeed = _passSpeed;
-        _currentFrameCollisions.Add(player.transform.position);
+        OnBallPlayer?.Invoke(player);
+        StopSimulation(position);
+        GetHit(Vector3.up);
+        ChangeSpeedLevel(1);
+        _currentFrameCollisions.Add(position);
     }
     
     public void PassThrough(RaycastHit hitInfo)
@@ -265,13 +275,13 @@ public class Ball : MonoBehaviour
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
 
-    public void GetHit(Vector3 direction, int speedLevelChange = 0)
+    public void GetHit(Vector3 direction, int speedLevelChange = 0, Player player = null)
     {
+        OnBallHit?.Invoke(player);
         ChangeFrameDirection(direction);
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
-        isSwitchingSide = false;
     }
 
     public void StopSimulation(Vector3 spot)
@@ -283,6 +293,11 @@ public class Ball : MonoBehaviour
     public float GetFinalDamage()
     {
         return baseDamage * currentSpeedLevel.damageMultiplier;
+    }
+
+    public float GetFinalSpeed()
+    {
+        return baseSpeed * currentSpeedLevel.speedMultiplier;
     }
     
     void GetBlocked(Vector3 target)

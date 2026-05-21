@@ -33,11 +33,18 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _direction;
     private float _forceToApply;
     private bool _isGrounded;
+    public bool isGrounded => _isGrounded;
+    private bool _isSlowFalling;
+    public bool isSlowFalling => _isSlowFalling;
     private bool _canDoubleJump;
 
-    #region Telemetry
-    public static event Action<int> OnPlayerJump;
-    public static event Action<int> OnPlayerDoubleJump;
+    [Header("Override movement")]
+    public bool isOverriden;
+    public Vector3 overrideVelocity;
+
+    #region Delegates
+    public event Action OnPlayerJump;
+    public event Action OnPlayerDoubleJump;
     #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,10 +57,13 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // Make the character face movement direction
-        var dir = _playerInput.currentDirection;
-        if (dir.magnitude > 0)
+        if (!isOverriden)
         {
-            characterModel.forward = Vector3.right * dir.x + Vector3.forward * dir.y;
+            var dir = _playerInput.currentDirection;
+            if (dir.magnitude > 0)
+            {
+                characterModel.forward = Vector3.right * dir.x + Vector3.forward * dir.y;
+            }
         }
 
         // Limit X rotation
@@ -70,6 +80,57 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void FixedUpdate()
+    {
+        if (isOverriden)
+        {
+            _currentVelocity = Quaternion.AngleAxis(characterModel.eulerAngles.y, Vector3.up) * overrideVelocity;
+        }
+        else
+        {
+            UpdateVelocityFromInputs();
+        }
+        
+        if (_currentVelocity.magnitude == 0) return;
+
+        // Move body according to velocity
+        RaycastHit hitInfo;
+        
+        // If hitting ground or ceiling, slide
+        if (
+            Physics.Raycast(
+                _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
+                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime + 1.0f, collisionLayers
+            )
+        )
+        {
+            _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, hitInfo.normal);
+            // TODO : snap to the right height
+        }
+        // Check walls on side
+        if (
+            Physics.SphereCast(
+                _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
+            )
+        )
+        {
+            _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, hitInfo.normal);
+            // If cornered, reset horizontal velocity
+            if (
+                Physics.SphereCast(
+                    _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+                    _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
+                )
+            )
+            {
+                _currentVelocity.x = 0f;
+                _currentVelocity.z = 0f;
+            }
+        }
+        _rigidbody.MovePosition(_rigidbody.position + _currentVelocity * Time.fixedDeltaTime);
+    }
+
+    private void UpdateVelocityFromInputs()
     {
         // Get Inputs
         var tmp = _playerInput.currentDirection.normalized;
@@ -114,12 +175,13 @@ public class PlayerMovement : MonoBehaviour
         _currentVelocity.z = _currentHorizontalVelocity.y;
 
         // Jump and fall
+        // On the ground
         if (_isGrounded)
         {
             _canDoubleJump = true;
             if(_playerInput.holdsJump || _playerInput.pressedJump)
             {
-                OnPlayerJump?.Invoke(gameObject.GetInstanceID());
+                OnPlayerJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
                 _justJumped = true;
             }
@@ -128,77 +190,38 @@ public class PlayerMovement : MonoBehaviour
                 _currentVelocity.y = 0f;
             }
         }
-        else
+        else // In air
         {
             // Double jump
             if (_playerInput.pressedJump && _canDoubleJump)
             {
-                OnPlayerDoubleJump?.Invoke(gameObject.GetInstanceID());
+                OnPlayerDoubleJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
                 _canDoubleJump = false;
                 _justJumped = false;
             }
-            var realMaxFallSpeed = _maxFallSpeed;
+            // Ascending
             if (_currentVelocity.y > 0)
             {
+                _isSlowFalling = false;
                 // Short jump if we release the jump button
                 if (_justJumped && _playerInput.releasedJump)
                 {
                     _currentVelocity.y /= 2;
                 }
             }
-            else
+            else // Falling
             {
                 _justJumped = false;
                 // Slow fall if we hold jump button
-                if (_playerInput.holdsJump)
-                {
-                    realMaxFallSpeed *= _slowFallFactor;
-                }
+                _isSlowFalling = _playerInput.holdsJump;
             }
+            var realMaxFallSpeed = isSlowFalling ? _maxFallSpeed * _slowFallFactor : _maxFallSpeed;
             _currentVelocity.y = Mathf.Max(realMaxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);
         }
 
         // Velocity determines our current direction
         _direction = _currentHorizontalVelocity.normalized; // * _forwardDirection;
-        if (_currentVelocity.magnitude == 0) return;
-
-        // Move body according to velocity
-        RaycastHit hitInfo;
-        
-        // If hitting ground or ceiling, snap
-        if (
-            Physics.Raycast(
-                _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
-                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime + 0.5f, collisionLayers
-            )
-        )
-        {
-            _rigidbody.MovePosition(hitInfo.point+hitInfo.normal*0.95f);
-            return;
-        }
-        // Check walls on side
-        if (
-            Physics.SphereCast(
-                _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
-                _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
-            )
-        )
-        {
-            _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, hitInfo.normal);
-            // If cornered, reset horizontal velocity
-            if (
-                Physics.SphereCast(
-                    _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
-                    _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
-                )
-            )
-            {
-                _currentVelocity.x = 0f;
-                _currentVelocity.z = 0f;
-            }
-        }
-        _rigidbody.MovePosition(_rigidbody.position + _currentVelocity * Time.fixedDeltaTime);
     }
 
     private bool GroundCheck()

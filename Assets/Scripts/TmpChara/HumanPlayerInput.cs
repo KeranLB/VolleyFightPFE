@@ -71,25 +71,27 @@ public class HumanPlayerInput : MonoBehaviour
             {
                 StartCoroutine(ReleaseJumpBuffering());
             }
-            _playerInput.pressedAttack = Mouse.current.leftButton.wasPressedThisFrame;
-            _playerInput.pressedBlock = Mouse.current.rightButton.wasPressedThisFrame;
+            _playerInput.pressedAttack1 = Mouse.current.leftButton.wasPressedThisFrame;
+            _playerInput.pressedAttack2 = Mouse.current.rightButton.wasPressedThisFrame;
+            _playerInput.pressedBlock = Input.GetKeyDown(KeyCode.E);
             // _playerInput.holdsJump = Input.GetButton("Jump");
             // _playerInput.pressedAttack = Input.GetButtonDown("Fire1");
             // _playerInput.pressedBlock = Input.GetButtonDown("Fire2");
         }
         else
         {
-            _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed || Gamepad.all[gamepadIndex].rightTrigger.isPressed;
-            if (Gamepad.all[gamepadIndex].buttonSouth.wasPressedThisFrame ||  Gamepad.all[gamepadIndex].rightTrigger.wasPressedThisFrame)
+            _playerInput.holdsJump = Gamepad.all[gamepadIndex].buttonSouth.isPressed || Gamepad.all[gamepadIndex].leftTrigger.isPressed;
+            if (Gamepad.all[gamepadIndex].buttonSouth.wasPressedThisFrame ||  Gamepad.all[gamepadIndex].leftTrigger.wasPressedThisFrame)
             {
                 StartCoroutine(PressJumpBuffering());
             }
-            else if (Gamepad.all[gamepadIndex].buttonSouth.wasReleasedThisFrame ||  Gamepad.all[gamepadIndex].rightTrigger.wasReleasedThisFrame)
+            else if (Gamepad.all[gamepadIndex].buttonSouth.wasReleasedThisFrame ||  Gamepad.all[gamepadIndex].leftTrigger.wasReleasedThisFrame)
             {
                 StartCoroutine(ReleaseJumpBuffering());
             }
-            _playerInput.pressedAttack = Gamepad.all[gamepadIndex].buttonWest.wasPressedThisFrame;
-            _playerInput.pressedBlock = Gamepad.all[gamepadIndex].buttonEast.wasPressedThisFrame;
+            _playerInput.pressedAttack1 = Gamepad.all[gamepadIndex].buttonWest.wasPressedThisFrame || Gamepad.all[gamepadIndex].rightShoulder.wasPressedThisFrame;
+            _playerInput.pressedAttack2 = Gamepad.all[gamepadIndex].buttonNorth.wasPressedThisFrame || Gamepad.all[gamepadIndex].rightTrigger.wasPressedThisFrame;
+            _playerInput.pressedBlock = Gamepad.all[gamepadIndex].buttonEast.wasPressedThisFrame || Gamepad.all[gamepadIndex].leftShoulder.wasPressedThisFrame;
         }
     }
     

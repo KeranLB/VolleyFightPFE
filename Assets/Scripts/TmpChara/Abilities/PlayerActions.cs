@@ -28,14 +28,24 @@ public class PlayerActions : MonoBehaviour
     [Header("Dependencies")]
     [SerializeField] private AttackZone _attackZone;
     [SerializeField] private BlockZone _blockZone;
+    [SerializeField] private Animator _animator;
 
     #endregion
 
-    #region Telemetry
+    #region Abilities
+    
+    [Header("Abilities")] 
+    public PlayerAbility attack1;
+    public PlayerAbility attack2;
+    public PlayerAbility block;
+    public PlayerAbility activeAbility;
+    
+    #endregion
 
-    public static event Action<int> OnPlayerAttack;
-    public static event Action<int> OnPlayerBlock;
+    #region Delegates
 
+    public event Action OnPlayerActionStart;
+    public event Action OnPlayerActionEnd;
 
     #endregion
 
@@ -49,16 +59,34 @@ public class PlayerActions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_playerInput.pressedAttack && _isReady)
+        if (_playerInput.pressedAttack1 && _isReady)
         {
-            OnPlayerAttack?.Invoke(gameObject.GetInstanceID());
-            _attackCoroutine = StartCoroutine(AttackCoroutine());
+            // _attackCoroutine = StartCoroutine(AttackCoroutine());
+            activeAbility = attack1;
+            _animator.SetBool("InAttack", true);
+        }
+        else if (_playerInput.pressedAttack2 && _isReady)
+        {
+            // _blockCoroutine = StartCoroutine(BlockCoroutine());
+            activeAbility = attack2;
+            _animator.SetBool("InAttack", true);
         }
         else if (_playerInput.pressedBlock && _isReady)
         {
-            OnPlayerBlock?.Invoke(gameObject.GetInstanceID());
-            _blockCoroutine = StartCoroutine(BlockCoroutine());
+            // _blockCoroutine = StartCoroutine(BlockCoroutine());
+            activeAbility = block;
+            _animator.SetBool("InAttack", true);
         }
+    }
+
+    public void EmitActionStart()
+    {
+        OnPlayerActionStart?.Invoke();
+    }
+
+    public void EmitActionEnd()
+    {
+        OnPlayerActionEnd?.Invoke();
     }
 
     private IEnumerator AttackCoroutine()
@@ -98,6 +126,5 @@ public class PlayerActions : MonoBehaviour
         _blockZone.Deactivate();
         _cooldownCoroutine = StartCoroutine(CooldownCoroutine());
     }
-
 
 }

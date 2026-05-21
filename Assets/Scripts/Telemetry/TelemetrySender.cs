@@ -1,3 +1,4 @@
+#nullable enable
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -90,25 +91,31 @@ public class TelemetrySender : MonoBehaviour
             Debug.Log("Telemetry is disabled");
             return null;
         }
+
+        if (payload == "")
+        {
+            Debug.Log("Empty payload, not sending request");
+            return null;
+        }
         
         string uri = $"https://pfesmashorpass.getgrist.com/api/docs/{docId}/tables/{tableId}/records";
         using UnityWebRequest www = UnityWebRequest.Post(uri, payload, "application/json");
         www.SetRequestHeader("Content-Type", "application/json");
         www.SetRequestHeader("Authorization", "Bearer " + apiKey);
         
-        Debug.Log("Sending telemetry data");
-        Debug.Log(www.uploadHandler.data);
+        Debug.Log($"Sending {tableId} data");
+        Debug.Log(payload);
         await www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("Error while sending telemetry data");
+            Debug.Log($"Error while sending {tableId} data");
             Debug.LogError(www.error);
             Debug.Log(www.downloadHandler.text);
             return null;
         }
         
-        Debug.Log("Telemetry data sent");
+        Debug.Log($"{tableId} data sent");
         Debug.Log(www.downloadHandler.text);
         
         return www.downloadHandler.text;

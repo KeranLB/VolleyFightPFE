@@ -37,7 +37,7 @@ public class BlockZone : PlayerHitZone
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {
         base.OnTrajectory(ball, hitInfo);
-        ball.Bunt(player);
+        ball.Bunt(player, player.transform.position);
         OnPlayerBlockSuccess?.Invoke(player.gameObject.GetInstanceID());
         player.playerActions.CancelAction();
     }

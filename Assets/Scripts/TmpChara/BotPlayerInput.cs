@@ -59,12 +59,20 @@ public class BotPlayerInput : MonoBehaviour
 
         if (canAttack && !_hasAttacked)
         {
-            _playerInput.pressedAttack = true;
+            if (Time.frameCount % 2 == 0)
+            {
+                _playerInput.pressedAttack1 = true;
+            }
+            else
+            {
+                _playerInput.pressedAttack2 = true;
+            }
             StartCoroutine(AttackLoop());
         }
         else
         {
-            _playerInput.pressedAttack = false;
+            _playerInput.pressedAttack1 = false;
+            _playerInput.pressedAttack2 = false;
         }
         
         if (canBlock && !_hasBlocked)

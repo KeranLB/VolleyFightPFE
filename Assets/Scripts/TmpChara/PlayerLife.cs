@@ -1,21 +1,32 @@
 using System;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
-//using UnityEngine.UIElements;
 
 public class PlayerLife : MonoBehaviour
 {
     public float maxHealth;
     public float currentHealth;
 
-    public Image LifeBar; 
+    public Image LifeBar;
+    public List<Image> LifeBars;
+
+    #region Delegates
+
+    public event Action OnPlayerDeath;
+
+    #endregion
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHealth = maxHealth;
-        LifeBar.fillAmount = 1;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = 1;
+        }
+        //LifeBar.fillAmount = 1;
     }
 
     public void TakeDamage(float damage)
@@ -26,16 +37,35 @@ public class PlayerLife : MonoBehaviour
     public void ChangeHealth(float health)
     {
         currentHealth = Mathf.Clamp(health, 0, maxHealth);
-        LifeBar.fillAmount = currentHealth/maxHealth;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = currentHealth/maxHealth;
+        }
+        //LifeBar.fillAmount = currentHealth/maxHealth;
         if (currentHealth <= 0)
         {
-            transform.position = Vector3.up * 50f;
+            Die();
         }
+    }
+
+    public void Die()
+    {
+        transform.position = Vector3.up * 50f;
+        OnPlayerDeath?.Invoke();
     }
 
     public void FullHeal()
     {
         ChangeHealth(maxHealth);
-        LifeBar.fillAmount = 1;
+        foreach (var item in LifeBars)
+        {
+            item.fillAmount = 1;
+        }
+        //LifeBar.fillAmount = 1;
+    }
+
+    public bool IsAlive()
+    {
+        return currentHealth > 0;
     }
 }
