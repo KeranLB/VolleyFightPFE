@@ -250,6 +250,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 915702840}
     m_Modifications:
+    - target: {fileID: 3654910166605121519, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 44f8a9a9065986e428b629b429d37404, type: 2}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallFront
@@ -459,6 +463,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 915702840}
     m_Modifications:
+    - target: {fileID: 3654910166605121519, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 44f8a9a9065986e428b629b429d37404, type: 2}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallBack
@@ -573,6 +581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaadf4fe5722cae42b6558866f15a0ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PAUppercut
+  abilityType: 0
   startupTime: 0
   activeTime: 0.3
   recoveryTime: 0.1
@@ -905,6 +914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae908b345eda1ae42ac2fca336314181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PABlock
+  abilityType: 0
   startupTime: 0
   activeTime: 0.5
   recoveryTime: 0.2
@@ -1094,6 +1104,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 915702840}
     m_Modifications:
+    - target: {fileID: 3654910166605121519, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 44f8a9a9065986e428b629b429d37404, type: 2}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallLeft
@@ -1503,6 +1517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae561f3f436aaa4e86fcaca576faaff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PADivekick
+  abilityType: 0
   startupTime: 0
   activeTime: 0.3
   recoveryTime: 0.1
@@ -1610,6 +1625,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 915702840}
     m_Modifications:
+    - target: {fileID: 3654910166605121519, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 44f8a9a9065986e428b629b429d37404, type: 2}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: WallRight
@@ -1688,6 +1707,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 915702840}
     m_Modifications:
+    - target: {fileID: 3654910166605121519, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 44f8a9a9065986e428b629b429d37404, type: 2}
     - target: {fileID: 6301980382828080734, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
       propertyPath: m_Name
       value: Ceilling
