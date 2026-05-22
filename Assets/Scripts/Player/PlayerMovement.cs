@@ -27,6 +27,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private float _maxXAngle;
     [SerializeField] private float _maxXRotationPerFrame;
+    [SerializeField] private bool _lookBall;
+    [SerializeField] private float _smoothTime = 1;
+    private Vector3 _smoothVelocity;
+    private Ball _ball;
 
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
@@ -52,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+        _ball = FindFirstObjectByType<Ball>();
     }
 
     private void Update()
@@ -66,17 +71,30 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Limit X rotation
-        var rotX = _playerInput.cameraRotation.x * Time.deltaTime;
-        rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
-        var newRotX = rotX + pivotCamera.eulerAngles.x;
-        if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
-        else newRotX = Mathf.Max(newRotX, 360-_maxXAngle);
-        // Don't limit Y rotation
-        var newRotY =_playerInput.cameraRotation.y * Time.deltaTime + pivotCamera.eulerAngles.y;
-        // Keep Z rotation
-        var newRotZ = pivotCamera.eulerAngles.z;
-        pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
+        // Camera orientation
+        if(!_lookBall)
+        {
+            // Limit X rotation
+            var rotX = _playerInput.cameraRotation.x * Time.deltaTime;
+            rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
+            var newRotX = rotX + pivotCamera.eulerAngles.x;
+            if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
+            else newRotX = Mathf.Max(newRotX, 360 - _maxXAngle);
+            // Don't limit Y rotation
+            var newRotY = _playerInput.cameraRotation.y * Time.deltaTime + pivotCamera.eulerAngles.y;
+            // Keep Z rotation
+            var newRotZ = pivotCamera.eulerAngles.z;
+            pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
+        }
+        else
+        {
+            Vector3 relativePos = _ball.transform.position - transform.position;
+            Quaternion rotation = Quaternion.LookRotation(relativePos);
+            rotation = Quaternion.Lerp(pivotCamera.rotation, rotation, Mathf.Lerp(0.5f, 5f, 1-_ball.currentSpeedLevelIndex/10f) * Time.deltaTime);
+            // pivotCamera.rotation = rotation;
+            pivotCamera.eulerAngles= new Vector3(rotation.eulerAngles.x, rotation.eulerAngles.y, 0);
+            // pivotCamera.eulerAngles = Vector3.SmoothDamp(pivotCamera.eulerAngles, rotation.eulerAngles, ref _smoothVelocity, _smoothTime);
+        }
     }
 
     private void FixedUpdate()
