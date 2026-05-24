@@ -43,6 +43,7 @@ public class HumanPlayerInput : MonoBehaviour
         // Recombine according to original rotation
         var projected = (currentDirection.x * cameraPosition.right + currentDirection.y * cameraPosition.forward).normalized;
         _playerInput.currentDirection = Vector2.right * projected.x + Vector2.up * projected.z;
+        _playerInput.rawDirection = currentDirection;
 
         // Camera Rotation
         Vector2 rotation;

@@ -43,6 +43,8 @@ public class Ball : MonoBehaviour
     #region Subcomponents
         private Rigidbody _rigidbody;
         private MeshRenderer _meshRenderer;
+        private Animator _animator;
+        private LineRenderer _lineRenderer;
     #endregion
 
     #region Physics
@@ -53,6 +55,7 @@ public class Ball : MonoBehaviour
     private float _currentFrameDistanceRemaining;
     private const float MAX_STEP_LENGTH = 0.5f;
     private const int MAX_STEP_NB = 100;
+    public bool isFreezeFrame = false;
     
     #endregion
     
@@ -85,6 +88,8 @@ public class Ball : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _vfxImpact = GetComponentInChildren<VisualEffect>();
+        _animator = GetComponent<Animator>();
+        _lineRenderer = GetComponent<LineRenderer>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -92,6 +97,7 @@ public class Ball : MonoBehaviour
     {
         _currentFramePosition = _rigidbody.position;
         _radius = transform.localScale.x / 2;
+        _lineRenderer.enabled = false;
     }
 
     // Update is called once per frame
@@ -153,6 +159,8 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isFreezeFrame) return;
+        
         _rigidbody.MovePosition(_currentFramePosition);
         _currentFrameCollisions.Clear();
         _currentFrameDirection = _direction.normalized;
@@ -282,6 +290,26 @@ public class Ball : MonoBehaviour
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
+        if(currentSpeedLevel.freezeFrames>0)
+        {
+            _animator.Play("FreezeFrame");
+        }
+    }
+
+    public void ShowLine()
+    {
+        _lineRenderer.enabled = true;
+        _lineRenderer.material.SetVector("_Center", _currentFramePosition);
+        if (Physics.Raycast(_currentFramePosition, _direction, out RaycastHit hit, Mathf.Infinity))
+        {
+            _lineRenderer.SetPosition(0, _currentFramePosition);
+            _lineRenderer.SetPosition(1, hit.point);
+        }
+    }
+
+    public void HideLine()
+    {
+        _lineRenderer.enabled = false;
     }
 
     public void StopSimulation(Vector3 spot)

@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 2
   speedMultiplier: 1.5
   damageMultiplier: 12
-  freezeFrames: 0
+  freezeFrames: 60

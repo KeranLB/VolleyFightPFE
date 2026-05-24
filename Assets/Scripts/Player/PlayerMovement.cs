@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Override movement")]
     public bool isOverriden;
     public Vector3 overrideVelocity;
+    public bool isFrozen;
 
     #region Delegates
     public event Action OnPlayerJump;
@@ -61,6 +62,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Completely prevent moving (aiming...)
+        if (isFrozen) return;
+        
         // Make the character face movement direction
         if (!isOverriden)
         {
@@ -99,6 +103,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Completely prevent moving (aiming...)
+        if (isFrozen) return;
+        
         if (isOverriden)
         {
             _currentVelocity = Quaternion.AngleAxis(characterModel.eulerAngles.y, Vector3.up) * overrideVelocity;
