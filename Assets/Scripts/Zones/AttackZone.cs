@@ -62,7 +62,9 @@ public class AttackZone : PlayerHitZone
         OnPlayerAttackSuccess?.Invoke(ball, false);
         base.OnTrajectory(ball, hitInfo);
         ball.StopSimulation(hitInfo.point);
-        ball.GetHit(GetOutDirection(), speedLevelChange);
+        ball.GetHit(GetOutDirection(), speedLevelChange, player);
+        ball.Freeze();
+        player.playerAim.StartAim(ball, GetOutDirection());
     }
 
     public override void OnOverlap(Ball ball)
@@ -77,5 +79,7 @@ public class AttackZone : PlayerHitZone
         OnPlayerAttackSuccess?.Invoke(ball, true);
         base.OnOverlap(ball);
         ball.GetHit(GetOutDirection(), speedLevelChange, player);
+        ball.Freeze();
+        player.playerAim.StartAim(ball, GetOutDirection());
     }
 }

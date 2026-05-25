@@ -7,7 +7,7 @@ public class FreezeFrameState : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         _ball = animator.GetComponent<Ball>();
-        _ball.isFreezeFrame = true;
+        _ball.Freeze();
         animator.SetFloat("Speed", 1f / (_ball.currentSpeedLevel.freezeFrames / 60f));
         _ball.ShowLine();
     }
@@ -21,7 +21,7 @@ public class FreezeFrameState : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _ball.isFreezeFrame = false;
+        _ball.UnFreeze();
         _ball.HideLine();
     }
 

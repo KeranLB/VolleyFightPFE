@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     public PlayerLife playerLife;
     public PlayerActions playerActions;
     public PlayerMovement playerMovement;
+    public PlayerAim playerAim;
     public Camera playerCamera;
 
     public int playerId;

@@ -290,10 +290,20 @@ public class Ball : MonoBehaviour
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
-        if(currentSpeedLevel.freezeFrames>0)
-        {
-            _animator.Play("FreezeFrame");
-        }
+        // if(currentSpeedLevel.freezeFrames>0)
+        // {
+        //     _animator.Play("FreezeFrame");
+        // }
+    }
+
+    public void Freeze()
+    {
+        isFreezeFrame = true;
+    }
+
+    public void UnFreeze()
+    {
+        isFreezeFrame = false;
     }
 
     public void ShowLine()
