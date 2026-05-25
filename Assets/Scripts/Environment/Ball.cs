@@ -12,6 +12,7 @@ public class Ball : MonoBehaviour
     #region Speeds
 
     [SerializeField] private float _maxSpeed;
+    private float _slowSpeed = 0f;
     private float _realSpeed;
     public float baseSpeed = 10.0f;
     public float baseDamage = 1f;
@@ -245,6 +246,7 @@ public class Ball : MonoBehaviour
         currentSpeedLevelIndex = Mathf.Clamp(i, 0, _speedLevels.Count - 1);
         currentSpeedLevel = _speedLevels[currentSpeedLevelIndex];
         _maxSpeed = GetFinalSpeed();
+        _slowSpeed = GetSlowSpeed();
         OnSpeedLevelChanged?.Invoke(currentSpeedLevelIndex);
     }
 
@@ -290,10 +292,31 @@ public class Ball : MonoBehaviour
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
+        StartCoroutine(DecelerationBall());
         // if(currentSpeedLevel.freezeFrames>0)
         // {
         //     _animator.Play("FreezeFrame");
         // }
+    }
+
+    void brouillonTaRace()
+    {
+        float t = currentSpeedLevel.decelerationDuration.Evaluate(1);
+        Keyframe minKey = currentSpeedLevel.decelerationDuration.keys[0];
+        float minSpeed = minKey.value;
+
+        //currentSpeedLevel.decelerationDuration.SetKeys
+       //float maxSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+    }
+
+    private IEnumerator DecelerationBall()
+    {
+        float currentMultiplierSpeed = currentSpeedLevel.slowSpeedMultiplier + 1;
+        while (currentMultiplierSpeed > currentSpeedLevel.slowSpeedMultiplier)
+        {
+            currentMultiplierSpeed = Mathf.Lerp(currentSpeedLevel.speedMultiplier, currentSpeedLevel.slowSpeedMultiplier, currentSpeedLevel.decelerationDuration);
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     public void Freeze()
@@ -336,6 +359,11 @@ public class Ball : MonoBehaviour
     public float GetFinalSpeed()
     {
         return baseSpeed * currentSpeedLevel.speedMultiplier;
+    }
+
+    public float GetSlowSpeed()
+    {
+        return baseSpeed * currentSpeedLevel.slowSpeedMultiplier;
     }
     
     void GetBlocked(Vector3 target)
