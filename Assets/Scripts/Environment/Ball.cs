@@ -19,6 +19,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private float _passSpeed;
     [SerializeField] private List<SO_BallSpeedLevel> _speedLevels;
     public SO_BallSpeedLevel currentSpeedLevel;
+    private Coroutine _decelerationCoroutine;
     public int currentSpeedLevelIndex;
 
     #endregion
@@ -262,7 +263,6 @@ public class Ball : MonoBehaviour
         ChangeFramePosition(sphereCenter);
         ChangeFrameDirection(Vector3.Reflect(_currentFrameDirection, normal));
         ReduceFrameDistanceRemaining(distance);
-        _realSpeed = _maxSpeed;
         _currentFrameCollisions.Add(sphereCenter);
         isSwitchingSide = false;
         VFXEventAttribute attribute = new VFXEventAttribute(_vfxImpact.CreateVFXEventAttribute());
@@ -292,41 +292,36 @@ public class Ball : MonoBehaviour
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
         _realSpeed = _maxSpeed;
-        StartCoroutine(DecelerationBall());
-        // if(currentSpeedLevel.freezeFrames>0)
-        // {
-        //     _animator.Play("FreezeFrame");
-        // }
-    }
-
-    void brouillonTaRace()
-    {
-        float t = currentSpeedLevel.decelerationDuration.Evaluate(1);
-        Keyframe minKey = currentSpeedLevel.decelerationDuration.keys[0];
-        float minSpeed = minKey.value;
-
-        //currentSpeedLevel.decelerationDuration.SetKeys
-       //float maxSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+        //StartCoroutine(DecelerationBall());
     }
 
     private IEnumerator DecelerationBall()
     {
-        float currentMultiplierSpeed = currentSpeedLevel.slowSpeedMultiplier + 1;
-        while (currentMultiplierSpeed > currentSpeedLevel.slowSpeedMultiplier)
+        float time = 0f;
+        float playBackSpeed = 1 / currentSpeedLevel.decelerationDuration;
+        while (time <= 1)
         {
-            currentMultiplierSpeed = Mathf.Lerp(currentSpeedLevel.speedMultiplier, currentSpeedLevel.slowSpeedMultiplier, currentSpeedLevel.decelerationDuration);
+            time += playBackSpeed * Time.fixedDeltaTime;
+            float tmp = currentSpeedLevel.decelerationCurve.Evaluate(time);
+            _realSpeed = Mathf.Lerp(_slowSpeed, _maxSpeed, tmp);
             yield return new WaitForFixedUpdate();
         }
+        _decelerationCoroutine = null;
     }
 
     public void Freeze()
     {
         isFreezeFrame = true;
+        if (_decelerationCoroutine != null)
+        {
+            StopCoroutine(_decelerationCoroutine);
+        }
     }
 
     public void UnFreeze()
     {
         isFreezeFrame = false;
+        _decelerationCoroutine = StartCoroutine(DecelerationBall());
     }
 
     public void ShowLine()

@@ -14,5 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_BallSpeedLevel
   index: 0
   speedMultiplier: 0
+  slowSpeedMultiplier: 0
+  decelerationDuration: 0
+  decelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   damageMultiplier: 0
   freezeFrames: 0

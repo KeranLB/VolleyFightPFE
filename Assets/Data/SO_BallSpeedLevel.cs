@@ -6,7 +6,8 @@ public class SO_BallSpeedLevel : ScriptableObject
     public int index;
     public float speedMultiplier;
     public float slowSpeedMultiplier;
-    public AnimationCurve decelerationDuration;
+    public float decelerationDuration;
+    public AnimationCurve decelerationCurve;
     public float damageMultiplier;
     public int freezeFrames;
 }
