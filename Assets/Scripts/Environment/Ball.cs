@@ -20,6 +20,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private List<SO_BallSpeedLevel> _speedLevels;
     public SO_BallSpeedLevel currentSpeedLevel;
     private Coroutine _decelerationCoroutine;
+    private Coroutine _downGradeCoroutine;
     public int currentSpeedLevelIndex;
 
     #endregion
@@ -307,11 +308,32 @@ public class Ball : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         _decelerationCoroutine = null;
+        _downGradeCoroutine = StartCoroutine(DownGradeLevel());
+    }
+
+    private IEnumerator DownGradeLevel()
+    {
+        yield return new WaitForSeconds(currentSpeedLevel.speedLevelDuration);
+        ChangeSpeedLevel(currentSpeedLevelIndex - 1);
+        _realSpeed = _slowSpeed;
+        if (currentSpeedLevelIndex >= 2)
+        {
+            _downGradeCoroutine = StartCoroutine(DownGradeLevel());
+        }
+        else
+        {
+            _downGradeCoroutine = null;
+        }
     }
 
     public void Freeze()
     {
         isFreezeFrame = true;
+        if (_downGradeCoroutine != null)
+        {
+            StopCoroutine(_downGradeCoroutine);
+            _downGradeCoroutine = null;
+        }
         if (_decelerationCoroutine != null)
         {
             StopCoroutine(_decelerationCoroutine);
