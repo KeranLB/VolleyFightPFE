@@ -3608,7 +3608,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8799859916885463089, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: _lookBall
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8799859916885463089, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: _smoothTime
