@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BallSpeedLevel_03
   m_EditorClassIdentifier: Assembly-CSharp::SO_BallSpeedLevel
   index: 3
-  speedMultiplier: 10
+  speedMultiplier: 5
   slowSpeedMultiplier: 2
   decelerationDuration: 5
   decelerationCurve:
@@ -40,6 +40,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  damageMultiplier: 15
-  freezeFrames: 60
-  speedLevelDuration: 10
+  damageMultiplier: 20
+  freezeFrames: 0
+  speedLevelDuration: 30

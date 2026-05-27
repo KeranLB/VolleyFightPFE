@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_BallSpeedLevel
   index: 1
   speedMultiplier: 2
-  slowSpeedMultiplier: 0.5
+  slowSpeedMultiplier: 1
   decelerationDuration: 5
   decelerationCurve:
     serializedVersion: 2
@@ -41,5 +41,5 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   damageMultiplier: 10
-  freezeFrames: 60
+  freezeFrames: 0
   speedLevelDuration: 10
