@@ -9,6 +9,7 @@ public class HealthZone : PlayerHitZone
             Vector3 position = player.transform.position;
             base.OnTrajectory(ball, hitInfo);
             player.playerLife.TakeDamage(ball.GetFinalDamage());
+            ball.ChangeSpeedLevel(1);
             ball.Bunt(player, position);
         }
         else
@@ -26,6 +27,7 @@ public class HealthZone : PlayerHitZone
             Vector3 position = player.transform.position;
             base.OnOverlap(ball);
             player.playerLife.TakeDamage(ball.GetFinalDamage());
+            ball.ChangeSpeedLevel(1);
             ball.Bunt(player, position);
         }
         else
