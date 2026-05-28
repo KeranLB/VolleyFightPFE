@@ -825,7 +825,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: isGamepad
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: gamepadIndex
@@ -1123,6 +1123,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1493094703084309020, guid: 3271371349c75044d8d43753a71832cd, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1886372140085176051, guid: 3271371349c75044d8d43753a71832cd, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1647,7 +1651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: isGamepad
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: gamepadIndex
@@ -1792,7 +1796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: isGamepad
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: gamepadIndex
