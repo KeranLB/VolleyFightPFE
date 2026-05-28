@@ -1728,7 +1728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4724773231053523976, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: isGamepad
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5987737778682160265, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
       propertyPath: m_Layer
