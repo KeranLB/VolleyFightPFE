@@ -30,7 +30,7 @@ Shader "Custom/InvertedHullOutline"
         [Header(Stretch Mask)]
         [Space(4)]
         _StretchIntensity ("Stretch Intensity", Range(0, 1)) = 0.0
-        _StretchWidth     ("Stretch Width Max", Range(0, 0.5)) = 0.05
+        _StretchWidth     ("Stretch Width Max", Range(0, 7)) = 0.05
         _StretchMask      ("Stretch Mask (R)", 2D) = "white" {}
     }
 
