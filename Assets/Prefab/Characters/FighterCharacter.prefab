@@ -358,7 +358,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GuardZone
   player: {fileID: 1730776642683030820}
-  speedLevelChange: 0
   speedLevelOverride: 2
 --- !u!1 &3532454494911602177
 GameObject:
@@ -666,7 +665,8 @@ MonoBehaviour:
   startupTime: 0
   activeTime: 0.5
   recoveryTime: 0.2
-  attackZone: {fileID: 8061226238098765445}
+  attackZone: {fileID: 0}
+  guardZone: {fileID: 8061226238098765445}
   overridesMovement: 0
   velocityCurveX:
     serializedVersion: 2
@@ -737,6 +737,7 @@ MonoBehaviour:
   activeTime: 0.3
   recoveryTime: 0.1
   attackZone: {fileID: 1741460190397509634}
+  guardZone: {fileID: 0}
   overridesMovement: 1
   velocityCurveX:
     serializedVersion: 2
@@ -895,6 +896,7 @@ MonoBehaviour:
   activeTime: 0.3
   recoveryTime: 0.1
   attackZone: {fileID: 679690453406668916}
+  guardZone: {fileID: 0}
   overridesMovement: 1
   velocityCurveX:
     serializedVersion: 2

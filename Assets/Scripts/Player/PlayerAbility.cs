@@ -9,6 +9,7 @@ public class PlayerAbility : MonoBehaviour
     public float recoveryTime;
 
     public AttackZone attackZone;
+    public GuardZone guardZone;
 
     public bool overridesMovement;
     public AnimationCurve velocityCurveX;
@@ -30,12 +31,14 @@ public class PlayerAbility : MonoBehaviour
 
     public void EnableEffect()
     {
-        attackZone.Activate();
+        attackZone?.Activate();
+        guardZone?.Activate();
     }
 
     public void DisableEffect()
     {
-        attackZone.Deactivate();
+        attackZone?.Deactivate();
+        guardZone?.Deactivate();
     }
 }
 

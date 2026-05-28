@@ -276,7 +276,6 @@ public class Ball : MonoBehaviour
         OnBallPlayer?.Invoke(player);
         StopSimulation(position);
         GetHit(Vector3.up);
-        ChangeSpeedLevel(1);
         _currentFrameCollisions.Add(position);
     }
     
@@ -313,6 +312,8 @@ public class Ball : MonoBehaviour
 
     private IEnumerator DownGradeLevel()
     {
+        if (currentSpeedLevelIndex <= 1) yield break;
+        
         yield return new WaitForSeconds(currentSpeedLevel.speedLevelDuration);
         ChangeSpeedLevel(currentSpeedLevelIndex - 1);
         _realSpeed = _slowSpeed;
@@ -337,6 +338,7 @@ public class Ball : MonoBehaviour
         if (_decelerationCoroutine != null)
         {
             StopCoroutine(_decelerationCoroutine);
+            _decelerationCoroutine = null;
         }
     }
 
