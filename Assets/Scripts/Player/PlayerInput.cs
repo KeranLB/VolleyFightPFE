@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -12,4 +11,5 @@ public class PlayerInput : MonoBehaviour
     public bool pressedAttack1;
     public bool pressedAttack2;
     public bool pressedBlock;
+    public bool pressedLockCamera;
 }

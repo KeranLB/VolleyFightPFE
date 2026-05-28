@@ -75,6 +75,7 @@ public class HumanPlayerInput : MonoBehaviour
             _playerInput.pressedAttack1 = Mouse.current.leftButton.wasPressedThisFrame;
             _playerInput.pressedAttack2 = Mouse.current.rightButton.wasPressedThisFrame;
             _playerInput.pressedBlock = Input.GetKeyDown(KeyCode.E);
+            _playerInput.pressedLockCamera = Input.GetKeyDown(KeyCode.Tab);
             // _playerInput.holdsJump = Input.GetButton("Jump");
             // _playerInput.pressedAttack = Input.GetButtonDown("Fire1");
             // _playerInput.pressedBlock = Input.GetButtonDown("Fire2");
@@ -93,6 +94,7 @@ public class HumanPlayerInput : MonoBehaviour
             _playerInput.pressedAttack1 = Gamepad.all[gamepadIndex].buttonWest.wasPressedThisFrame || Gamepad.all[gamepadIndex].rightShoulder.wasPressedThisFrame;
             _playerInput.pressedAttack2 = Gamepad.all[gamepadIndex].buttonNorth.wasPressedThisFrame || Gamepad.all[gamepadIndex].rightTrigger.wasPressedThisFrame;
             _playerInput.pressedBlock = Gamepad.all[gamepadIndex].buttonEast.wasPressedThisFrame || Gamepad.all[gamepadIndex].leftShoulder.wasPressedThisFrame;
+            _playerInput.pressedLockCamera = Gamepad.all[gamepadIndex].rightStickButton.wasPressedThisFrame;
         }
     }
     

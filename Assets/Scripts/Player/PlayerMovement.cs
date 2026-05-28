@@ -65,6 +65,9 @@ public class PlayerMovement : MonoBehaviour
         // Completely prevent moving (aiming...)
         if (isFrozen) return;
         
+        // Camera lock
+        if (_playerInput.pressedLockCamera) _lookBall = !_lookBall;
+        
         // Make the character face movement direction
         if (!isOverriden)
         {
