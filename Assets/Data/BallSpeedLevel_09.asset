@@ -15,7 +15,7 @@ MonoBehaviour:
   index: 9
   speedMultiplier: 80
   slowSpeedMultiplier: 40
-  decelerationDuration: 0
+  decelerationDuration: 5
   decelerationCurve:
     serializedVersion: 2
     m_Curve:
