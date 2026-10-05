@@ -278,16 +278,43 @@ public class Ball : MonoBehaviour
         GetHit(Vector3.up);
         _currentFrameCollisions.Add(position);
     }
-    
+
+    public void Bunt(KratosPlayer player, Vector3 position)
+    {
+        // OnBallPlayer?.Invoke(player);
+        StopSimulation(position);
+        GetHit(Vector3.up);
+        _currentFrameCollisions.Add(position);
+    }
+
     public void PassThrough(RaycastHit hitInfo)
     {
         ChangeFramePosition(hitInfo.point);
         ReduceFrameDistanceRemaining(hitInfo.distance);
     }
+    
+    public void GetHit(Vector3 direction)
+    {
+        ChangeFrameDirection(direction);
+        _direction = direction.normalized;
+        ChangeSpeedLevel(currentSpeedLevelIndex);
+        _realSpeed = _maxSpeed;
+        //StartCoroutine(DecelerationBall());
+    }
 
     public void GetHit(Vector3 direction, int speedLevelChange = 0, Player player = null)
     {
         OnBallHit?.Invoke(player);
+        ChangeFrameDirection(direction);
+        _direction = direction.normalized;
+        ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);
+        _realSpeed = _maxSpeed;
+        //StartCoroutine(DecelerationBall());
+    }
+    
+    public void GetHit(Vector3 direction, int speedLevelChange = 0, KratosPlayer player = null)
+    {
+        // OnBallHit?.Invoke(player);
         ChangeFrameDirection(direction);
         _direction = direction.normalized;
         ChangeSpeedLevel(currentSpeedLevelIndex + speedLevelChange);

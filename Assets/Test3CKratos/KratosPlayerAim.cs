@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-public class PlayerAim : MonoBehaviour
+public class KratosPlayerAim : MonoBehaviour
 {
-    public Player player;
+    public KratosPlayer player;
     private Vector3 _aimDirection;
     public float sensitivity = 1f;
     public bool isActive;

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerHitZone : HitZone
 {
-    public Player player;
+    public KratosPlayer player;
 
     public override void OnTrajectory(Ball ball, RaycastHit hitInfo)
     {

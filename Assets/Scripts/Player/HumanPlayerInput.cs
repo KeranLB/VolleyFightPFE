@@ -7,7 +7,7 @@ public class HumanPlayerInput : MonoBehaviour
 {
     private PlayerInput _playerInput;
     
-    public Transform cameraPosition;
+    public Transform orientationPivot;
 
     public bool isGamepad;
     public int gamepadIndex;
@@ -40,10 +40,10 @@ public class HumanPlayerInput : MonoBehaviour
         {
             currentDirection = Gamepad.all[gamepadIndex].leftStick.value;
         }
-        // Recombine according to original rotation
-        var projected = (currentDirection.x * cameraPosition.right + currentDirection.y * cameraPosition.forward).normalized;
-        _playerInput.currentDirection = Vector2.right * projected.x + Vector2.up * projected.z;
         _playerInput.rawDirection = currentDirection;
+        // Recombine according to original rotation
+        var projected = (currentDirection.x * orientationPivot.right + currentDirection.y * orientationPivot.forward).normalized;
+        _playerInput.currentDirection = Vector2.right * projected.x + Vector2.up * projected.z;
 
         // Camera Rotation
         Vector2 rotation;
