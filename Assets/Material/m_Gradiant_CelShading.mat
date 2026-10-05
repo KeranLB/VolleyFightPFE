@@ -146,7 +146,8 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissive_color: {r: 0, g: 0, b: 0, a: 1}
     - _Light_Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Shadow_Color: {r: 0.9339623, g: 0.73571557, b: 0.9153122, a: 1}
+    - _Midcolor: {r: 0.98453885, g: 0.7216981, b: 1, a: 1}
+    - _Shadow_Color: {r: 1, g: 0.5896226, b: 0.9589621, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
