@@ -34,6 +34,13 @@ public class KratosMovement : MonoBehaviour
     private bool _canDoubleJump;
     private Ball _ball;
 
+    #region Inputs
+    private Vector2 _movementInput;
+    private bool _pressedJump;
+    private bool _holdsJump;
+    private bool _releasedJump;
+    #endregion
+
     [Header("Override movement")]
     public bool isOverriden;
     public Vector3 overrideVelocity;
@@ -54,6 +61,14 @@ public class KratosMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void Update()
+    {
+        _movementInput = _playerInput.rawDirection;
+        _pressedJump = _playerInput.pressedJump;
+        _holdsJump = _playerInput.holdsJump;
+        _releasedJump = _playerInput.releasedJump;
     }
 
     private void FixedUpdate()
@@ -87,7 +102,7 @@ public class KratosMovement : MonoBehaviour
         if (
             Physics.Raycast(
                 _rigidbody.position, Mathf.Sign(_currentVelocity.y)*Vector3.up, out hitInfo,
-                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime + 1.0f, collisionLayers
+                Mathf.Abs(_currentVelocity.y) * Time.fixedDeltaTime - _feetSpot.localPosition.y, collisionLayers
             )
         )
         {
@@ -96,8 +111,8 @@ public class KratosMovement : MonoBehaviour
         }
         // Check walls on side
         if (
-            Physics.SphereCast(
-                _rigidbody.position, 0.5f, _currentVelocity.normalized, out hitInfo,
+            Physics.CapsuleCast(
+                _rigidbody.position + Vector3.up * (_feetSpot.localPosition.y + 0.5f), _rigidbody.position + Vector3.down * (_feetSpot.localPosition.y - 0.5f), 0.5f, _currentVelocity.normalized, out hitInfo,
                 _currentVelocity.magnitude*Time.fixedDeltaTime, collisionLayers
             )
         )
@@ -121,7 +136,7 @@ public class KratosMovement : MonoBehaviour
     private void UpdateVelocityFromInputs()
     {
         // Get Inputs and recombine them for current rotation
-        var world_dir = _playerInput.rawDirection.x * characterModel.right + _playerInput.rawDirection.y * characterModel.forward;
+        var world_dir = _movementInput.x * characterModel.right + _movementInput.y * characterModel.forward;
         Vector2 tmp = new Vector2(world_dir.x, world_dir.z);
 
         // Get GroundCheck
@@ -168,7 +183,7 @@ public class KratosMovement : MonoBehaviour
         if (_isGrounded)
         {
             _canDoubleJump = true;
-            if(_playerInput.holdsJump || _playerInput.pressedJump)
+            if(_holdsJump || _pressedJump)
             {
                 OnPlayerJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
@@ -182,7 +197,7 @@ public class KratosMovement : MonoBehaviour
         else // In air
         {
             // Double jump
-            if (_playerInput.pressedJump && _canDoubleJump)
+            if (_pressedJump && _canDoubleJump)
             {
                 OnPlayerDoubleJump?.Invoke();
                 _currentVelocity.y = _jumpForce;
@@ -194,7 +209,7 @@ public class KratosMovement : MonoBehaviour
             {
                 _isSlowFalling = false;
                 // Short jump if we release the jump button
-                if (_justJumped && _playerInput.releasedJump)
+                if (_justJumped && _releasedJump)
                 {
                     _currentVelocity.y /= 2;
                 }
@@ -203,7 +218,7 @@ public class KratosMovement : MonoBehaviour
             {
                 _justJumped = false;
                 // Slow fall if we hold jump button
-                _isSlowFalling = _playerInput.holdsJump;
+                _isSlowFalling = _holdsJump;
             }
             var realMaxFallSpeed = isSlowFalling ? _maxFallSpeed * _slowFallFactor : _maxFallSpeed;
             _currentVelocity.y = Mathf.Max(realMaxFallSpeed, _currentVelocity.y + _gravity * Time.fixedDeltaTime);

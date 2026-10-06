@@ -17,7 +17,7 @@ public class KratosPlayer : MonoBehaviour
     public PlayerActions playerActions;
     public KratosMovement playerMovement;
     public KratosPlayerAim playerAim;
-    public Camera playerCamera;
+    public KratosCamera playerCamera;
 
     public int playerId;
 }

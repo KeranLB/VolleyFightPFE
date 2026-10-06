@@ -243,6 +243,20 @@ public class Ball : MonoBehaviour
         };
     }
 
+    public void MakeTransparent()
+    {
+        var transparentColor = _meshRenderer.material.color;
+        transparentColor.a = 0.2f;
+        _meshRenderer.material.color = transparentColor;
+    }
+    
+    public void MakeOpaque()
+    {
+        var opaqueColor = _meshRenderer.material.color;
+        opaqueColor.a = 1.0f;
+        _meshRenderer.material.color = opaqueColor;
+    }
+
     public void ChangeSpeedLevel(int i)
     {
         currentSpeedLevelIndex = Mathf.Clamp(i, 0, _speedLevels.Count - 1);
@@ -356,6 +370,7 @@ public class Ball : MonoBehaviour
 
     public void Freeze()
     {
+        MakeTransparent();
         isFreezeFrame = true;
         if (_downGradeCoroutine != null)
         {
@@ -371,6 +386,7 @@ public class Ball : MonoBehaviour
 
     public void UnFreeze()
     {
+        MakeOpaque();
         isFreezeFrame = false;
         _decelerationCoroutine = StartCoroutine(DecelerationBall());
     }
