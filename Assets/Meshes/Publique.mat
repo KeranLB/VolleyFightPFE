@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5839865150841853705
+--- !u!114 &-7742862016334215893
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: m_Perso_CelShading 1
-  m_Shader: {fileID: -6465566751694194690, guid: 5ca9d5b003e08324b8cf8fa74cbf393c, type: 3}
+  m_Name: Publique
+  m_Shader: {fileID: -6465566751694194690, guid: 8980d2278d1772842b0b9845337599fb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -65,10 +65,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Mask_Alpha:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -85,12 +81,8 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Texture_Base:
-        m_Texture: {fileID: 2800000, guid: 6c39e060642bb464293a96ded524f267, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture_Emissive:
-        m_Texture: {fileID: 0}
+    - _Texture2D:
+        m_Texture: {fileID: 2800000, guid: 92fc19bd3a6ee7447830c0bab95acdee, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -141,16 +133,13 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
+    - _2emelumiere: {r: 0.8584906, g: 0.7977484, b: 0.8539263, a: 1}
+    - _2emeombre: {r: 0.543075, g: 0, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Direction1: {r: 1.81, g: 2.19, b: 19.2, a: 0}
-    - _Direction2: {r: 2.37, g: 3.32, b: 7.03, a: 0}
-    - _Direction3: {r: 2.37, g: 3.32, b: 7.03, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Emissive_color: {r: 0, g: 0, b: 0, a: 1}
-    - _Light_Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Midcolor: {r: 0.99616057, g: 0.8349056, b: 1, a: 1}
-    - _Shadow_Color: {r: 0.8327716, g: 0.7802154, b: 0.8396226, a: 1}
+    - _Lumiere: {r: 0.9056604, g: 0.67070127, b: 0.8894463, a: 1}
+    - _Ombre: {r: 0.9056604, g: 0.7847749, b: 0.49982202, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

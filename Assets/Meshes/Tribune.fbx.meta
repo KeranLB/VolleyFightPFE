@@ -1,19 +1,9 @@
 fileFormatVersion: 2
-guid: 26a04bf04032511459fcc0d574e0e099
+guid: a414cff6a568cc3408ab9dbd42fb3b7a
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: M_Table_001
-    second: {fileID: 2100000, guid: 992746f8f8a81f14d98f95f6fb414c4e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: m_Holow_001
-    second: {fileID: -876546973899608171, guid: 833740d59d70cde4bbccd98e35be03f0, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
