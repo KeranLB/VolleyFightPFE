@@ -3,13 +3,16 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region Components
     private PlayerInput _playerInput;
     private Rigidbody _rigidbody;
 
     public LayerMask collisionLayers;
     public Transform characterModel;
     public Transform pivotCamera;
+    #endregion
 
+    #region Movement
     [Header("Horizontal Movement")]
     [SerializeField] private float _groundAcceleration;
     [SerializeField] private float _groundFriction;
@@ -23,15 +26,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool _justJumped;
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
+    #endregion
 
-    [Header("Camera")]
-    [SerializeField] private float _maxXAngle;
-    [SerializeField] private float _maxXRotationPerFrame;
-    [SerializeField] private bool _lookBall;
-    [SerializeField] private float _smoothTime = 1;
-    private Vector3 _smoothVelocity;
-    private Ball _ball;
-
+    #region VariablesDiv
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
     private Vector2 _direction;
@@ -46,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isOverriden;
     public Vector3 overrideVelocity;
     public bool isFrozen;
+    #endregion
 
     #region Delegates
     public event Action OnPlayerJump;
@@ -57,16 +55,12 @@ public class PlayerMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
-        _ball = FindFirstObjectByType<Ball>();
     }
 
     private void Update()
     {
         // Completely prevent moving (aiming...)
         if (isFrozen) return;
-        
-        // Camera lock
-        if (_playerInput.pressedLockCamera) _lookBall = !_lookBall;
         
         // Make the character face movement direction
         if (!isOverriden)
@@ -76,31 +70,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 characterModel.forward = Vector3.right * dir.x + Vector3.forward * dir.y;
             }
-        }
-
-        // Camera orientation
-        if(!_lookBall)
-        {
-            // Limit X rotation
-            var rotX = _playerInput.cameraRotation.x * Time.deltaTime;
-            rotX = Mathf.Clamp(rotX, -_maxXRotationPerFrame, _maxXRotationPerFrame);
-            var newRotX = rotX + pivotCamera.eulerAngles.x;
-            if (newRotX < 180) newRotX = Mathf.Min(newRotX, _maxXAngle);
-            else newRotX = Mathf.Max(newRotX, 360 - _maxXAngle);
-            // Don't limit Y rotation
-            var newRotY = _playerInput.cameraRotation.y * Time.deltaTime + pivotCamera.eulerAngles.y;
-            // Keep Z rotation
-            var newRotZ = pivotCamera.eulerAngles.z;
-            pivotCamera.eulerAngles = new Vector3(newRotX, newRotY, newRotZ);
-        }
-        else
-        {
-            Vector3 relativePos = _ball.transform.position - transform.position;
-            Quaternion rotation = Quaternion.LookRotation(relativePos);
-            rotation = Quaternion.Lerp(pivotCamera.rotation, rotation, Mathf.Lerp(0.5f, 5f, 1-_ball.currentSpeedLevelIndex/10f) * Time.deltaTime);
-            // pivotCamera.rotation = rotation;
-            pivotCamera.eulerAngles= new Vector3(rotation.eulerAngles.x, rotation.eulerAngles.y, 0);
-            // pivotCamera.eulerAngles = Vector3.SmoothDamp(pivotCamera.eulerAngles, rotation.eulerAngles, ref _smoothVelocity, _smoothTime);
         }
     }
 

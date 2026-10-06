@@ -329,6 +329,30 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2981822178825555973, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
   m_PrefabInstance: {fileID: 3905606341821201992}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &337846290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337846285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d52bfc7c6a8a5ae458a1c7a3ade2f7b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraManager
+  _player: {fileID: 940663480}
+  _minBallDistance: 15
+  _maxBallDistance: 45
+  _isCameraDistanceActive: 0
+  _minCameraDistance: -11
+  _maxCameraDistance: -7
+  _isFovActive: 0
+  _minFov: 50
+  _maxFov: 75
+  _pivotCamera: {fileID: 823339063}
+  _minXAngle: 0
+  _maxXAngle: 30
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +805,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+--- !u!4 &823339063 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8357122705217506693, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+  m_PrefabInstance: {fileID: 3905606341821201992}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,6 +896,11 @@ Transform:
   - {fileID: 1385408505}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &940663480 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6559700741937977178, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+  m_PrefabInstance: {fileID: 3905606341821201992}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1079132534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2125,6 +2159,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7791844043668260406, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      propertyPath: isTpsView
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7791844043668260406, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -2205,6 +2243,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8799859916885463089, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      propertyPath: _maxXAngle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799859916885463089, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       propertyPath: _smoothTime
       value: 5
       objectReference: {fileID: 0}
@@ -2222,7 +2264,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5947970227115169457, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1175524577}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2981822178825555973, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 337846290}
   m_SourcePrefab: {fileID: 100100000, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
 --- !u!4 &3905606341821201994 stripped
 Transform:
@@ -2234,7 +2279,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3870563267189737242, guid: 9c30ac7d69ec66c48ac9ab7178d524e5, type: 3}
   m_PrefabInstance: {fileID: 3905606341821201992}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 940663480}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c68314da5fbdb0459bfb38f284ac253, type: 3}
