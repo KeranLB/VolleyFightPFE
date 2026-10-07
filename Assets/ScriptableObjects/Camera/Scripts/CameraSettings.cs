@@ -22,12 +22,12 @@ public class CameraSettings : ScriptableObject
 	[Min(0.1f)] public float velocitySmoothing = 5f;
 
 	[Header("Suivi")]
-	[Min(0.01f)] public float followSmoothTime = 0.35f;
-	[Min(1f)] public float maxFollowSpeed = 35f;
+	[Min(0.01f)] public float followSmoothTime = 0.6f;
+	[Min(1f)] public float maxFollowSpeed = 45f;
 
 	[Header ("Zoom")]
-	[Min(1f)] public float minDistance = 14f;
-	[Min(1f)] public float maxDistance = 40f;
+	[Min(1f)] public float minDistance = 35f;
+	[Min(1f)] public float maxDistance = 80f;
 	[Min(0f)] public float framingPadding = 5f;
 	[Min(0.01f)] public float zoomSmoothTime = 0.8f;
 

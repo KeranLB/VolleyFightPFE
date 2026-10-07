@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 924e8c5b9b873c7409247ae0f1a68597, type: 3}
   m_Name: CameraSettings_Match
   m_EditorClassIdentifier: Assembly-CSharp::CameraSettings
-  pitch: 45
-  yaw: 0
+  pitch: 43
+  yaw: 90
   arenaCenter: {x: 0, y: 0, z: 0}
-  arenaSize: {x: 60, y: 30}
-  focusInset: 6
+  arenaSize: {x: 180, y: 90}
+  focusInset: 25
   influenceRadius: 15
   depthFollow: 0.4
   lookAheadTime: 0.25
   maxLookAhead: 5
   velocitySmoothing: 5
   followSmoothTime: 0.35
-  maxFollowSpeed: 35
-  minDistance: 14
-  maxDistance: 40
+  maxFollowSpeed: 45
+  minDistance: 35
+  maxDistance: 80
   framingPadding: 5
   zoomSmoothTime: 0.8
   ballMaxSpeed: 40
