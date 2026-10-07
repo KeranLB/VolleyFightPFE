@@ -119,6 +119,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &22286353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1884029192776038153, guid: e0cb56b7363e74e4097da7b8bbfa4877, type: 3}
+  m_PrefabInstance: {fileID: 1722207591}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &22286355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22286353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b37ce4fabb35d4bad42ca2bd728e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalOutlineShake
+  key: 114
+  duration: 4.33
+  shakeIntensity: 19.7
+  shakeScale: 10
+  shakeSpeed: 16
+  falloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &36740763
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1077,10 +1123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c611988d1a0d6034e9a80b56c3d49c95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightSource
-  volumeColor: {r: 1, g: 1, b: 1, a: 1}
-  emissionIntensity: 1
-  radius: 2
-  softness: 5
 --- !u!114 &327496521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2094,7 +2136,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 25
+  field of view: 9
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -2693,7 +2735,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: e0cb56b7363e74e4097da7b8bbfa4877, type: 3}
       insertIndex: 0
       addedObject: {fileID: 1672974601}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1884029192776038153, guid: e0cb56b7363e74e4097da7b8bbfa4877, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 22286355}
   m_SourcePrefab: {fileID: 100100000, guid: e0cb56b7363e74e4097da7b8bbfa4877, type: 3}
 --- !u!4 &1722207592 stripped
 Transform:
@@ -3296,7 +3341,7 @@ Transform:
   m_GameObject: {fileID: 1987210876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.96, y: 10.31, z: -21.54}
+  m_LocalPosition: {x: 0.23, y: 10.31, z: -34.04}
   m_LocalScale: {x: 7.2402, y: 7.2402, z: 7.2402}
   m_ConstrainProportionsScale: 0
   m_Children: []
