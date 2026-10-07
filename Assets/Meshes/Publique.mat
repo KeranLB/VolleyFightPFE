@@ -77,6 +77,18 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_012f1218a19b4b90b641583018b95422_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 22bf2a7319b5ca346b80b60643f92c45, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_3f691c5eb4a641d79471d87104ad8aff_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 412ee2b8ecbffa94d8352be866d1a5b4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_f7f0d1b893684d7e99a5c1b69a99a647_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 03b3bd993eecfb8428db9b58322bd40b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -133,6 +145,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
+    - White: {r: 1, g: 1, b: 1, a: 1}
     - _2emelumiere: {r: 0.8584906, g: 0.7977484, b: 0.8539263, a: 1}
     - _2emeombre: {r: 0.543075, g: 0, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
