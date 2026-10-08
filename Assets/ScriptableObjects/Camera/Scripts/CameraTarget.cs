@@ -10,9 +10,9 @@ public class CameraTarget : MonoBehaviour
 	Rigidbody body;
 
 	public bool IsPrimary => isPrimary;
-	public float Weigh => weight;
+	public float Weight => weight;
 	public Vector3 Position => transform.position;
-	public Vector3 Velocity => body != null? body.linearVelocity : Vector3.zero;
+	public Vector3 Velocity => body != null ? body.linearVelocity : Vector3.zero;
 
 	void Awake()
 	{
