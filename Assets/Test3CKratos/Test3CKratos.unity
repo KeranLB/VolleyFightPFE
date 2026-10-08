@@ -2404,6 +2404,8 @@ MonoBehaviour:
   _justJumped: 0
   _feetSpot: {fileID: 6974657816976199606}
   _groundCheckRaycastLength: 0.1
+  _aimTarget: {fileID: 0}
+  _isFacingTarget: 0
   isOverriden: 0
   overrideVelocity: {x: 0, y: 0, z: 0}
   isFrozen: 0

@@ -23,6 +23,10 @@ public class KratosMovement : MonoBehaviour
     [SerializeField] private Transform _feetSpot;
     [SerializeField] private float _groundCheckRaycastLength;
 
+    [Header("Orientation")]
+    [SerializeField] private GameObject _aimTarget;
+    [SerializeField] private bool _isFacingTarget;
+    
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
     private Vector2 _direction;
@@ -61,6 +65,7 @@ public class KratosMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+        _aimTarget = _ball.gameObject;
     }
 
     private void Update()
@@ -76,12 +81,22 @@ public class KratosMovement : MonoBehaviour
         // Completely prevent moving (aiming...)
         if (isFrozen) return;
         
-        // Make the character face the ball
+        // Make the character face the target
         if (!isOverriden)
         {
             Vector3 faceTarget = _ball.transform.position;
             faceTarget.y = characterModel.transform.position.y;
             characterModel.LookAt(faceTarget);
+            // if (_isFacingTarget)
+            // {
+            //     Vector3 faceTarget = _aimTarget.transform.position;
+            //     faceTarget.y = characterModel.transform.position.y;
+            //     characterModel.LookAt(faceTarget);
+            // }
+            // else
+            // {
+            //     characterModel.LookAt(characterModel.position + _currentVelocity);
+            // }
         }
         
         if (isOverriden)
