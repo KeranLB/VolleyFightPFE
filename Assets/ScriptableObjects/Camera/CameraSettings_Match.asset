@@ -22,8 +22,8 @@ MonoBehaviour:
   lookAheadTime: 5
   maxLookAhead: 5
   velocitySmoothing: 8
-  followSmoothTime: 0.35
-  maxFollowSpeed: 38
+  followSmoothTime: 0.2
+  maxFollowSpeed: 15.4
   minDistance: 35
   maxDistance: 80
   framingPadding: 5
