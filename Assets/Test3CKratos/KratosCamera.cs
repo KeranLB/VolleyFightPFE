@@ -13,7 +13,13 @@ public class KratosCamera : MonoBehaviour
     private float _targetDistance;
     private Vector3 _smoothVelocity;
     private Ball _ball;
-    
+
+    [SerializeField] private float maxYOffset = 3f;
+    [SerializeField] private float minYOffset = -2f;
+    [SerializeField] private float maxBallHeight = 10f;
+    [SerializeField] private float minBallHeight = 0f;
+    [SerializeField] private float maxZOffset = 10f;
+    [SerializeField] private float minZOffset = 0f;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -43,6 +49,13 @@ public class KratosCamera : MonoBehaviour
         
         // pivotCamera.eulerAngles = Vector3.SmoothDamp(pivotCamera.eulerAngles, rotation.eulerAngles, ref _smoothVelocity, _smoothTime);
         
+        // Vertical adjustments
+        var newPosition = pivotY.localPosition;
+        var targetPosition = Mathf.Lerp(minYOffset, maxYOffset, Mathf.InverseLerp(minBallHeight, maxBallHeight, _ball.transform.position.y));
+        newPosition.y = Mathf.Lerp(pivotY.localPosition.y, targetPosition, Mathf.Lerp(0.5f, 5f, 1-_ball.currentSpeedLevelIndex/10f) * Time.deltaTime);
+        pivotY.localPosition = newPosition;
+        
+        // Depth adjustments
     }
 
     public void SetDistanceOffset(float offset)
