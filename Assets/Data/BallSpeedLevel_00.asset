@@ -24,3 +24,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   damageMultiplier: 0
   freezeFrames: 0
+  speedLevelDuration: 0

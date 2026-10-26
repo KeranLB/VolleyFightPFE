@@ -25,7 +25,7 @@ public class KratosMovement : MonoBehaviour
 
     [Header("Orientation")]
     [SerializeField] private GameObject _aimTarget;
-    [SerializeField] private bool _isFacingTarget;
+    [SerializeField] private bool _enableFacingTarget;
     
     private Vector3 _currentVelocity;
     private Vector2 _currentHorizontalVelocity;
@@ -84,19 +84,16 @@ public class KratosMovement : MonoBehaviour
         // Make the character face the target
         if (!isOverriden)
         {
-            Vector3 faceTarget = _ball.transform.position;
-            faceTarget.y = characterModel.transform.position.y;
-            characterModel.LookAt(faceTarget);
-            // if (_isFacingTarget)
-            // {
-            //     Vector3 faceTarget = _aimTarget.transform.position;
-            //     faceTarget.y = characterModel.transform.position.y;
-            //     characterModel.LookAt(faceTarget);
-            // }
-            // else
-            // {
-            //     characterModel.LookAt(characterModel.position + _currentVelocity);
-            // }
+            if (_enableFacingTarget)
+            {
+                Vector3 faceTarget = _aimTarget.transform.position;
+                faceTarget.y = characterModel.transform.position.y;
+                characterModel.LookAt(faceTarget);
+            }
+            else
+            {
+                characterModel.LookAt(characterModel.position + _currentVelocity);
+            }
         }
         
         if (isOverriden)

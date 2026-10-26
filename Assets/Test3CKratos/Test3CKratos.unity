@@ -2373,6 +2373,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7325209751530367532, guid: 1723b3c9a8c94814fa58c20c32e8a65e, type: 3}
+      propertyPath: baseSpeed
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2405,7 +2409,7 @@ MonoBehaviour:
   _feetSpot: {fileID: 6974657816976199606}
   _groundCheckRaycastLength: 0.1
   _aimTarget: {fileID: 0}
-  _isFacingTarget: 0
+  _enableFacingTarget: 1
   isOverriden: 0
   overrideVelocity: {x: 0, y: 0, z: 0}
   isFrozen: 0
@@ -2893,7 +2897,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HumanPlayerInput
   orientationPivot: {fileID: 7257813780439984377}
-  isGamepad: 1
+  isGamepad: 0
   gamepadIndex: 0
   _mouseSensitivityX: 60
   _mouseSensitivityY: 60
