@@ -25,7 +25,7 @@ public class AttackZone : PlayerHitZone
     {
         _rigidbody.detectCollisions = true;
         Color c = Color.blue;
-        c.a = 0.5f;
+        c.a = 0.4f;
         _meshRenderer.material.color = c;
         _hasTouchedBall = false;
     }
@@ -34,7 +34,7 @@ public class AttackZone : PlayerHitZone
     {
         _rigidbody.detectCollisions = false;
         Color c = Color.red;
-        c.a = 0.3f;
+        c.a = 0.1f;
         _meshRenderer.material.color = c; 
     }
 
