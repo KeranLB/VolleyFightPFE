@@ -12,59 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 924e8c5b9b873c7409247ae0f1a68597, type: 3}
   m_Name: CameraSettings_Match
   m_EditorClassIdentifier: Assembly-CSharp::CameraSettings
-  pitch: 45
-  yaw: 90
-  distance: 70
-  capDistanceToArena: 1
+  pitch: 40
+  yaw: 0
+  distance: 62
   arenaCenter: {x: 0, y: 0, z: 0}
-  arenaSize: {x: 74.7, y: 295.2}
-  arenaViewOverscan: 0
-  clampViewportTop: 0.85
-  arenaSoftEdge: 30
-  clampViewportSide: 0.2
+  arenaSize: {x: 213.2, y: 295.2}
   ballInfluence: 0.8
   depthFollow: 0.4
-  anchorSmoothTime: 0.25
-  deadZoneViewport: {x: 0.04, y: 0.03}
   followSmoothTime: 0.25
-  maxFollowSpeed: 120
+  followSmoothTimeFastBall: 1
   ballMaxSpeed: 100
-  speedSmoothing: 6
-  speedResponse:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1.0125122
-      value: 0.75476074
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  anchorSmoothTimeAtMaxSpeed: 0.45
-  followSmoothTimeAtMaxSpeed: 1
-  ballInfluenceAtMaxSpeed: 0.35
-  safeZoneMargin: 0.12
-  safeZoneSharpness: 4
-  safeZoneMaxSpeed: 20
   eventIntensity: 1
-  shakeMaxOffset: 0.8
-  shakeFrequency: 25
-  traumaDecay: 1.8
-  kickDistance: 1.5
-  impulseFrequency: 3.5
-  impulseDamping: 0.35
-  shotSmoothTime: 0.3
+  shakeAmount: 0.35
+  kickAmount: 0.5

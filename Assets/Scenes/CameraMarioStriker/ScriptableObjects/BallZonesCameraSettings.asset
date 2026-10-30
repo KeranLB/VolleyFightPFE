@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04100264a47860b4a9b108f15efbf6e5, type: 3}
+  m_Name: BallZonesCameraSettings
+  m_EditorClassIdentifier: Assembly-CSharp::BallZonesCameraSettings
+  cameraPitch: 45
+  cameraYaw: 0
+  cameraDistance: 70
+  sideZoneOffset: 50
+  zoneLimitDistance: 20
+  zoneChangeMargin: 10
+  transitionSmoothTime: 0.8
+  maxCameraSpeed: 30
+  ballMaxSpeed: 300
+  recenterStartSpeedRatio: 0.6
+  ballSpeedSmoothTime: 0.3

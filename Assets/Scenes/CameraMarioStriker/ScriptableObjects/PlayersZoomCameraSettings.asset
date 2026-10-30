@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PlayersZoomCameraSettings
   m_EditorClassIdentifier: Assembly-CSharp::PlayersZoomCameraSettings
   cameraPitch: 45
-  cameraYaw: 90
-  playersFollowStrength: 0
-  ballInfluence: 0.2
-  followSmoothTime: 0.4
-  maxCameraSpeed: 40
-  closestCameraDistance: 50
-  farthestCameraDistance: 90
+  cameraYaw: 0
+  playersFollowStrength: 0.25
+  ballInfluence: 0.09
+  followSmoothTime: 0.6
+  maxCameraSpeed: 25
+  closestCameraDistance: 55
+  farthestCameraDistance: 100
   playerDistanceForClosestZoom: 30
-  playerDistanceForFarthestZoom: 120
+  playerDistanceForFarthestZoom: 100
   zoomSmoothTime: 0.6

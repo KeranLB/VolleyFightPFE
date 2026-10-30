@@ -2,43 +2,65 @@ using UnityEngine;
 
 /// <summary>
 /// Caméra Strikers, volontairement calme (motion sickness) :
-///  - angle et distance FIXES (aucun zoom, roll ou sway continus)
-///  - on suit la zone de jeu (milieu des joueurs, légèrement influencé par la balle)
-///  - dead zone : la caméra ne bouge que quand l'action sort d'un rectangle central
-///  - safe zone douce : joueurs et balle restent visibles
-///  - jamais de vide d'arène (clamp sur l'empreinte réelle de la vue)
-///  - dynamisme par ÉVÉNEMENTS uniquement : Punch (hit) et PlayShot (KO, spécial, but)
+///  - angle et distance fixes, translation seule
+///  - suit le milieu des joueurs, tiré vers la balle (ballInfluence)
+///  - suivi plus posé quand la balle est rapide
+///  - ne montre jamais le vide de l'arène, ralentit en douceur près des murs
+///  - joueurs et balle gardés dans l'écran (safe zone douce)
+///  - dynamisme par événements : Punch (hit) et PlayShot (KO, spécial, but)
 /// Caméra perspective uniquement.
 /// </summary>
 [RequireComponent(typeof(Camera))]
 public class StrikersCameraRig : MonoBehaviour
 {
     [SerializeField] CameraSettings settings;
-    [SerializeField] CameraTargetSet targetSet;
+    [SerializeField] bool debugOverlay;
 
-    /// <summary>Accès pratique : StrikersCameraRig.Current?.Punch(...)</summary>
     public static StrikersCameraRig Current { get; private set; }
 
-    Camera cam;
+    // ---- Constantes internes (réglées une fois, volontairement pas dans l'inspector) ----
+    const float AnchorShare = 0.4f;             // part du temps de suivi pour le filtre de cible (étage 1)
+    const float SpeedAttack = 15f;              // passage rapide en mode "balle rapide"
+    const float SpeedRelease = 2.5f;            // retour lent en mode "balle lente"
+    const float SafeMargin = 0.1f;              // marge du viewport pour la safe zone
+    const float SafeSharpness = 4f;             // douceur de la safe zone
+    const float SafeSpeedRatio = 0.5f;          // vitesse max de la safe zone, relative à la vitesse max de la caméra
+    const float MaxCameraSpeedRatio = 0.6f;     // vitesse max de la caméra = ratio x ballMaxSpeed
+    const float ClampViewTop = 0.6f;            // hauteur du viewport testée contre le vide d'arène
+    const float ArenaSoftEdgeRatio = 0.15f;     // zone de ralentissement près des murs (x petit côté de l'arène)
+    static readonly Vector2 DeadZone = new Vector2(0.04f, 0.03f); // demi-taille (viewport) : évite les micro-mouvements
+    const float ShakeFrequency = 22f;
+    const float TraumaDecay = 3.5f;
+    const float ImpulseFrequency = 4f;
+    const float ImpulseDamping = 0.6f;
+    const float ShotSmoothTime = 0.3f;
 
-    // --- Simulation ---
-    Vector3 focus, focusVelocity;
-    Vector3 goal;                       // objectif posé par la dead zone
-    Vector3 anchorSmoothed, anchorVelocity; // cible filtrée (absorbe rebonds et zigzags de la balle)
-    float speedSmoothed;                // vitesse de la balle, lissée
-    float limLoX, limHiX, limLoZ, limHiZ; // limites du focus (arène), recalculées à chaque frame
-    float distanceScale = 1f, distanceScaleVelocity;
+    Camera cam;
     bool initialized;
 
-    // --- Plan spécial ---
+    // Simulation
+    Vector3 focus, focusVelocity;
+    Vector3 goal;
+    Vector3 anchorSmoothed, anchorVelocity;
+    float distanceScale = 1f, distanceScaleVelocity;
+    float speedRaw, speedSmoothed;
+    Vector3 lastBallPos;
+    bool hasLastBallPos;
+    float limLoX, limHiX, limLoZ, limHiZ;
+
+    // Plan spécial
     bool shotActive;
     Vector3 shotPoint;
     float shotTimer;
     float shotDistanceScale = 1f;
 
-    // --- Impulsions (temps non scalé : le hitstop ne fige pas la caméra) ---
+    // Impulsions (temps non scalé : le hitstop ne fige pas la caméra)
     float trauma, noiseSeed;
     Vector3 kickOffset, kickVelocity;
+
+    // Debug
+    Vector3 dbgPrevFocus;
+    float dbgFocusSpeed, dbgPeak, dbgPeakTimer, dbgSpeedT;
 
     void Awake()
     {
@@ -62,18 +84,17 @@ public class StrikersCameraRig : MonoBehaviour
         strength = Mathf.Clamp01(strength) * settings.eventIntensity;
         if (strength <= 0f) return;
 
-        float omega = 2f * Mathf.PI * settings.impulseFrequency;
+        float omega = 2f * Mathf.PI * ImpulseFrequency;
         trauma = Mathf.Clamp01(trauma + strength);
 
         worldDirection.y = 0f;
         if (worldDirection.sqrMagnitude > 1e-4f)
-            kickVelocity += worldDirection.normalized * (settings.kickDistance * strength * omega);
+            kickVelocity += worldDirection.normalized * (settings.kickAmount * strength * omega);
     }
 
     /// <summary>
     /// Plan spécial (KO, spécial, but) : la caméra se cale sur worldPoint pendant duration secondes puis revient.
-    /// distanceScale = 1 : aucun zoom (translation seule). &lt;1 rapproche légèrement, à réserver aux moments rares.
-    /// Ignoré si eventIntensity = 0.
+    /// distanceScale = 1 : aucun zoom. Ignoré si eventIntensity = 0.
     /// </summary>
     public void PlayShot(Vector3 worldPoint, float duration, float distanceScale = 1f)
     {
@@ -95,8 +116,8 @@ public class StrikersCameraRig : MonoBehaviour
 
     void LateUpdate()
     {
-        if (settings == null || targetSet == null) return;
-        CameraTarget ball = targetSet.Primary;
+        if (settings == null) return;
+        CameraTarget ball = CameraTarget.Primary;
         if (ball == null) return;
 
         UpdateImpulses(Mathf.Min(Time.unscaledDeltaTime, 0.05f));
@@ -112,26 +133,39 @@ public class StrikersCameraRig : MonoBehaviour
     {
         focusVelocity = Vector3.zero;
         distanceScale = 1f; distanceScaleVelocity = 0f;
-        speedSmoothed = 0f;
-        goal = ComputeAnchor(ball, 0f);
+        speedRaw = speedSmoothed = 0f;
+        hasLastBallPos = false;
+
+        goal = ComputeAnchor(ball);
         anchorSmoothed = goal;
         anchorVelocity = Vector3.zero;
         focus = goal;
+        dbgPrevFocus = focus;
         ConstrainToArena();
         initialized = true;
     }
 
     void Simulate(CameraTarget ball, float dt)
     {
-        // Vitesse de la balle (lissée) : 0 = lente, 1 = ballMaxSpeed
-        Vector3 bv = ball.Velocity;
-        bv.y = 0f;
-        speedSmoothed = Mathf.Lerp(speedSmoothed, bv.magnitude, 1f - Mathf.Exp(-settings.speedSmoothing * dt));
-        float speedT = settings.speedResponse.Evaluate(Mathf.Clamp01(speedSmoothed / settings.ballMaxSpeed));
+        // Vitesse mesurée sur le déplacement réel de la balle : 0 = lente, 1 = ballMaxSpeed
+        Vector3 bp = ball.Position;
+        bp.y = 0f;
+        float instant = hasLastBallPos ? (bp - lastBallPos).magnitude / dt : 0f;
+        lastBallPos = bp;
+        hasLastBallPos = true;
+        if (instant > settings.ballMaxSpeed * 3f) instant = speedRaw; // reset / téléportation : ignoré
+        speedRaw = Mathf.Lerp(speedRaw, instant, 1f - Mathf.Exp(-25f * dt)); // retire le bruit des pas de physique
 
-        // Balle lente = follow réactif. Balle rapide = follow plus lent (pas de mouvement brusque).
-        float smoothTime = Mathf.Lerp(settings.followSmoothTime, settings.followSmoothTimeAtMaxSpeed, speedT);
-        float anchorTime = Mathf.Lerp(settings.anchorSmoothTime, settings.anchorSmoothTimeAtMaxSpeed, speedT);
+        // Attaque rapide, relâchement lent
+        float rate = speedRaw > speedSmoothed ? SpeedAttack : SpeedRelease;
+        speedSmoothed = Mathf.Lerp(speedSmoothed, speedRaw, 1f - Mathf.Exp(-rate * dt));
+        float speedT = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(speedSmoothed / settings.ballMaxSpeed));
+        dbgSpeedT = speedT;
+
+        // Balle lente = suivi réactif. Balle rapide = suivi plus posé. Deux étages : filtre de cible puis suivi.
+        float total = Mathf.Lerp(settings.followSmoothTime, settings.followSmoothTimeFastBall, speedT);
+        float anchorTime = total * AnchorShare;
+        float stageTime = total * (1f - AnchorShare);
 
         if (shotActive)
         {
@@ -139,17 +173,16 @@ public class StrikersCameraRig : MonoBehaviour
             if (shotTimer <= 0f) shotActive = false;
         }
 
-        // Étage 1 : la cible est filtrée (démarrage et arrêt progressifs, rebonds absorbés)
+        // Étage 1 : cible filtrée, ralentie en douceur près des murs
         ComputeLimits();
-        Vector3 rawAnchor = SoftLimitAnchor(ComputeAnchor(ball, speedT));
-        anchorSmoothed = Vector3.SmoothDamp(anchorSmoothed, rawAnchor, ref anchorVelocity,
-                                            anchorTime, Mathf.Infinity, dt);
+        Vector3 rawAnchor = SoftLimitAnchor(ComputeAnchor(ball));
+        anchorSmoothed = Vector3.SmoothDamp(anchorSmoothed, rawAnchor, ref anchorVelocity, anchorTime, Mathf.Infinity, dt);
 
         if (shotActive)
         {
             goal = shotPoint;
             goal.y = settings.arenaCenter.y;
-            smoothTime = settings.shotSmoothTime;
+            stageTime = ShotSmoothTime;
         }
         else
         {
@@ -157,19 +190,19 @@ public class StrikersCameraRig : MonoBehaviour
         }
 
         float targetScale = shotActive ? shotDistanceScale : 1f;
-        distanceScale = Mathf.SmoothDamp(distanceScale, targetScale, ref distanceScaleVelocity, settings.shotSmoothTime, Mathf.Infinity, dt);
+        distanceScale = Mathf.SmoothDamp(distanceScale, targetScale, ref distanceScaleVelocity, ShotSmoothTime, Mathf.Infinity, dt);
 
-        ConstrainToArena(); // l'objectif lui-même doit être valide
+        ConstrainToArena(); // l'objectif doit être valide
 
-        // Étage 2 : la caméra suit l'objectif (sans dépassement)
-        focus = Vector3.SmoothDamp(focus, goal, ref focusVelocity, smoothTime, settings.maxFollowSpeed, dt);
+        // Étage 2 : la caméra suit l'objectif (sans dépassement, vitesse plafonnée)
+        float maxSpeed = settings.ballMaxSpeed * MaxCameraSpeedRatio;
+        focus = Vector3.SmoothDamp(focus, goal, ref focusVelocity, stageTime, maxSpeed, dt);
         focus.y = settings.arenaCenter.y;
 
-        // Safe zone douce : joueurs d'abord, balle en dernier (elle est prioritaire)
-        float softK = 1f - Mathf.Exp(-settings.safeZoneSharpness * dt);
-        // Budget de déplacement de la safe zone sur cette frame (0 = illimité) : évite l'effet de téléportation.
-        float budget = settings.safeZoneMaxSpeed > 0f ? settings.safeZoneMaxSpeed * dt : float.MaxValue;
-        var list = targetSet.Targets;
+        // Safe zone douce, vitesse limitée : joueurs d'abord, balle en dernier (prioritaire)
+        float softK = 1f - Mathf.Exp(-SafeSharpness * dt);
+        float budget = maxSpeed * SafeSpeedRatio * dt;
+        var list = CameraTarget.All;
         for (int i = 0; i < list.Count; i++)
         {
             CameraTarget t = list[i];
@@ -179,18 +212,32 @@ public class StrikersCameraRig : MonoBehaviour
         PushIntoSafeZone(ball.Position, softK, ref budget);
 
         ConstrainToArena();
+
+        // Debug
+        dbgFocusSpeed = (focus - dbgPrevFocus).magnitude / dt;
+        dbgPrevFocus = focus;
+        dbgPeakTimer -= dt;
+        if (dbgFocusSpeed >= dbgPeak || dbgPeakTimer <= 0f) { dbgPeak = dbgFocusSpeed; dbgPeakTimer = 2f; }
+    }
+
+    void OnGUI()
+    {
+        if (!debugOverlay || !initialized || settings == null) return;
+        GUI.Label(new Rect(10, 10, 600, 70),
+            "camera speed " + dbgFocusSpeed.ToString("F1") + "  (peak 2s: " + dbgPeak.ToString("F1") + ")\n" +
+            "ball speed " + speedSmoothed.ToString("F1") + "  -> speedT " + dbgSpeedT.ToString("F2"));
     }
 
     // ------------------------------------------------------------------
     // Cadrage
     // ------------------------------------------------------------------
 
-    /// <summary>Point de la zone de jeu : milieu (pondéré) des joueurs, légèrement tiré vers la balle.</summary>
-    Vector3 ComputeAnchor(CameraTarget ball, float speedT)
+    /// <summary>Point de la zone de jeu : milieu (pondéré) des joueurs, tiré vers la balle.</summary>
+    Vector3 ComputeAnchor(CameraTarget ball)
     {
         Vector3 sum = Vector3.zero;
         float w = 0f;
-        var list = targetSet.Targets;
+        var list = CameraTarget.All;
         for (int i = 0; i < list.Count; i++)
         {
             CameraTarget t = list[i];
@@ -200,12 +247,10 @@ public class StrikersCameraRig : MonoBehaviour
         }
 
         Vector3 players = w > 1e-4f ? sum / w : ball.Position;
-        // Balle rapide : on s'appuie davantage sur les joueurs (la balle traverse le terrain trop vite pour être suivie)
-        float influence = Mathf.Lerp(settings.ballInfluence, settings.ballInfluenceAtMaxSpeed, speedT);
-        Vector3 a = Vector3.Lerp(players, ball.Position, influence);
+        Vector3 a = Vector3.Lerp(players, ball.Position, settings.ballInfluence);
         a.y = settings.arenaCenter.y;
 
-        // depthFollow : on atténue le suivi sur l'axe de profondeur
+        // depthFollow : atténue le suivi sur l'axe de profondeur
         Vector3 depthAxis = FlatForward();
         float depthOffset = Vector3.Dot(a - settings.arenaCenter, depthAxis);
         a -= depthAxis * (depthOffset * (1f - settings.depthFollow));
@@ -234,18 +279,18 @@ public class StrikersCameraRig : MonoBehaviour
         Vector3 fwd = FlatForward();
 
         Vector2 c = GroundOffset(new Vector2(0.5f, 0.5f), dist);
-        Vector2 r = GroundOffset(new Vector2(0.5f + settings.deadZoneViewport.x, 0.5f), dist) - c;
-        Vector2 u = GroundOffset(new Vector2(0.5f, 0.5f + settings.deadZoneViewport.y), dist) - c;
+        Vector2 r = GroundOffset(new Vector2(0.5f + DeadZone.x, 0.5f), dist) - c;
+        Vector2 u = GroundOffset(new Vector2(0.5f, 0.5f + DeadZone.y), dist) - c;
 
         halfRight = Mathf.Abs(r.x * right.x + r.y * right.z);
         halfDepth = Mathf.Abs(u.x * fwd.x + u.y * fwd.z);
     }
 
-    /// <summary>Si la cible entre dans la marge du viewport : poussée douce, totale au bord de l'écran. Décale focus ET objectif.</summary>
+    /// <summary>Cible dans la marge du viewport : poussée douce (totale au bord de l'écran), vitesse limitée. Décale focus ET objectif.</summary>
     void PushIntoSafeZone(Vector3 worldPos, float softK, ref float budget)
     {
-        float m = settings.safeZoneMargin;
-        if (m <= 0f || budget <= 0f) return;
+        if (budget <= 0f) return;
+        float m = SafeMargin;
 
         for (int i = 0; i < 2; i++)
         {
@@ -264,11 +309,11 @@ public class StrikersCameraRig : MonoBehaviour
             Vector2 b = GroundOffset(new Vector2(0.5f + ox, 0.5f + oy), dist);
             Vector2 d = b - a;
 
-            // On ne pousse pas là où l'arène l'interdit (sinon le clamp annule la poussée et crée des à-coups)
+            // Pas de poussée là où l'arène l'interdit
             d.x = Mathf.Clamp(focus.x + d.x, limLoX, limHiX) - focus.x;
             d.y = Mathf.Clamp(focus.z + d.y, limLoZ, limHiZ) - focus.z;
 
-            // Vitesse de poussée limitée : pas de téléportation, même si la balle est très rapide
+            // Vitesse de poussée limitée : pas de téléportation
             float mag = d.magnitude;
             if (mag > budget) d *= budget / mag;
             budget -= d.magnitude;
@@ -280,32 +325,16 @@ public class StrikersCameraRig : MonoBehaviour
     }
 
     // ------------------------------------------------------------------
-    // Arène : jamais de vide
+    // Arène : jamais de vide, approche des murs en douceur
     // ------------------------------------------------------------------
 
-    float CurrentDistance()
-    {
-        float d = settings.distance;
-        if (settings.capDistanceToArena) d = Mathf.Min(d, ArenaFitDistance());
-        return Mathf.Max(1f, d * distanceScale);
-    }
-
-    /// <summary>Distance max pour que l'empreinte de la vue tienne dans l'arène (l'empreinte est linéaire en distance).</summary>
-    float ArenaFitDistance()
-    {
-        GetFootprint(1f, out Vector2 min, out Vector2 max);
-        float w = Mathf.Max(1e-4f, max.x - min.x);
-        float d = Mathf.Max(1e-4f, max.y - min.y);
-        float availX = settings.arenaSize.x + 2f * settings.arenaViewOverscan;
-        float availZ = settings.arenaSize.y + 2f * settings.arenaViewOverscan;
-        return Mathf.Min(availX / w, availZ / d);
-    }
+    float CurrentDistance() { return Mathf.Max(1f, settings.distance * distanceScale); }
 
     /// <summary>Plage atteignable par le focus pour que la vue reste dans l'arène (lo <= hi garanti).</summary>
     void ComputeLimits()
     {
         GetFootprint(CurrentDistance(), out Vector2 min, out Vector2 max);
-        Vector2 half = settings.arenaSize * 0.5f + Vector2.one * settings.arenaViewOverscan;
+        Vector2 half = settings.arenaSize * 0.5f;
         Vector3 c = settings.arenaCenter;
 
         limLoX = c.x - half.x - min.x; limHiX = c.x + half.x - max.x;
@@ -315,14 +344,12 @@ public class StrikersCameraRig : MonoBehaviour
         if (limLoZ > limHiZ) limLoZ = limHiZ = (limLoZ + limHiZ) * 0.5f;
     }
 
-    /// <summary>
-    /// Ralentit la cible en approchant des limites (saturation exponentielle, continue en vitesse) :
-    /// plus de blocage net contre les murs, donc pas de redémarrage brutal au rebond.
-    /// </summary>
+    /// <summary>Ralentit la cible en approchant des limites (continu en vitesse) : pas de blocage net contre les murs.</summary>
     Vector3 SoftLimitAnchor(Vector3 a)
     {
-        a.x = SoftLimit(a.x, limLoX, limHiX, settings.arenaSoftEdge);
-        a.z = SoftLimit(a.z, limLoZ, limHiZ, settings.arenaSoftEdge);
+        float soft = Mathf.Min(settings.arenaSize.x, settings.arenaSize.y) * ArenaSoftEdgeRatio;
+        a.x = SoftLimit(a.x, limLoX, limHiX, soft);
+        a.z = SoftLimit(a.z, limLoZ, limHiZ, soft);
         return a;
     }
 
@@ -352,7 +379,6 @@ public class StrikersCameraRig : MonoBehaviour
 
     static void ClampAxis(ref float value, ref float velocity, float lo, float hi)
     {
-        if (lo > hi) { value = (lo + hi) * 0.5f; velocity = 0f; return; }
         if (value < lo) { value = lo; if (velocity < 0f) velocity = 0f; }
         else if (value > hi) { value = hi; if (velocity > 0f) velocity = 0f; }
     }
@@ -396,13 +422,10 @@ public class StrikersCameraRig : MonoBehaviour
 
     void GetFootprint(float dist, out Vector2 min, out Vector2 max)
     {
-        float s = settings.clampViewportSide;
-        float top = settings.clampViewportTop;
-
-        Vector2 c0 = GroundOffset(new Vector2(s, 0f), dist);
-        Vector2 c1 = GroundOffset(new Vector2(1f - s, 0f), dist);
-        Vector2 c2 = GroundOffset(new Vector2(s, top), dist);
-        Vector2 c3 = GroundOffset(new Vector2(1f - s, top), dist);
+        Vector2 c0 = GroundOffset(new Vector2(0f, 0f), dist);
+        Vector2 c1 = GroundOffset(new Vector2(1f, 0f), dist);
+        Vector2 c2 = GroundOffset(new Vector2(0f, ClampViewTop), dist);
+        Vector2 c3 = GroundOffset(new Vector2(1f, ClampViewTop), dist);
 
         min = Vector2.Min(Vector2.Min(c0, c1), Vector2.Min(c2, c3));
         max = Vector2.Max(Vector2.Max(c0, c1), Vector2.Max(c2, c3));
@@ -415,9 +438,9 @@ public class StrikersCameraRig : MonoBehaviour
     void UpdateImpulses(float rawDt)
     {
         if (rawDt <= 0f) return;
-        float omega = 2f * Mathf.PI * settings.impulseFrequency;
-        Spring(ref kickOffset, ref kickVelocity, Vector3.zero, omega, settings.impulseDamping, rawDt);
-        trauma = Mathf.MoveTowards(trauma, 0f, settings.traumaDecay * rawDt);
+        float omega = 2f * Mathf.PI * ImpulseFrequency;
+        Spring(ref kickOffset, ref kickVelocity, Vector3.zero, omega, ImpulseDamping, rawDt);
+        trauma = Mathf.MoveTowards(trauma, 0f, TraumaDecay * rawDt);
     }
 
     Vector3 ShakeOffset(Quaternion rot)
@@ -425,10 +448,10 @@ public class StrikersCameraRig : MonoBehaviour
         float s = trauma * trauma;
         if (s <= 0f) return Vector3.zero;
 
-        float t = Time.unscaledTime * settings.shakeFrequency;
+        float t = Time.unscaledTime * ShakeFrequency;
         float x = Mathf.PerlinNoise(noiseSeed, t) * 2f - 1f;
         float y = Mathf.PerlinNoise(noiseSeed + 17.3f, t) * 2f - 1f;
-        return (rot * Vector3.right * x + rot * Vector3.up * y) * (s * settings.shakeMaxOffset);
+        return (rot * Vector3.right * x + rot * Vector3.up * y) * (s * settings.shakeAmount);
     }
 
     void ApplyTransform()
@@ -473,7 +496,6 @@ public class StrikersCameraRig : MonoBehaviour
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(goal, 0.4f);
 
-        // Dead zone (orange), centrée sur l'objectif
         GetDeadZoneHalfExtents(out float hr, out float hd);
         Vector3 r = FlatRight() * hr, f = FlatForward() * hd;
         Gizmos.color = new Color(1f, 0.55f, 0f);
@@ -482,9 +504,7 @@ public class StrikersCameraRig : MonoBehaviour
         Gizmos.DrawLine(goal + r + f, goal - r + f);
         Gizmos.DrawLine(goal - r + f, goal - r - f);
 
-        // Empreinte testée contre l'arène (vert)
-        float s = settings.clampViewportSide, top = settings.clampViewportTop;
-        Vector2[] uvs = { new Vector2(s, 0f), new Vector2(1f - s, 0f), new Vector2(1f - s, top), new Vector2(s, top) };
+        Vector2[] uvs = { new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, ClampViewTop), new Vector2(0f, ClampViewTop) };
         Gizmos.color = Color.green;
         float dist = CurrentDistance();
         for (int i = 0; i < 4; i++)
