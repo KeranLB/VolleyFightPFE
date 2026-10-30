@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PlayersZoomCameraSettings
   m_EditorClassIdentifier: Assembly-CSharp::PlayersZoomCameraSettings
   cameraPitch: 45
-  cameraYaw: 0
-  playersFollowStrength: 0.4
+  cameraYaw: 90
+  playersFollowStrength: 0
   ballInfluence: 0.2
   followSmoothTime: 0.4
   maxCameraSpeed: 40
