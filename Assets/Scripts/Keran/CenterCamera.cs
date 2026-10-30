@@ -1,5 +1,8 @@
+using System;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 using static UnityEditor.FilePathAttribute;
 
 public class CenterCamera : MonoBehaviour
@@ -9,45 +12,87 @@ public class CenterCamera : MonoBehaviour
     [Header("")]
     
     [Header("Gameplay Objects :")]
-    [SerializeField] private GameObject _player;
+    private GameObject _player;
+    [SerializeField] private string _tagPlayer;
     [SerializeField] private Ball _ball;
 
-    [Header("Camera Follow :")]
+    [Header("Camera Attachement :")]
     private Camera _camera;
     [SerializeField] private Transform _cameraPivot;
     [SerializeField] private Transform _centerArenaTransform;
+    [SerializeField] private Transform _targetBallVision;
     #endregion
 
     #region Parameters
     [Header("Parameters :")]
     [Header("")]
-    
-    [Header("Damping Pivot Camera Follow :")]
+    [Header("Informations :")]
+    [SerializeField] private float _maxDistancePlayerFromCenterArena;
+
+    [Header("")]
+    [Header("Pivot Camera Parameters :")]
+
+    [Header("Pivot Camera Rotation :")]
     [SerializeField] private float _slowDampingForce;
     [SerializeField] private float _normalDampingForce;
     
-    [Header("Distance Center to Pivot Camera :")]
-    [SerializeField] private float _minDistanceCenterToPivot;
-    [SerializeField] private float _transitionLimit;
-    [SerializeField] private float _maxDistanceCenterToPivot;
+    [Header("Pivot Camera Position :")]
+    private float _minDistanceCenterToPivot;
+    private float _transitionLimit;
+    private float _maxDistanceCenterToPivot;
     private float _distanceSlowFollowPivotCamera;
-    [SerializeField] private float _maxDistanceCenterToPlayer;
+    [SerializeField] private float _distancePivotFromPlayer;
+    [SerializeField] private float _hightPivotFromPlayer;
+
+    [Header("")]
+    [Header("Camera Parameters :")]
+
+    [Header("Camera Rotation :")]
+    [Tooltip("vers qui la caméra s'oriente le plus (0 = Balle / 1 = Joueur).")]
+    [SerializeField][Range(0, 1)] private float _VisionPriority;
+    [SerializeField] private float _dampingForcePriorityVision;
     
+    [Header("Camera Position")]
+    [SerializeField] private float _distanceCameraFromPivot;
+    [SerializeField] private float _hightCameraFromPivot;
+
+
     #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _camera = GetComponent<Camera>();
-        _distanceSlowFollowPivotCamera = _minDistanceCenterToPivot;
+        _player = GameObject.FindWithTag(_tagPlayer);
+        //_distanceSlowFollowPivotCamera = _minDistanceCenterToPivot;
         DrawDebugCircle(_centerArenaTransform.position + new Vector3(1f, 0f, 0f), _distanceSlowFollowPivotCamera, 360, Color.red);
+        InitCameraParameters();
+        InitPivotParameters();
+    }
+
+    private void InitPivotParameters()
+    {
+        _distanceSlowFollowPivotCamera = _maxDistancePlayerFromCenterArena / 10f;
+        _transitionLimit = _maxDistancePlayerFromCenterArena / 40f;
+        _minDistanceCenterToPivot = _distanceSlowFollowPivotCamera + _distancePivotFromPlayer;
+        _maxDistanceCenterToPivot = _maxDistancePlayerFromCenterArena + _distancePivotFromPlayer;
+    }
+
+    private void InitCameraParameters()
+    {
+        _camera.transform.position = new Vector3(_camera.transform.position.x, _hightCameraFromPivot, _distanceCameraFromPivot);
     }
 
     // Update is called once per frame
     void Update()
     {
+        //InitCameraParameters();
+        //InitPivotParameters();
+
         CameraRotationFollow();
         NewPivotDistanceToCenter();
+        HightFollow();
+        KeepBallInVision();
     }
 
     void DrawDebugCircle(Vector3 center, float radius, int segments, Color color)
@@ -80,6 +125,7 @@ public class CenterCamera : MonoBehaviour
         return result;
     }
 
+
     private void CameraRotationFollow()
     {
         float centerToPlayer = GetDistance2D(_player.transform.position, _centerArenaTransform.position);
@@ -87,7 +133,7 @@ public class CenterCamera : MonoBehaviour
 
         if((centerToPlayer > _distanceSlowFollowPivotCamera)&&(centerToPlayer < _transitionLimit))
         {
-            float percent = GetPercent(centerToPlayer, _minDistanceCenterToPivot, _maxDistanceCenterToPlayer);
+            float percent = GetPercent(centerToPlayer, _minDistanceCenterToPivot, _maxDistancePlayerFromCenterArena);
             float newDampingForce = GetValueFromPercent(percent, _slowDampingForce, _normalDampingForce);
 
             Quaternion lookRotation = LookAtTarget(_centerArenaTransform, _player.transform, newDampingForce);
@@ -106,10 +152,10 @@ public class CenterCamera : MonoBehaviour
         
     }
 
-    private void CameraHightFollow()
+    private void HightFollow()
     {
-        float centerToPlayer = GetDistance2D(_player.transform.position, _centerArenaTransform.position);
-
+        _cameraPivot.position = new Vector3(_cameraPivot.position.x,_player.transform.position.y + _hightPivotFromPlayer, _cameraPivot.position.z);
+        
     }
 
     private void NewPivotDistanceToCenter()
@@ -118,7 +164,7 @@ public class CenterCamera : MonoBehaviour
 
         if (distanceCenterToPlayer > _minDistanceCenterToPivot)
         {
-            float percent = GetPercent(distanceCenterToPlayer, _minDistanceCenterToPivot, _maxDistanceCenterToPlayer);
+            float percent = GetPercent(distanceCenterToPlayer, _minDistanceCenterToPivot, _maxDistancePlayerFromCenterArena);
             float newDistancePivotCamera = GetValueFromPercent(percent, _minDistanceCenterToPivot, _maxDistanceCenterToPivot);
             _cameraPivot.localPosition = new Vector3(0f, _cameraPivot.localPosition.y, newDistancePivotCamera);
         }
@@ -126,6 +172,14 @@ public class CenterCamera : MonoBehaviour
         {
             _cameraPivot.localPosition = new Vector3(0f, _cameraPivot.localPosition.y, _minDistanceCenterToPivot);
         }
+    }
+
+    private void KeepBallInVision()
+    {
+        _targetBallVision.position = Vector3.Lerp(_ball.transform.position, _player.transform.position,_VisionPriority);
+        Quaternion rotation = LookAtTarget(_camera.transform, _targetBallVision, _dampingForcePriorityVision);
+       
+        _camera.transform.eulerAngles = new Vector3(_camera.transform.eulerAngles.x, rotation.eulerAngles.y, _camera.transform.eulerAngles.z);
     }
 
     private Quaternion LookAtTarget(Transform from, Transform target, float dampingForce)
@@ -136,14 +190,6 @@ public class CenterCamera : MonoBehaviour
         return rotation;
     }
 
-    private Vector3 Interpolation3D(Vector3 vectorA, Vector3 vectorB, Vector3 vectorC, float forceA, float forceB, float forceC)
-    {
-        float resultX = vectorA.x * forceA + vectorB.x * forceB + vectorC.x * forceC;
-        float resultY = vectorA.y * forceA + vectorB.y * forceB + vectorC.y * forceC;
-        float resultZ = vectorA.z * forceA + vectorB.z * forceB + vectorC.z * forceC;
-        Vector3 result = new Vector3(resultX, resultY, resultZ);
-        return result;
-    }
 
     /// <summary>
     /// Return the percent of a value between a minimum value and a maximum value.
