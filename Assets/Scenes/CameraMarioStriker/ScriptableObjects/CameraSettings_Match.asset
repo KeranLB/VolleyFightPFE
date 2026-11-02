@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 924e8c5b9b873c7409247ae0f1a68597, type: 3}
   m_Name: CameraSettings_Match
   m_EditorClassIdentifier: Assembly-CSharp::CameraSettings
-  pitch: 40
-  yaw: 0
-  distance: 62
+  pitch: 45
+  yaw: -0.57
+  distance: 52
   arenaCenter: {x: 0, y: 0, z: 0}
   arenaSize: {x: 213.2, y: 295.2}
   ballInfluence: 0.8
