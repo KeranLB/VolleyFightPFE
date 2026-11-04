@@ -8,6 +8,7 @@ public class KratosMovement : MonoBehaviour
 
     public LayerMask collisionLayers;
     public Transform characterModel;
+    public Camera _camera;
 
     [Header("Horizontal Movement")]
     [SerializeField] private float _groundAcceleration;
@@ -65,7 +66,7 @@ public class KratosMovement : MonoBehaviour
     {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
-        _aimTarget = _ball.gameObject;
+        //_aimTarget = _ball.gameObject;
     }
 
     private void Update()
@@ -86,13 +87,19 @@ public class KratosMovement : MonoBehaviour
         {
             if (_enableFacingTarget)
             {
+                /*
                 Vector3 faceTarget = _aimTarget.transform.position;
                 faceTarget.y = characterModel.transform.position.y;
                 characterModel.LookAt(faceTarget);
+                */
+                characterModel.eulerAngles = new Vector3(characterModel.eulerAngles.x, _aimTarget.transform.eulerAngles.y, characterModel.eulerAngles.z);
+                
             }
             else
             {
-                characterModel.LookAt(characterModel.position + _currentVelocity);
+                //Quaternion direction = Quaternion.LookRotation(new Vector3(_currentVelocity.x,characterModel.position.y,_currentVelocity.z));
+                Quaternion direction = Quaternion.LookRotation(new Vector3(_currentVelocity.x, 0f, _currentVelocity.z) + _camera.transform.forward);
+                characterModel.rotation = direction;
             }
         }
         
@@ -148,7 +155,7 @@ public class KratosMovement : MonoBehaviour
     private void UpdateVelocityFromInputs()
     {
         // Get Inputs and recombine them for current rotation
-        var world_dir = _movementInput.x * characterModel.right + _movementInput.y * characterModel.forward;
+        var world_dir = _movementInput.x * _camera.transform.right + _movementInput.y * _camera.transform.forward;
         Vector2 tmp = new Vector2(world_dir.x, world_dir.z);
 
         // Get GroundCheck

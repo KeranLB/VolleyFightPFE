@@ -319,6 +319,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8610176cab1fe684eabb4e1b3d1d4e86, type: 3}
+--- !u!20 &239472043 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+  m_PrefabInstance: {fileID: 1848880670}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &261682404 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2349691993881888995, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
@@ -425,6 +430,18 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e0b0c2bb32c3ce64ebf18b0cf17b211e, type: 2}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 1168611683}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _aimTarget
+      value: 
+      objectReference: {fileID: 1908159870}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _enableFacingTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8508556014177939450, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_Name
       value: KratosPlayer2-1
@@ -1008,10 +1025,20 @@ Transform:
   - {fileID: 1385408505}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &964261067 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+  m_PrefabInstance: {fileID: 1859094930}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1108046690 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7213579373530985476, guid: 550fb607a699af34b8cf9bbab75a831c, type: 3}
   m_PrefabInstance: {fileID: 9077254276045530429}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &1168611683 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+  m_PrefabInstance: {fileID: 330971728}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1280908429
 GameObject:
@@ -1357,7 +1384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2224237105444766610, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: gamepadIndex
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -1558,6 +1585,10 @@ PrefabInstance:
       propertyPath: isGamepad
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2224237105444766610, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: gamepadIndex
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 255
@@ -1594,6 +1625,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: daef72cf3bc62f04e89e077664ef305d, type: 2}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 239472043}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _enableFacingTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8508556014177939450, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_Name
       value: KratosPlayer1-1
@@ -1723,6 +1762,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 6059e06742204da47bd9bda56a7f4f53, type: 2}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 964261067}
+    - target: {fileID: 6000041259398391254, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+      propertyPath: _enableFacingTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8508556014177939450, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_Name
       value: KratosPlayer2-2
@@ -1818,6 +1865,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -295389436650021185, guid: 15804da3dde0fe84f864c5a0690453da, type: 3}
+--- !u!1 &1908159870 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1463007889587627684, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
+  m_PrefabInstance: {fileID: 330971728}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1929937888
 PrefabInstance:
   m_ObjectHideFlags: 0

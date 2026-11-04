@@ -1571,6 +1571,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   characterModel: {fileID: 4405208487288057749}
+  _camera: {fileID: 4201043693218528618}
   _groundAcceleration: 50
   _groundFriction: 60
   _maxHorizontalSpeed: 20
@@ -1582,7 +1583,7 @@ MonoBehaviour:
   _feetSpot: {fileID: 649873029294465719}
   _groundCheckRaycastLength: 0.1
   _aimTarget: {fileID: 0}
-  _enableFacingTarget: 1
+  _enableFacingTarget: 0
   isOverriden: 0
   overrideVelocity: {x: 0, y: 0, z: 0}
   isFrozen: 0
