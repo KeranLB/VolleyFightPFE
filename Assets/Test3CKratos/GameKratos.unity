@@ -379,11 +379,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2224237105444766610, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: isGamepad
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2224237105444766610, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: gamepadIndex
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3422540298899594099, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: team
@@ -1451,11 +1451,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2224237105444766610, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: gamepadIndex
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3422540298899594099, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: team
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4201043693218528618, guid: 8fcebcd6c7ffd454f9888d2ab7ccb369, type: 3}
       propertyPath: m_CullingMask.m_Bits
