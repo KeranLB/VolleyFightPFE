@@ -263,8 +263,8 @@ public class KratosMovement : MonoBehaviour
 
     private void OnGUI()
     {
-        GUIStyle style = new GUIStyle();
-        GUI.Label(new Rect(10, 30, 200, 20), "Velocity: "+ _currentVelocity, style);
-        GUI.Label(new Rect(10, 50, 200, 20), "Acceleration: "+ _forceToApply, style);
+        //GUIStyle style = new GUIStyle();
+        //GUI.Label(new Rect(10, 30, 200, 20), "Velocity: "+ _currentVelocity, style);
+        //GUI.Label(new Rect(10, 50, 200, 20), "Acceleration: "+ _forceToApply, style);
     }
 }

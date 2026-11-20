@@ -8,9 +8,9 @@ public class PlayerLife : MonoBehaviour
 {
     public float maxHealth;
     public float currentHealth;
+    public List<Image> PlayerLifeBarsToUpdate;
 
-    public Image LifeBar;
-    public List<Image> LifeBars;
+    public Camera playerCamera;
 
     #region Delegates
 
@@ -22,11 +22,11 @@ public class PlayerLife : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        foreach (var item in LifeBars)
+        foreach (var item in PlayerLifeBarsToUpdate)
         {
             item.fillAmount = 1;
         }
-        //LifeBar.fillAmount = 1;
+
     }
 
     public void TakeDamage(float damage)
@@ -37,7 +37,7 @@ public class PlayerLife : MonoBehaviour
     public void ChangeHealth(float health)
     {
         currentHealth = Mathf.Clamp(health, 0, maxHealth);
-        foreach (var item in LifeBars)
+        foreach (var item in PlayerLifeBarsToUpdate)
         {
             item.fillAmount = currentHealth/maxHealth;
         }
@@ -57,7 +57,7 @@ public class PlayerLife : MonoBehaviour
     public void FullHeal()
     {
         ChangeHealth(maxHealth);
-        foreach (var item in LifeBars)
+        foreach (var item in PlayerLifeBarsToUpdate)
         {
             item.fillAmount = 1;
         }
